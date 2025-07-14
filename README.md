@@ -9,6 +9,8 @@ The package provides the ability to use `ramsey/identifier` as various Cycle ORM
 
 ## Installation
 
+> Note this package required PHP `8.2` or newer.
+
 Install this package as a dependency using Composer.
 
 ```bash
