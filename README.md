@@ -1,8 +1,8 @@
 # Cycle ORM Entity Behavior Identifier
-[![Latest Stable Version](https://poser.pugx.org/cycle/entity-behavior-Identifier/version)](https://packagist.org/packages/cycle/entity-behavior-Identifier)
-[![Build Status](https://github.com/cycle/entity-behavior-Identifier/workflows/build/badge.svg)](https://github.com/cycle/entity-behavior-Identifier/actions)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cycle/entity-behavior-Identifier/badges/quality-score.png?b=1.x)](https://scrutinizer-ci.com/g/cycle/entity-behavior-Identifier/?branch=1.x)
-[![Codecov](https://codecov.io/gh/cycle/entity-behavior-Identifier/graph/badge.svg)](https://codecov.io/gh/cycle/entity-behavior)
+[![Latest Stable Version](https://poser.pugx.org/cycle/entity-behavior-Identifier/version)](https://packagist.org/packages/cycle/entity-behavior-identifier)
+[![Build Status](https://github.com/cycle/entity-behavior-identifier/workflows/build/badge.svg)](https://github.com/cycle/entity-behavior-identifier/actions)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cycle/entity-behavior-identifier/badges/quality-score.png?b=1.x)](https://scrutinizer-ci.com/g/cycle/entity-behavior-identifier/?branch=1.x)
+[![Codecov](https://codecov.io/gh/cycle/entity-behavior-identifier/graph/badge.svg)](https://codecov.io/gh/cycle/entity-behavior)
 <a href="https://discord.gg/TFeEmCs"><img src="https://img.shields.io/badge/discord-chat-magenta.svg"></a>
 
 The package provides the ability to use `ramsey/identifier` as various Cycle ORM entity column types.
@@ -12,7 +12,7 @@ The package provides the ability to use `ramsey/identifier` as various Cycle ORM
 Install this package as a dependency using Composer.
 
 ```bash
-composer require cycle/entity-behavior-Identifier
+composer require cycle/entity-behavior-identifier
 ```
 
 ## Example
