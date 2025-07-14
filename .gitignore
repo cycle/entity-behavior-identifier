@@ -1,0 +1,11 @@
+/.idea/
+/.report/
+/.dolt/
+/runtime/
+/vendor/
+/tests/runtime/*
+/.env
+*.db
+clover.xml
+docker-compose.override.yml
+.phpunit.result.cache
