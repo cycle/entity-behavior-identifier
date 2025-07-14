@@ -1,0 +1,17 @@
+---
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - master
+      - '*.*'
+      - '*.*.*'
+  pull_request: null
+
+name: Postgres
+
+jobs:
+  phpunit:
+    uses: cycle/gh-actions/.github/workflows/db-pgsql.yml@master
+
+...

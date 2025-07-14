@@ -1,0 +1,17 @@
+---
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - master
+      - '*.*'
+      - '*.*.*'
+  pull_request: null
+
+name: MySQL
+
+jobs:
+  phpunit:
+    uses: cycle/gh-actions/.github/workflows/db-mysql.yml@master
+
+...
