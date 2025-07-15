@@ -28,7 +28,7 @@ abstract class ListenerTest extends BaseTest
     {
         $this->withListeners([
             Uuid4Listener::class,
-            UlidListener::class
+            UlidListener::class,
         ]);
 
         $identifiers = new MultipleIdentifiers();
