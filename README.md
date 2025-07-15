@@ -9,7 +9,7 @@ The package provides the ability to use `ramsey/identifier` as various Cycle ORM
 
 ## Installation
 
-> Note this package required PHP `8.2` or newer.
+> **Note:** Due to a dependency on `ramsey/identifier` this package requires PHP `8.2` or newer.
 
 Install this package as a dependency using Composer.
 
@@ -17,23 +17,157 @@ Install this package as a dependency using Composer.
 composer require cycle/entity-behavior-identifier
 ```
 
-## Example
+## Snowflake Examples
 
-They are randomly-generated and do not contain any information about the time they are created or the machine that
-generated them.
+**Snowflake:** A distributed ID generation system developed by Twitter that produces 64-bit unique, sortable identifiers. Each ID encodes a timestamp, machine ID, and sequence number, enabling high-throughput, ordered ID creation suitable for large-scale distributed applications.
+
+> **Note:** Support for Snowflake identifiers will arrive soon, stay tuned.
+
+## ULID Examples
+
+**ULID (Universally Unique Lexicographically Sortable Identifier):** A 128-bit identifier designed for high uniqueness and lexicographical sortability. It combines a timestamp component with random data, allowing for ordered IDs that can be generated rapidly and are human-readable, making it ideal for databases and distributed systems.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use Cycle\ORM\Entity\Behavior\Idetifier\Uuid4;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Ulid;
+
+#[Entity]
+#[Identifier\Ulid(field: 'id')]
+class User
+{
+    #[Column(type: 'ulid', primary: true)]
+    private Ulid $id;
+}
+```
+
+## UUID Examples
+
+**UUID Version 1 (Time-based):** Generated using the current timestamp and the MAC address of the computer, ensuring unique identification based on time and hardware.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
 use Ramsey\Identifier\Uuid;
 
 #[Entity]
-#[Uuid4]
+#[Identifier\Uuid1(field: 'id')]
 class User
 {
-    #[Column(field: 'uuid', type: 'uuid', primary: true)]
-    private Uuid $uuid;
+    #[Column(type: 'uuid', primary: true)]
+    private Uuid $id;
+}
+```
+
+**UUID Version 2 (DCE Security):** Similar to version 1 but includes a local identifier such as a user ID or group ID, primarily used in DCE security contexts.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Uuid;
+
+#[Entity]
+#[Identifier\Uuid2(field: 'id')]
+class User
+{
+    #[Column(type: 'uuid', primary: true)]
+    private Uuid $id;
+}
+```
+
+**UUID Version 3 (Name-based, MD5):** Created by hashing a namespace identifier and name using MD5, resulting in a deterministic UUID based on input data.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Uuid;
+
+#[Entity]
+#[Identifier\Uuid3(
+    field: 'id',
+    namespace: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+    name: 'example.com',
+)]
+class User
+{
+    #[Column(type: 'uuid', primary: true)]
+    private Uuid $id;
+}
+```
+
+**UUID Version 4 (Random):** Generated entirely from random or pseudo-random numbers, offering high unpredictability and uniqueness.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Uuid;
+
+#[Entity]
+#[Identifier\Uuid4(field: 'id')]
+class User
+{
+    #[Column(type: 'uuid', primary: true)]
+    private Uuid $id;
+}
+```
+
+**UUID Version 5 (Name-based, SHA-1):** Similar to version 3 but uses SHA-1 hashing, providing a different deterministic UUID based on namespace and name.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Uuid;
+
+#[Entity]
+#[Identifier\Uuid5(
+    field: 'id',
+    namespace: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+    name: 'example.com',
+)]
+class User
+{
+    #[Column(type: 'uuid', primary: true)]
+    private Uuid $id;
+}
+```
+
+**UUID Version 6 (Draft/Upcoming):** An experimental or proposed version focused on improving time-based UUIDs with more sortable properties (not yet widely adopted).
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Uuid;
+
+#[Entity]
+#[Identifier\Uuid6(field: 'id')]
+class User
+{
+    #[Column(type: 'uuid', primary: true)]
+    private Uuid $id;
+}
+```
+
+**UUID Version 7 (Draft/Upcoming):** A newer proposal designed to incorporate sortable features based on Unix timestamp, enhancing performance in database indexing.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Uuid;
+
+#[Entity]
+#[Identifier\Uuid7(field: 'id')]
+class User
+{
+    #[Column(type: 'uuid', primary: true)]
+    private Uuid $id;
 }
 ```
 
