@@ -1,5 +1,5 @@
 # Cycle ORM Entity Behavior Identifier
-[![Latest Stable Version](https://poser.pugx.org/cycle/entity-behavior-Identifier/version)](https://packagist.org/packages/cycle/entity-behavior-identifier)
+[![Latest Stable Version](https://poser.pugx.org/cycle/entity-behavior-identifier/version)](https://packagist.org/packages/cycle/entity-behavior-identifier)
 [![Build Status](https://github.com/cycle/entity-behavior-identifier/workflows/build/badge.svg)](https://github.com/cycle/entity-behavior-identifier/actions)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cycle/entity-behavior-identifier/badges/quality-score.png?b=1.x)](https://scrutinizer-ci.com/g/cycle/entity-behavior-identifier/?branch=1.x)
 [![Codecov](https://codecov.io/gh/cycle/entity-behavior-identifier/graph/badge.svg)](https://codecov.io/gh/cycle/entity-behavior)
@@ -19,9 +19,90 @@ composer require cycle/entity-behavior-identifier
 
 ## Snowflake Examples
 
-**Snowflake:** A distributed ID generation system developed by Twitter that produces 64-bit unique, sortable identifiers. Each ID encodes a timestamp, machine ID, and sequence number, enabling high-throughput, ordered ID creation suitable for large-scale distributed applications.
+**Generic:** A flexible Snowflake format that can use a node identifier and any epoch offset, suitable for various applications requiring unique identifiers.
 
-> **Note:** Support for Snowflake identifiers will arrive soon, stay tuned.
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Snowflake;
+
+#[Entity]
+#[Identifier\SnowflakeGeneric(field: 'id', node: 1, epochOffset: 1738265600000)]
+class User
+{
+    #[Column(type: 'snowflake', primary: true)]
+    private Snowflake $id;
+}
+```
+
+**Discord:** Snowflake identifier for Discord's platform (voice, text, video), starting from epoch `2015-01-01`. Can incorporate a worker and process ID's to generate distinct Snowflakes.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Snowflake;
+
+#[Entity]
+#[Identifier\SnowflakeDiscord(field: 'id', workerId: 12, processId: 24)]
+class User
+{
+    #[Column(type: 'snowflake', primary: true)]
+    private Snowflake $id;
+}
+```
+
+**Instagram:** Snowflake identifier for Instagram's photo and video sharing platform, with an epoch starting at `2011-08-24`. Can incorporate a shard ID to generate distinct Snowflakes.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Snowflake;
+
+#[Entity]
+#[Identifier\SnowflakeInstagram(field: 'id', shardId: 16)]
+class User
+{
+    #[Column(type: 'snowflake', primary: true)]
+    private Snowflake $id;
+}
+```
+
+**Mastodon:** Snowflake identifier for Mastodon’s decentralized social network, generated within a database to ensure uniqueness and approximate order within 1ms. Can include a table name for distinct sequences per table; IDs are unique on a single database but not guaranteed across multiple machines.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Snowflake;
+
+#[Entity]
+#[Identifier\SnowflakeMastodon(field: 'id', tableName: 'users')]
+class User
+{
+    #[Column(type: 'snowflake', primary: true)]
+    private Snowflake $id;
+}
+```
+
+**Twitter:** Snowflake identifier for Twitter (X), beginning from `2010-11-04`. Can incorporate a machine ID to generate distinct Snowflakes.
+
+```php
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Snowflake;
+
+#[Entity]
+#[Identifier\SnowflakeTwitter(field: 'id', machineId: 30)]
+class User
+{
+    #[Column(type: 'snowflake', primary: true)]
+    private Snowflake $id;
+}
+```
 
 ## ULID Examples
 
@@ -171,7 +252,7 @@ class User
 }
 ```
 
-You can find more information about Entity behavior UUID [here](https://cycle-orm.dev/docs/entity-behaviors-identifier).
+You can find more information about Entity behavior Identifier [here](https://cycle-orm.dev/docs/entity-behaviors-identifier).
 
 ## License:
 
