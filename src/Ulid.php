@@ -52,7 +52,7 @@ final class Ulid extends BaseModifier
     {
         $modifier = new RegistryModifier($registry, $this->role);
         $this->column = $modifier->findColumnName($this->field, $this->column);
-        if ($this->column !== null) {
+        if (\is_string($this->column) && $this->column !== '') {
             $modifier->addUlidColumn(
                 $this->column,
                 $this->field,
@@ -70,6 +70,7 @@ final class Ulid extends BaseModifier
     public function render(Registry $registry): void
     {
         $modifier = new RegistryModifier($registry, $this->role);
+        /** @var non-empty-string column */
         $this->column = $modifier->findColumnName($this->field, $this->column) ?? $this->field;
 
         $modifier->addUlidColumn(

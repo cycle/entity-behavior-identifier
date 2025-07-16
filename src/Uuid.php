@@ -30,7 +30,7 @@ abstract class Uuid extends BaseModifier
     {
         $modifier = new RegistryModifier($registry, $this->role);
         $this->column = $modifier->findColumnName($this->field, $this->column);
-        if ($this->column !== null) {
+        if (\is_string($this->column) && $this->column !== '') {
             $modifier->addUuidColumn(
                 $this->column,
                 $this->field,
@@ -48,6 +48,7 @@ abstract class Uuid extends BaseModifier
     public function render(Registry $registry): void
     {
         $modifier = new RegistryModifier($registry, $this->role);
+        /** @var non-empty-string column */
         $this->column = $modifier->findColumnName($this->field, $this->column) ?? $this->field;
 
         $modifier->addUuidColumn(
