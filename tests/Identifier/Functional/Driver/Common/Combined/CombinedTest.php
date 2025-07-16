@@ -57,6 +57,7 @@ abstract class CombinedTest extends BaseTest
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('ulidNullable')->getGenerated());
     }
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();

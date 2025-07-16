@@ -92,6 +92,7 @@ abstract class ListenerTest extends BaseTest
         ]));
     }
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();

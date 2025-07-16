@@ -106,6 +106,7 @@ abstract class UlidTest extends BaseTest
         $this->assertNull($fields->get('notDefinedUlid')->getGenerated());
     }
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();

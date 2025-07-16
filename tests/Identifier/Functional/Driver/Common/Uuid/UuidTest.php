@@ -112,6 +112,7 @@ abstract class UuidTest extends BaseTest
         $this->assertNull($fields->get('notDefinedUuid')->getGenerated());
     }
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
