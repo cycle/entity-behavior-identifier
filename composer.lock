@@ -68,16 +68,16 @@
         },
         {
             "name": "cycle/database",
-            "version": "2.14.0",
+            "version": "2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cycle/database.git",
-                "reference": "876fbc2bc0d068f047388c0bd9b354e4d891af07"
+                "reference": "3d7ee3524b299c5897e2b03dc51bad2ddd609a90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cycle/database/zipball/876fbc2bc0d068f047388c0bd9b354e4d891af07",
-                "reference": "876fbc2bc0d068f047388c0bd9b354e4d891af07",
+                "url": "https://api.github.com/repos/cycle/database/zipball/3d7ee3524b299c5897e2b03dc51bad2ddd609a90",
+                "reference": "3d7ee3524b299c5897e2b03dc51bad2ddd609a90",
                 "shasum": ""
             },
             "require": {
@@ -157,20 +157,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-14T11:36:41+00:00"
+            "time": "2025-07-22T05:27:52+00:00"
         },
         {
             "name": "cycle/entity-behavior",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cycle/entity-behavior.git",
-                "reference": "49b0c71485855f16193b0720d637d822d65f688c"
+                "reference": "0c8d84fb3eaa50ec426f336a158d62ad2b4a83b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cycle/entity-behavior/zipball/49b0c71485855f16193b0720d637d822d65f688c",
-                "reference": "49b0c71485855f16193b0720d637d822d65f688c",
+                "url": "https://api.github.com/repos/cycle/entity-behavior/zipball/0c8d84fb3eaa50ec426f336a158d62ad2b4a83b6",
+                "reference": "0c8d84fb3eaa50ec426f336a158d62ad2b4a83b6",
                 "shasum": ""
             },
             "require": {
@@ -232,7 +232,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-14T19:37:04+00:00"
+            "time": "2025-07-22T05:27:05+00:00"
         },
         {
             "name": "cycle/orm",
@@ -2538,19 +2538,20 @@
         },
         {
             "name": "cycle/annotated",
-            "version": "v4.3.0",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cycle/annotated.git",
-                "reference": "35890d8fe16b6a7a29cbacef5715d31b13b78212"
+                "reference": "f996d3ee0c22aa8f2c03dca5d693408f8b7fdbbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cycle/annotated/zipball/35890d8fe16b6a7a29cbacef5715d31b13b78212",
-                "reference": "35890d8fe16b6a7a29cbacef5715d31b13b78212",
+                "url": "https://api.github.com/repos/cycle/annotated/zipball/f996d3ee0c22aa8f2c03dca5d693408f8b7fdbbe",
+                "reference": "f996d3ee0c22aa8f2c03dca5d693408f8b7fdbbe",
                 "shasum": ""
             },
             "require": {
+                "cycle/database": "^2.15",
                 "cycle/orm": "^2.9.2",
                 "cycle/schema-builder": "^2.11.1",
                 "doctrine/inflector": "^2.0",
@@ -2607,7 +2608,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-14T14:48:40+00:00"
+            "time": "2025-07-22T06:19:06+00:00"
         },
         {
             "name": "danog/advanced-json-rpc",
@@ -3200,16 +3201,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.83.0",
+            "version": "v3.84.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "b83916e79a6386a1ec43fdd72391aeb13b63282f"
+                "reference": "38dad0767bf2a9b516b976852200ae722fe984ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/b83916e79a6386a1ec43fdd72391aeb13b63282f",
-                "reference": "b83916e79a6386a1ec43fdd72391aeb13b63282f",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/38dad0767bf2a9b516b976852200ae722fe984ca",
+                "reference": "38dad0767bf2a9b516b976852200ae722fe984ca",
                 "shasum": ""
             },
             "require": {
@@ -3293,7 +3294,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.83.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.84.0"
             },
             "funding": [
                 {
@@ -3301,7 +3302,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-14T15:41:41+00:00"
+            "time": "2025-07-15T18:21:57+00:00"
         },
         {
             "name": "kelunik/certificate",
