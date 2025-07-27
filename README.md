@@ -1,7 +1,6 @@
 # Cycle ORM Entity Behavior Identifier
 [![Latest Stable Version](https://poser.pugx.org/cycle/entity-behavior-identifier/version)](https://packagist.org/packages/cycle/entity-behavior-identifier)
 [![Build Status](https://github.com/cycle/entity-behavior-identifier/workflows/build/badge.svg)](https://github.com/cycle/entity-behavior-identifier/actions)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cycle/entity-behavior-identifier/badges/quality-score.png?b=1.x)](https://scrutinizer-ci.com/g/cycle/entity-behavior-identifier/?branch=1.x)
 [![Codecov](https://codecov.io/gh/cycle/entity-behavior-identifier/graph/badge.svg)](https://codecov.io/gh/cycle/entity-behavior)
 <a href="https://discord.gg/TFeEmCs"><img src="https://img.shields.io/badge/discord-chat-magenta.svg"></a>
 
