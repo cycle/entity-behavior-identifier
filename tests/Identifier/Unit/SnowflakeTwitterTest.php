@@ -6,7 +6,8 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeTwitter;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as SnowflakeTwitterListener;
+use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeTwitter as Defaults;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +19,7 @@ final class SnowflakeTwitterTest extends TestCase
             [
                 SchemaInterface::LISTENERS => [
                     [
-                        ListenerProvider::DEFINITION_CLASS => SnowflakeTwitterListener::class,
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'snowflake',
                             'machineId' => 0,
@@ -33,7 +34,7 @@ final class SnowflakeTwitterTest extends TestCase
             [
                 SchemaInterface::LISTENERS => [
                     [
-                        ListenerProvider::DEFINITION_CLASS => SnowflakeTwitterListener::class,
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
                             'machineId' => 0,
@@ -48,7 +49,7 @@ final class SnowflakeTwitterTest extends TestCase
             [
                 SchemaInterface::LISTENERS => [
                     [
-                        ListenerProvider::DEFINITION_CLASS => SnowflakeTwitterListener::class,
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
                             'machineId' => 0,
@@ -63,7 +64,7 @@ final class SnowflakeTwitterTest extends TestCase
             [
                 SchemaInterface::LISTENERS => [
                     [
-                        ListenerProvider::DEFINITION_CLASS => SnowflakeTwitterListener::class,
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
                             'machineId' => 3,
@@ -86,5 +87,40 @@ final class SnowflakeTwitterTest extends TestCase
         $snowflake->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
+    }
+
+    public function testModifySchemaWithDefaults(): void
+    {
+        Defaults::setMachineId(1);
+
+        $args = ['snowflake', null, null, false];
+
+        $expected = [
+            SchemaInterface::LISTENERS => [
+                [
+                    ListenerProvider::DEFINITION_CLASS => Listener::class,
+                    ListenerProvider::DEFINITION_ARGS => [
+                        'field' => 'snowflake',
+                        'machineId' => Defaults::getMachineId(),
+                        'nullable' => false,
+                    ],
+                ],
+            ],
+        ];
+
+        $schema = [];
+        $snowflake = new SnowflakeTwitter(...$args);
+        $snowflake->modifySchema($schema);
+
+        $this->assertSame($expected, $schema);
+        $this->assertSame(1, Defaults::getMachineId());
+    }
+
+    #[\Override]
+    protected function setUp(): void
+    {
+        Defaults::setMachineId(0);
+
+        parent::setUp();
     }
 }

@@ -6,6 +6,7 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid2;
+use Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid2 as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2 as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
@@ -135,5 +136,52 @@ final class Uuid2Test extends TestCase
         $uuid->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
+    }
+
+    public function testModifySchemaWithDefaults(): void
+    {
+        Defaults::setLocalDomain(DceDomain::Group);
+        Defaults::setLocalIdentifier(2);
+        Defaults::setNode('foo');
+        Defaults::setClockSeq(3);
+
+        $args = ['uuid', null, null, null, null, null, false];
+
+        $expected = [
+            SchemaInterface::LISTENERS => [
+                [
+                    ListenerProvider::DEFINITION_CLASS => Listener::class,
+                    ListenerProvider::DEFINITION_ARGS => [
+                        'field' => 'uuid',
+                        'localDomain' => Defaults::getLocalDomain(),
+                        'localIdentifier' => Defaults::getLocalIdentifier(),
+                        'node' => Defaults::getNode(),
+                        'clockSeq' => Defaults::getClockSeq(),
+                        'nullable' => false,
+                    ],
+                ],
+            ],
+        ];
+
+        $schema = [];
+        $snowflake = new Uuid2(...$args);
+        $snowflake->modifySchema($schema);
+
+        $this->assertSame($expected, $schema);
+        $this->assertSame(DceDomain::Group, Defaults::getLocalDomain());
+        $this->assertSame(2, Defaults::getLocalIdentifier());
+        $this->assertSame('foo', Defaults::getNode());
+        $this->assertSame(3, Defaults::getClockSeq());
+    }
+
+    #[\Override]
+    protected function setUp(): void
+    {
+        Defaults::setLocalDomain(0);
+        Defaults::setLocalIdentifier(null);
+        Defaults::setNode(null);
+        Defaults::setClockSeq(null);
+
+        parent::setUp();
     }
 }

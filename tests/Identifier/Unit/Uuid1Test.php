@@ -6,6 +6,7 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
+use Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid1 as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
@@ -106,5 +107,44 @@ final class Uuid1Test extends TestCase
         $uuid->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
+    }
+
+    public function testModifySchemaWithDefaults(): void
+    {
+        Defaults::setNode('foo');
+        Defaults::setClockSeq(1);
+
+        $args = ['uuid', null, null, null, false];
+
+        $expected = [
+            SchemaInterface::LISTENERS => [
+                [
+                    ListenerProvider::DEFINITION_CLASS => Listener::class,
+                    ListenerProvider::DEFINITION_ARGS => [
+                        'field' => 'uuid',
+                        'node' => Defaults::getNode(),
+                        'clockSeq' => Defaults::getClockSeq(),
+                        'nullable' => false,
+                    ],
+                ],
+            ],
+        ];
+
+        $schema = [];
+        $snowflake = new Uuid1(...$args);
+        $snowflake->modifySchema($schema);
+
+        $this->assertSame($expected, $schema);
+        $this->assertSame('foo', Defaults::getNode());
+        $this->assertSame(1, Defaults::getClockSeq());
+    }
+
+    #[\Override]
+    protected function setUp(): void
+    {
+        Defaults::setNode(null);
+        Defaults::setClockSeq(null);
+
+        parent::setUp();
     }
 }
