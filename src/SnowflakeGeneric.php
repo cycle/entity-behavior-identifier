@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
+use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeGeneric as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
@@ -23,11 +24,14 @@ use Ramsey\Identifier\SnowflakeFactory;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE), NamedArgumentConstructor]
 final class SnowflakeGeneric extends BaseSnowflake
 {
+    private int $node;
+    private Epoch|int $epochOffset;
+
     /**
      * @param non-empty-string $field Snowflake property name
      * @param string|null $column Snowflake column name
-     * @param int $node A node identifier to use when creating Snowflakes
-     * @param Epoch | int $epochOffset The offset from the Unix Epoch in milliseconds
+     * @param int|null $node A node identifier to use when creating Snowflakes
+     * @param Epoch|int|null $epochOffset The offset from the Unix Epoch in milliseconds
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
      *
      * @see \Ramsey\Identifier\Snowflake\GenericSnowflakeFactory::create()
@@ -35,13 +39,15 @@ final class SnowflakeGeneric extends BaseSnowflake
     public function __construct(
         string $field = 'snowflake',
         ?string $column = null,
-        private int $node = 0,
-        private Epoch|int $epochOffset = 0,
+        ?int $node = null,
+        Epoch|int|null $epochOffset = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+        $this->node = $node === null ? Defaults::getNode() : $node;
+        $this->epochOffset = $epochOffset === null ? Defaults::getEpochOffset() : $epochOffset;
     }
 
     #[\Override]

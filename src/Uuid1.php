@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
+use Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid1 as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid as BaseUuid;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
@@ -22,6 +23,13 @@ use Ramsey\Identifier\Service\Nic\Nic;
 final class Uuid1 extends BaseUuid
 {
     /**
+     * @var Nic|int<0, 281474976710655>|non-empty-string|null $node
+     */
+    private Nic|int|string|null $node = null;
+
+    private ?int $clockSeq = null;
+
+    /**
      * @param non-empty-string $field Uuid property name
      * @param non-empty-string|null $column Uuid column name
      * @param Nic|int<0, 281474976710655>|non-empty-string|null $node A 48-bit integer or hexadecimal string
@@ -36,13 +44,15 @@ final class Uuid1 extends BaseUuid
     public function __construct(
         string $field = 'uuid',
         ?string $column = null,
-        private Nic|int|string|null $node = null,
-        private ?int $clockSeq = null,
+        Nic|int|string|null $node = null,
+        ?int $clockSeq = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+        $this->node = $node === null ? Defaults::getNode() : $node;
+        $this->clockSeq = $clockSeq === null ? Defaults::getClockSeq() : $clockSeq;
     }
 
     #[\Override]

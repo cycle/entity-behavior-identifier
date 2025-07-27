@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
+use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeTwitter as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
@@ -21,10 +22,12 @@ use Ramsey\Identifier\SnowflakeFactory;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE), NamedArgumentConstructor]
 final class SnowflakeTwitter extends BaseSnowflake
 {
+    private int $machineId;
+
     /**
      * @param non-empty-string $field Snowflake property name
      * @param string|null $column Snowflake column name
-     * @param int $machineId A machine identifier to use when creating Snowflakes
+     * @param int|null $machineId A machine identifier to use when creating Snowflakes
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
      *
      * @see \Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory::create()
@@ -32,12 +35,13 @@ final class SnowflakeTwitter extends BaseSnowflake
     public function __construct(
         string $field = 'snowflake',
         ?string $column = null,
-        private int $machineId = 0,
+        ?int $machineId = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+        $this->machineId = $machineId === null ? Defaults::getMachineId() : $machineId;
     }
 
     #[\Override]

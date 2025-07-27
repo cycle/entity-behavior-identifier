@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
+use Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid2 as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2 as Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid as BaseUuid;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
@@ -22,10 +23,20 @@ use Ramsey\Identifier\Uuid\DceDomain;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE), NamedArgumentConstructor]
 final class Uuid2 extends BaseUuid
 {
+    private DceDomain|int $localDomain;
+    private ?int $localIdentifier;
+
+    /**
+     * @var Nic|int<0, 281474976710655>|non-empty-string|null $node
+     */
+    private Nic|int|string|null $node;
+
+    private ?int $clockSeq;
+
     /**
      * @param non-empty-string $field Uuid property name
      * @param non-empty-string|null $column Uuid column name
-     * @param DceDomain|int $localDomain The local domain to which the local identifier belongs; this defaults to "Person"
+     * @param DceDomain|int|null $localDomain The local domain to which the local identifier belongs; this defaults to "Person"
      *      and if $localIdentifier is not provided, the factory will attempt to get a suitable local ID for the domain
      *      (e.g., the UID or GID of the user running the script).
      * @param int<0, 4294967295> | null $localIdentifier A 32-bit local identifier belonging to the local domain
@@ -43,15 +54,19 @@ final class Uuid2 extends BaseUuid
     public function __construct(
         string $field = 'uuid',
         ?string $column = null,
-        private DceDomain|int $localDomain = 0,
-        private ?int $localIdentifier = null,
-        private Nic|int|string|null $node = null,
-        private ?int $clockSeq = null,
+        DceDomain|int|null $localDomain = null,
+        ?int $localIdentifier = null,
+        Nic|int|string|null $node = null,
+        ?int $clockSeq = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+        $this->localDomain = $localDomain === null ? Defaults::getLocalDomain() : $localDomain;
+        $this->localIdentifier = $localIdentifier === null ? Defaults::getLocalIdentifier() : $localIdentifier;
+        $this->node = $node === null ? Defaults::getNode() : $node;
+        $this->clockSeq = $clockSeq === null ? Defaults::getClockSeq() : $clockSeq;
     }
 
     #[\Override]
