@@ -19,7 +19,7 @@ composer require cycle/entity-behavior-identifier
 
 ## Snowflake Examples
 
-**Generic:** A flexible Snowflake format that can use a node identifier and any epoch offset, suitable for various applications requiring unique identifiers.
+**Generic:** A flexible Snowflake format that can use a node identifier and any epoch offset, suitable for various applications requiring unique identifiers. Default values for `node` and `epochOffset` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeGeneric`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -36,7 +36,7 @@ class User
 }
 ```
 
-**Discord:** Snowflake identifier for Discord's platform (voice, text, video), starting from epoch `2015-01-01`. Can incorporate a worker and process ID's to generate distinct Snowflakes.
+**Discord:** Snowflake identifier for Discord's platform (voice, text, video), starting from epoch `2015-01-01`. Can incorporate a worker and process ID's to generate distinct Snowflakes. Default values for `workerId` and `processId` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeDiscord`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -53,7 +53,7 @@ class User
 }
 ```
 
-**Instagram:** Snowflake identifier for Instagram's photo and video sharing platform, with an epoch starting at `2011-08-24`. Can incorporate a shard ID to generate distinct Snowflakes.
+**Instagram:** Snowflake identifier for Instagram's photo and video sharing platform, with an epoch starting at `2011-08-24`. Can incorporate a shard ID to generate distinct Snowflakes. Default values for `shardId` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeInstagram`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -70,7 +70,7 @@ class User
 }
 ```
 
-**Mastodon:** Snowflake identifier for Mastodon’s decentralized social network, generated within a database to ensure uniqueness and approximate order within 1ms. Can include a table name for distinct sequences per table; IDs are unique on a single database but not guaranteed across multiple machines.
+**Mastodon:** Snowflake identifier for Mastodon’s decentralized social network, generated within a database to ensure uniqueness and approximate order within 1ms. Can include a table name for distinct sequences per table; IDs are unique on a single database but not guaranteed across multiple machines. Default values for `tableName` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeMastodon`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -87,7 +87,7 @@ class User
 }
 ```
 
-**Twitter:** Snowflake identifier for Twitter (X), beginning from `2010-11-04`. Can incorporate a machine ID to generate distinct Snowflakes.
+**Twitter:** Snowflake identifier for Twitter (X), beginning from `2010-11-04`. Can incorporate a machine ID to generate distinct Snowflakes. Default values for `machineId` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeTwitter`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -125,7 +125,7 @@ class User
 
 ## UUID Examples
 
-**UUID Version 1 (Time-based):** Generated using the current timestamp and the MAC address of the computer, ensuring unique identification based on time and hardware.
+**UUID Version 1 (Time-based):** Generated using the current timestamp and the MAC address of the computer, ensuring unique identification based on time and hardware. Default values for `node` and `clockSeq` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid1`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -142,7 +142,7 @@ class User
 }
 ```
 
-**UUID Version 2 (DCE Security):** Similar to version 1 but includes a local identifier such as a user ID or group ID, primarily used in DCE security contexts.
+**UUID Version 2 (DCE Security):** Similar to version 1 but includes a local identifier such as a user ID or group ID, primarily used in DCE security contexts. Default values for `localDomain`, `localIdentifier`, `node` and `clockSeq` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid2`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -218,7 +218,7 @@ class User
 }
 ```
 
-**UUID Version 6 (Draft/Upcoming):** An experimental or proposed version focused on improving time-based UUIDs with more sortable properties (not yet widely adopted).
+**UUID Version 6 (Draft/Upcoming):** An experimental or proposed version focused on improving time-based UUIDs with more sortable properties (not yet widely adopted). Default values for `node` and `clockSeq` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid6`.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
