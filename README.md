@@ -53,7 +53,8 @@ class User
 }
 ```
 
-**Instagram:** Snowflake identifier for Instagram's photo and video sharing platform, with an epoch starting at `2011-08-24`. Can incorporate a shard ID to generate distinct Snowflakes. Default values for `shardId` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeInstagram`.
+### Instagram
+Snowflake identifier for Instagram's photo and video sharing platform, with an epoch starting at `2011-08-24`. Can incorporate a shard ID to generate distinct Snowflakes. Default values for `shardId` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;

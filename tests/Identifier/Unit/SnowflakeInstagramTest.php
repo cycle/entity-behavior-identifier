@@ -6,7 +6,6 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeInstagram;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeInstagram as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
@@ -21,23 +20,8 @@ final class SnowflakeInstagramTest extends TestCase
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'snowflake',
-                            'shardId' => 0,
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            [],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'shardId' => 0,
+                            'shardId' => null,
                             'nullable' => false,
                         ],
                     ],
@@ -52,13 +36,13 @@ final class SnowflakeInstagramTest extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'shardId' => 0,
+                            'shardId' => null,
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake', null, 0, true],
+            ['custom_snowflake', null, null, true],
         ];
         yield [
             [
@@ -91,7 +75,7 @@ final class SnowflakeInstagramTest extends TestCase
 
     public function testModifySchemaWithDefaults(): void
     {
-        Defaults::setShardId(1);
+        Listener::setDefaults(1);
 
         $args = ['snowflake', null, null, false];
 
@@ -101,7 +85,7 @@ final class SnowflakeInstagramTest extends TestCase
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'snowflake',
-                        'shardId' => Defaults::getShardId(),
+                        'shardId' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -113,13 +97,12 @@ final class SnowflakeInstagramTest extends TestCase
         $snowflake->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
-        $this->assertSame(1, Defaults::getShardId());
     }
 
     #[\Override]
     protected function setUp(): void
     {
-        Defaults::setShardId(0);
+        Listener::setDefaults(null);
 
         parent::setUp();
     }

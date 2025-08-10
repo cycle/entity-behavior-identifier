@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeInstagram as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Snowflake\InstagramSnowflakeFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
@@ -22,26 +20,23 @@ use Ramsey\Identifier\SnowflakeFactory;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE), NamedArgumentConstructor]
 final class SnowflakeInstagram extends BaseSnowflake
 {
-    private int $shardId;
-
     /**
      * @param non-empty-string $field Snowflake property name
-     * @param string|null $column Snowflake column name
-     * @param int|null $shardId A shard identifier to use when creating Snowflakes
+     * @param non-empty-string|null $column Snowflake column name
+     * @param int<0, 1023>|null $shardId A shard identifier to use when creating Snowflakes
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
      *
-     * @see \Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory::create()
+     * @see \Ramsey\Identifier\Snowflake\InstagramSnowflakeFactory::create()
      */
     public function __construct(
-        string $field = 'snowflake',
+        string $field,
         ?string $column = null,
-        ?int $shardId = null,
+        private readonly ?int $shardId = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
-        $this->shardId = $shardId === null ? Defaults::getShardId() : $shardId;
     }
 
     #[\Override]
@@ -50,11 +45,13 @@ final class SnowflakeInstagram extends BaseSnowflake
         return Listener::class;
     }
 
-    #[ArrayShape([
-        'field' => 'string',
-        'shardId' => 'int',
-        'nullable' => 'bool',
-    ])]
+    /**
+     * @return array{
+     *     field: non-empty-string,
+     *     shardId: null|int<0, 1023>,
+     *     nullable: bool
+     * }
+     */
     #[\Override]
     protected function getListenerArgs(): array
     {

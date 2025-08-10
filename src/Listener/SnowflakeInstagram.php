@@ -4,27 +4,52 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
-use Cycle\ORM\Entity\Behavior\Attribute\Listen;
-use Cycle\ORM\Entity\Behavior\Event\Mapper\Command\OnCreate;
+use Ramsey\Identifier\Snowflake\InstagramSnowflake;
 use Ramsey\Identifier\Snowflake\InstagramSnowflakeFactory;
 
-final class SnowflakeInstagram
+/**
+ * Generates Instagram Snowflake identifiers for entities.
+ * You can set default shard ID using the {@see setDefaults()} method.
+ */
+final class SnowflakeInstagram extends Snowflake
 {
-    public function __construct(
-        private string $field = 'snowflake',
-        private int $shardId = 0,
-        private bool $nullable = false,
-    ) {}
+    /** @var int<0, 1023> */
+    private static int $shardId = 0;
 
-    #[Listen(OnCreate::class)]
-    public function __invoke(OnCreate $event): void
+    private InstagramSnowflakeFactory $factory;
+
+    /**
+     * @param non-empty-string $field The name of the field to store the Snowflake identifier
+     * @param bool $nullable Indicates whether the Snowflake identifier can be null
+     * @param int<0, 1023>|null $shardId A shard identifier to use when creating Snowflakes
+     */
+    public function __construct(
+        string $field,
+        bool $nullable = false,
+        ?int $shardId = null,
+    ) {
+        $shardId ??= self::$shardId;
+        $this->factory = new InstagramSnowflakeFactory($shardId);
+        parent::__construct($field, $nullable);
+    }
+
+    /**
+     * Set default shard ID for Snowflake generation.
+     *
+     * @param null|int<0, 1023> $shardId The shard ID to set. Null to use the default (0).
+     */
+    public static function setDefaults(?int $shardId): void
     {
-        if ($this->nullable || isset($event->state->getData()[$this->field])) {
-            return;
+        if ($shardId !== null && ($shardId < 0 || $shardId > 1023)) {
+            throw new \InvalidArgumentException('Shard ID must be between 0 and 1023.');
         }
 
-        $identifier = (new InstagramSnowflakeFactory($this->shardId))->create();
+        self::$shardId = (int) $shardId;
+    }
 
-        $event->state->register($this->field, $identifier);
+    #[\Override]
+    protected function createValue(): InstagramSnowflake
+    {
+        return $this->factory->create();
     }
 }
