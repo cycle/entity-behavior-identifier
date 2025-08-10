@@ -12,7 +12,10 @@ use Ramsey\Identifier\SnowflakeFactory;
 
 abstract class Snowflake extends BaseModifier
 {
+    /** @var non-empty-string|null */
     protected ?string $column = null;
+
+    /** @var non-empty-string */
     protected string $field;
     protected bool $nullable = false;
 
