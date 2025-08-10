@@ -4,29 +4,63 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
-use Cycle\ORM\Entity\Behavior\Attribute\Listen;
-use Cycle\ORM\Entity\Behavior\Event\Mapper\Command\OnCreate;
+use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Epoch;
 use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
 
-final class SnowflakeGeneric
+/**
+ * Generates generic Snowflake identifiers for entities.
+ * You can set default node and epoch offset using the {@see setDefaults()} method.
+ */
+final class SnowflakeGeneric extends \Cycle\ORM\Entity\Behavior\Identifier\Listener\Snowflake
 {
-    public function __construct(
-        private string $field = 'snowflake',
-        private int $node = 0,
-        private Epoch|int $epochOffset = 0,
-        private bool $nullable = false,
-    ) {}
+    /** @var int<0, 1023> */
+    private static int $node = 0;
 
-    #[Listen(OnCreate::class)]
-    public function __invoke(OnCreate $event): void
+    /** @var Epoch|int */
+    private static Epoch|int $epochOffset = 0;
+
+    private GenericSnowflakeFactory $factory;
+
+    /**
+     * @param non-empty-string $field The name of the field to store the Snowflake identifier
+     * @param bool $nullable Indicates whether the Snowflake identifier can be null
+     * @param int<0, 1023>|null $node A node identifier to use when creating Snowflakes
+     * @param Epoch|int|null $epochOffset The offset from the Unix Epoch in milliseconds
+     */
+    public function __construct(
+        string $field,
+        bool $nullable = false,
+        ?int $node = null,
+        Epoch|int|null $epochOffset = null,
+    ) {
+        $node ??= self::$node;
+        $epochOffset ??= self::$epochOffset;
+        $this->factory = new GenericSnowflakeFactory($node, $epochOffset);
+        parent::__construct($field, $nullable);
+    }
+
+    /**
+     * Set default node and epoch offset for Snowflake generation.
+     *
+     * @param null|int<0, 1023> $node The node ID to set. Null to use the default (0).
+     * @param Epoch|int|null $epochOffset The epoch offset to set. Null to use the default (0).
+     */
+    public static function setDefaults(?int $node, Epoch|int|null $epochOffset): void
     {
-        if ($this->nullable || isset($event->state->getData()[$this->field])) {
-            return;
+        if ($node !== null && ($node < 0 || $node > 1023)) {
+            throw new \InvalidArgumentException('Node ID must be between 0 and 1023.');
         }
 
-        $identifier = (new GenericSnowflakeFactory($this->node, $this->epochOffset))->create();
+        self::$node = (int) $node;
+        if ($epochOffset !== null) {
+            self::$epochOffset = $epochOffset;
+        }
+    }
 
-        $event->state->register($this->field, $identifier);
+    #[\Override]
+    protected function createValue(): Snowflake
+    {
+        return $this->factory->create();
     }
 }

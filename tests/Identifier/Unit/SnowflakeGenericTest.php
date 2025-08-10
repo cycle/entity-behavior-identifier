@@ -6,7 +6,6 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeGeneric;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeGeneric as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
@@ -21,25 +20,9 @@ final class SnowflakeGenericTest extends TestCase
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'snowflake',
-                            'node' => 0,
-                            'epochOffset' => 0,
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            [],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'node' => 0,
-                            'epochOffset' => 0,
+                            'node' => null,
+                            'epochOffset' => null,
                             'nullable' => false,
                         ],
                     ],
@@ -54,14 +37,14 @@ final class SnowflakeGenericTest extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'node' => 0,
-                            'epochOffset' => 0,
+                            'node' => null,
+                            'epochOffset' => null,
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake', null, 0, 0, true],
+            ['custom_snowflake', null, null, null, true],
         ];
         yield [
             [
@@ -95,8 +78,7 @@ final class SnowflakeGenericTest extends TestCase
 
     public function testModifySchemaWithDefaults(): void
     {
-        Defaults::setNode(1);
-        Defaults::setEpochOffset(1738265600000);
+        Listener::setDefaults(1, 1738265600000);
 
         $args = ['snowflake', null, null, null, false];
 
@@ -106,8 +88,8 @@ final class SnowflakeGenericTest extends TestCase
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'snowflake',
-                        'node' => Defaults::getNode(),
-                        'epochOffset' => Defaults::getEpochOffset(),
+                        'node' => null,
+                        'epochOffset' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -119,15 +101,12 @@ final class SnowflakeGenericTest extends TestCase
         $snowflake->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
-        $this->assertSame(1, Defaults::getNode());
-        $this->assertSame(1738265600000, Defaults::getEpochOffset());
     }
 
     #[\Override]
     protected function setUp(): void
     {
-        Defaults::setNode(0);
-        Defaults::setEpochOffset(0);
+        Listener::setDefaults(null, null);
 
         parent::setUp();
     }

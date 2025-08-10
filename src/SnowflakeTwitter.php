@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeTwitter as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
@@ -22,26 +20,23 @@ use Ramsey\Identifier\SnowflakeFactory;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE), NamedArgumentConstructor]
 final class SnowflakeTwitter extends BaseSnowflake
 {
-    private int $machineId;
-
     /**
      * @param non-empty-string $field Snowflake property name
-     * @param string|null $column Snowflake column name
-     * @param int|null $machineId A machine identifier to use when creating Snowflakes
+     * @param non-empty-string|null $column Snowflake column name
+     * @param int<0, 1023>|null $machineId A machine identifier to use when creating Snowflakes
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
      *
-     * @see \Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory::create()
+     * @see \Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory::create()
      */
     public function __construct(
-        string $field = 'snowflake',
+        string $field,
         ?string $column = null,
-        ?int $machineId = null,
+        private readonly ?int $machineId = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
-        $this->machineId = $machineId === null ? Defaults::getMachineId() : $machineId;
     }
 
     #[\Override]
@@ -50,11 +45,13 @@ final class SnowflakeTwitter extends BaseSnowflake
         return Listener::class;
     }
 
-    #[ArrayShape([
-        'field' => 'string',
-        'machineId' => 'int',
-        'nullable' => 'bool',
-    ])]
+    /**
+     * @return array{
+     *     field: non-empty-string,
+     *     machineId: null|int<0, 1023>,
+     *     nullable: bool
+     * }
+     */
     #[\Override]
     protected function getListenerArgs(): array
     {

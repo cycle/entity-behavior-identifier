@@ -18,7 +18,8 @@ composer require cycle/entity-behavior-identifier
 
 ## Snowflake Examples
 
-**Generic:** A flexible Snowflake format that can use a node identifier and any epoch offset, suitable for various applications requiring unique identifiers. Default values for `node` and `epochOffset` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeGeneric`.
+### Generic
+A flexible Snowflake format that can use a node identifier and any epoch offset, suitable for various applications requiring unique identifiers. Default values for `node` and `epochOffset` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -71,7 +72,8 @@ class User
 }
 ```
 
-**Mastodon:** Snowflake identifier for Mastodon’s decentralized social network, generated within a database to ensure uniqueness and approximate order within 1ms. Can include a table name for distinct sequences per table; IDs are unique on a single database but not guaranteed across multiple machines. Default values for `tableName` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeMastodon`.
+### Mastodon
+Snowflake identifier for Mastodon's decentralized social network, generated within a database to ensure uniqueness and approximate order within 1ms. Can include a table name for distinct sequences per table; IDs are unique on a single database but not guaranteed across multiple machines. Default values for `tableName` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -88,7 +90,8 @@ class User
 }
 ```
 
-**Twitter:** Snowflake identifier for Twitter (X), beginning from `2010-11-04`. Can incorporate a machine ID to generate distinct Snowflakes. Default values for `machineId` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeTwitter`.
+### Twitter
+Snowflake identifier for Twitter (X), beginning from `2010-11-04`. Can incorporate a machine ID to generate distinct Snowflakes. Default values for `machineId` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;

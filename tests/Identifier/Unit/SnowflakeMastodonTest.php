@@ -6,7 +6,6 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeMastodon;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeMastodon as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
@@ -15,21 +14,6 @@ final class SnowflakeMastodonTest extends TestCase
 {
     public static function schemaDataProvider(): \Traversable
     {
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'snowflake',
-                            'tableName' => null,
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            [],
-        ];
         yield [
             [
                 SchemaInterface::LISTENERS => [
@@ -91,7 +75,7 @@ final class SnowflakeMastodonTest extends TestCase
 
     public function testModifySchemaWithDefaults(): void
     {
-        Defaults::setTableName('users');
+        Listener::setDefaults('users');
 
         $args = ['snowflake', null, null, false];
 
@@ -101,7 +85,7 @@ final class SnowflakeMastodonTest extends TestCase
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'snowflake',
-                        'tableName' => Defaults::getTableName(),
+                        'tableName' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -113,13 +97,12 @@ final class SnowflakeMastodonTest extends TestCase
         $snowflake->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
-        $this->assertSame('users', Defaults::getTableName());
     }
 
     #[\Override]
     protected function setUp(): void
     {
-        Defaults::setTableName(null);
+        Listener::setDefaults(null);
 
         parent::setUp();
     }

@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeMastodon as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
@@ -23,28 +21,22 @@ use Ramsey\Identifier\SnowflakeFactory;
 final class SnowflakeMastodon extends BaseSnowflake
 {
     /**
-     * @var non-empty-string|null
-     */
-    private ?string $tableName;
-
-    /**
      * @param non-empty-string $field Snowflake property name
-     * @param string|null $column Snowflake column name
+     * @param non-empty-string|null $column Snowflake column name
      * @param non-empty-string|null $tableName Database table name ensuring different tables derive separate sequence bases
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
      *
-     * @see \Ramsey\Identifier\Snowflake\GenericSnowflakeFactory::create()
+     * @see \Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory::create()
      */
     public function __construct(
-        string $field = 'snowflake',
+        string $field,
         ?string $column = null,
-        ?string $tableName = null,
+        private readonly ?string $tableName = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
-        $this->tableName = $tableName === null ? Defaults::getTableName() : $tableName;
     }
 
     #[\Override]
@@ -53,11 +45,13 @@ final class SnowflakeMastodon extends BaseSnowflake
         return Listener::class;
     }
 
-    #[ArrayShape([
-        'field' => 'string',
-        'tableName' => 'string|null',
-        'nullable' => 'bool',
-    ])]
+    /**
+     * @return array{
+     *     field: non-empty-string,
+     *     tableName: non-empty-string|null,
+     *     nullable: bool
+     * }
+     */
     #[\Override]
     protected function getListenerArgs(): array
     {
