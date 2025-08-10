@@ -14,10 +14,10 @@ use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 final class SnowflakeDiscord extends Snowflake
 {
     /** @var int<0, 281474976710655> */
-    private static int $workerId = 0;
+    private static int $defaultWorkerId = 0;
 
     /** @var null|int<0, 281474976710655> */
-    private static ?int $processId = null;
+    private static ?int $defaultProcessId = null;
 
     private DiscordSnowflakeFactory $factory;
 
@@ -33,7 +33,7 @@ final class SnowflakeDiscord extends Snowflake
         ?int $workerId = null,
         ?int $processId = null,
     ) {
-        $workerId ??= self::$workerId;
+        $workerId ??= self::$defaultWorkerId;
         $processId ??= $this->getProcessId();
         $this->factory = new DiscordSnowflakeFactory($workerId, $processId);
         parent::__construct($field, $nullable);
@@ -54,8 +54,8 @@ final class SnowflakeDiscord extends Snowflake
             throw new \InvalidArgumentException('Process ID must be between 0 and 281474976710655.');
         }
 
-        self::$workerId = (int) $workerId;
-        self::$processId = $processId;
+        self::$defaultWorkerId = (int) $workerId;
+        self::$defaultProcessId = $processId;
     }
 
     #[\Override]
@@ -71,6 +71,6 @@ final class SnowflakeDiscord extends Snowflake
      */
     private function getProcessId(): int
     {
-        return self::$processId ??= \getmypid();
+        return self::$defaultProcessId ??= \getmypid();
     }
 }

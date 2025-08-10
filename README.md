@@ -129,7 +129,8 @@ class User
 
 ## UUID Examples
 
-**UUID Version 1 (Time-based):** Generated using the current timestamp and the MAC address of the computer, ensuring unique identification based on time and hardware. Default values for `node` and `clockSeq` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid1`.
+### UUID Version 1 (Time-based)
+Generated using the current timestamp and the MAC address of the computer, ensuring unique identification based on time and hardware. Default values for `node` and `clockSeq` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -146,7 +147,8 @@ class User
 }
 ```
 
-**UUID Version 2 (DCE Security):** Similar to version 1 but includes a local identifier such as a user ID or group ID, primarily used in DCE security contexts. Default values for `localDomain`, `localIdentifier`, `node` and `clockSeq` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid2`.
+### UUID Version 2 (DCE Security)
+Similar to version 1 but includes a local identifier such as a user ID or group ID, primarily used in DCE security contexts. Default values for `localDomain`, `localIdentifier`, `node` and `clockSeq` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -222,7 +224,8 @@ class User
 }
 ```
 
-**UUID Version 6 (Draft/Upcoming):** An experimental or proposed version focused on improving time-based UUIDs with more sortable properties (not yet widely adopted). Default values for `node` and `clockSeq` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid6`.
+### UUID Version 6 (Draft/Upcoming)
+An experimental or proposed version focused on improving time-based UUIDs with more sortable properties (not yet widely adopted). Default values for `node` and `clockSeq` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid6::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;

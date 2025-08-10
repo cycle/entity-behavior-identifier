@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid2 as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2 as Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid as BaseUuid;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
@@ -63,10 +62,10 @@ final class Uuid2 extends BaseUuid
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
-        $this->localDomain = $localDomain === null ? Defaults::getLocalDomain() : $localDomain;
-        $this->localIdentifier = $localIdentifier === null ? Defaults::getLocalIdentifier() : $localIdentifier;
-        $this->node = $node === null ? Defaults::getNode() : $node;
-        $this->clockSeq = $clockSeq === null ? Defaults::getClockSeq() : $clockSeq;
+        $this->localDomain = $localDomain ?? DceDomain::Person;
+        $this->localIdentifier = $localIdentifier;
+        $this->node = $node;
+        $this->clockSeq = $clockSeq;
     }
 
     #[\Override]

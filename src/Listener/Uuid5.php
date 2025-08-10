@@ -4,33 +4,37 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
-use Cycle\ORM\Entity\Behavior\Attribute\Listen;
-use Cycle\ORM\Entity\Behavior\Event\Mapper\Command\OnCreate;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\BaseUuid as Base;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\NamespaceId;
-use Ramsey\Identifier\Uuid\UuidFactory;
+use Ramsey\Identifier\Uuid\UuidV5Factory;
 
-final class Uuid5
+/**
+ * Generates UUIDv5 (name-based with SHA-1 hashing) identifiers for entities.
+ */
+final class Uuid5 extends Base
 {
+    private UuidV5Factory $factory;
+
+    /**
+     * @param non-empty-string $field The name of the field to store the UUID
+     * @param NamespaceId|BaseUuid|string $namespace The namespace UUID
+     * @param string $name The name to hash
+     * @param bool $nullable Indicates whether the UUID can be null
+     */
     public function __construct(
-        private NamespaceId|Uuid|string $namespace,
-        private string $name,
-        private string $field = 'uuid',
-        private bool $nullable = false,
-    ) {}
+        string $field,
+        private readonly NamespaceId|Uuid|string $namespace,
+        private readonly string $name,
+        bool $nullable = false,
+    ) {
+        $this->factory = new UuidV5Factory();
+        parent::__construct($field, $nullable);
+    }
 
-    #[Listen(OnCreate::class)]
-    public function __invoke(OnCreate $event): void
+    #[\Override]
+    protected function createValue(): \Ramsey\Identifier\Uuid
     {
-        if ($this->nullable || isset($event->state->getData()[$this->field])) {
-            return;
-        }
-
-        $identifier = (new UuidFactory())->v5(
-            $this->namespace,
-            $this->name,
-        );
-
-        $event->state->register($this->field, $identifier);
+        return $this->factory->create($this->namespace, $this->name);
     }
 }

@@ -6,7 +6,6 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid6;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid6 as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid6 as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
@@ -111,8 +110,7 @@ final class Uuid6Test extends TestCase
 
     public function testModifySchemaWithDefaults(): void
     {
-        Defaults::setNode('foo');
-        Defaults::setClockSeq(1);
+        Listener::setDefaults('foo', 1);
 
         $args = ['uuid', null, null, null, false];
 
@@ -122,8 +120,8 @@ final class Uuid6Test extends TestCase
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'uuid',
-                        'node' => Defaults::getNode(),
-                        'clockSeq' => Defaults::getClockSeq(),
+                        'node' => null,
+                        'clockSeq' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -135,15 +133,12 @@ final class Uuid6Test extends TestCase
         $snowflake->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
-        $this->assertSame('foo', Defaults::getNode());
-        $this->assertSame(1, Defaults::getClockSeq());
     }
 
     #[\Override]
     protected function setUp(): void
     {
-        Defaults::setNode(null);
-        Defaults::setClockSeq(null);
+        Listener::setDefaults(null, null);
 
         parent::setUp();
     }

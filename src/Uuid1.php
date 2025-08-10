@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\Uuid1 as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid as BaseUuid;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
@@ -51,8 +50,8 @@ final class Uuid1 extends BaseUuid
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
-        $this->node = $node === null ? Defaults::getNode() : $node;
-        $this->clockSeq = $clockSeq === null ? Defaults::getClockSeq() : $clockSeq;
+        $this->node = $node;
+        $this->clockSeq = $clockSeq;
     }
 
     #[\Override]
