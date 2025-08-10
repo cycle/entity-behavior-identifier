@@ -4,28 +4,73 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
-use Cycle\ORM\Entity\Behavior\Attribute\Listen;
-use Cycle\ORM\Entity\Behavior\Event\Mapper\Command\OnCreate;
+use Ramsey\Identifier\Snowflake\DiscordSnowflake;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 
-final class SnowflakeDiscord
+/**
+ * Generates Discord Snowflake identifiers for entities.
+ * You can set default worker and process IDs using the {@see setDefaults()} method.
+ */
+final class SnowflakeDiscord extends Snowflake
 {
-    public function __construct(
-        private string $field = 'snowflake',
-        private int $workerId = 0,
-        private int $processId = 0,
-        private bool $nullable = false,
-    ) {}
+    /** @var int<0, 281474976710655> */
+    private static int $workerId = 0;
 
-    #[Listen(OnCreate::class)]
-    public function __invoke(OnCreate $event): void
+    /** @var null|int<0, 281474976710655> */
+    private static ?int $processId = null;
+
+    private DiscordSnowflakeFactory $factory;
+
+    /**
+     * @param non-empty-string $field The name of the field to store the Snowflake identifier
+     * @param bool $nullable Indicates whether the Snowflake identifier can be null
+     * @param int<0, 281474976710655>|null $workerId A worker identifier to use when creating Snowflakes
+     * @param int<0, 281474976710655>|null $processId A process identifier to use when creating Snowflakes
+     */
+    public function __construct(
+        string $field,
+        bool $nullable = false,
+        ?int $workerId = null,
+        ?int $processId = null,
+    ) {
+        $workerId ??= self::$workerId;
+        $processId ??= $this->getProcessId();
+        $this->factory = new DiscordSnowflakeFactory($workerId, $processId);
+        parent::__construct($field, $nullable);
+    }
+
+    /**
+     * Set default worker and process IDs for Snowflake generation.
+     *
+     * @param null|int<0, 281474976710655> $workerId The worker ID to set. Null to use the default (0).
+     * @param null|int<0, 281474976710655> $processId The process ID to set. Null to use the current process ID.
+     */
+    public static function setDefaults(?int $workerId, ?int $processId): void
     {
-        if ($this->nullable || isset($event->state->getData()[$this->field])) {
-            return;
+        if ($workerId !== null && ($workerId < 0 || $workerId > 281474976710655)) {
+            throw new \InvalidArgumentException('Worker ID must be between 0 and 281474976710655.');
+        }
+        if ($processId !== null && ($processId < 0 || $processId > 281474976710655)) {
+            throw new \InvalidArgumentException('Process ID must be between 0 and 281474976710655.');
         }
 
-        $identifier = (new DiscordSnowflakeFactory($this->workerId, $this->processId))->create();
+        self::$workerId = (int) $workerId;
+        self::$processId = $processId;
+    }
 
-        $event->state->register($this->field, $identifier);
+    #[\Override]
+    protected function createValue(): DiscordSnowflake
+    {
+        return $this->factory->create();
+    }
+
+    /**
+     * Get the current process ID.
+     *
+     * @return int<0, 281474976710655>
+     */
+    private function getProcessId(): int
+    {
+        return self::$processId ??= \getmypid();
     }
 }

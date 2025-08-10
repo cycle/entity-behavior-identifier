@@ -6,7 +6,6 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
-use Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeDiscord as Defaults;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
@@ -21,25 +20,9 @@ final class SnowflakeDiscordTest extends TestCase
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'snowflake',
-                            'workerId' => 0,
-                            'processId' => 0,
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            [],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'workerId' => 0,
-                            'processId' => 0,
+                            'workerId' => null,
+                            'processId' => null,
                             'nullable' => false,
                         ],
                     ],
@@ -54,14 +37,14 @@ final class SnowflakeDiscordTest extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'workerId' => 0,
-                            'processId' => 0,
+                            'workerId' => null,
+                            'processId' => null,
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake', null, 0, 0, true],
+            ['custom_snowflake', null, null, null, true],
         ];
         yield [
             [
@@ -95,8 +78,7 @@ final class SnowflakeDiscordTest extends TestCase
 
     public function testModifySchemaWithDefaults(): void
     {
-        Defaults::setWorkerId(1);
-        Defaults::setProcessId(2);
+        Listener::setDefaults(1, 2);
 
         $args = ['snowflake', null, null, null, false];
 
@@ -106,8 +88,8 @@ final class SnowflakeDiscordTest extends TestCase
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'snowflake',
-                        'workerId' => Defaults::getWorkerId(),
-                        'processId' => Defaults::getProcessId(),
+                        'workerId' => null,
+                        'processId' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -119,15 +101,12 @@ final class SnowflakeDiscordTest extends TestCase
         $snowflake->modifySchema($schema);
 
         $this->assertSame($expected, $schema);
-        $this->assertSame(1, Defaults::getWorkerId());
-        $this->assertSame(2, Defaults::getProcessId());
     }
 
     #[\Override]
     protected function setUp(): void
     {
-        Defaults::setWorkerId(0);
-        Defaults::setProcessId(0);
+        Listener::setDefaults(null, null);
 
         parent::setUp();
     }

@@ -35,7 +35,8 @@ class User
 }
 ```
 
-**Discord:** Snowflake identifier for Discord's platform (voice, text, video), starting from epoch `2015-01-01`. Can incorporate a worker and process ID's to generate distinct Snowflakes. Default values for `workerId` and `processId` can be defined globally via class `Cycle\ORM\Entity\Behavior\Identifier\Defaults\SnowflakeDiscord`.
+### Discord
+Snowflake identifier for Discord's platform (voice, text, video), starting from epoch `2015-01-01`. Can incorporate a worker and process ID's to generate distinct Snowflakes. Default values for `workerId` and `processId` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord::setDefaults()` method.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
