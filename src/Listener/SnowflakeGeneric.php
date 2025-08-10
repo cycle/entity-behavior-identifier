@@ -18,7 +18,6 @@ final class SnowflakeGeneric extends \Cycle\ORM\Entity\Behavior\Identifier\Liste
     private static int $node = 0;
 
     private static Epoch|int $epochOffset = 0;
-
     private GenericSnowflakeFactory $factory;
 
     /**

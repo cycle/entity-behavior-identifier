@@ -73,9 +73,9 @@ final class Uuid2 extends BaseUuid
         $localIdentifier = $this->localIdentifier ?? self::$defaultLocalIdentifier;
         $node = $this->node ?? self::$defaultNode;
         $clockSeq = $this->clockSeq ?? self::$defaultClockSeq;
-        
+
         $localDomain = \is_int($localDomain) ? DceDomain::from($localDomain) : $localDomain;
-        
+
         return $this->factory->create($localDomain, $localIdentifier, $node, $clockSeq);
     }
 }
