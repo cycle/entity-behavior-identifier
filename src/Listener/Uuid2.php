@@ -35,11 +35,12 @@ final class Uuid2 extends BaseUuid
     public function __construct(
         string $field,
         bool $nullable = false,
-        private readonly DceDomain|int|null $localDomain = null,
+        private DceDomain|int|null $localDomain = null,
         private readonly ?int $localIdentifier = null,
         private readonly int|string|null $node = null,
         private readonly ?int $clockSeq = null,
     ) {
+        $this->localDomain = \is_int($this->localDomain) ? DceDomain::from($this->localDomain) : $this->localDomain;
         $this->factory = new UuidV2Factory();
         parent::__construct($field, $nullable);
     }
