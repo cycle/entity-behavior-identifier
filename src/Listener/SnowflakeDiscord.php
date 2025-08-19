@@ -66,11 +66,9 @@ final class SnowflakeDiscord extends Snowflake
 
     /**
      * Get the current process ID.
-     *
-     * @return int<0, 281474976710655>
      */
     private function getProcessId(): int
     {
-        return self::$defaultProcessId ??= \getmypid();
+        return self::$defaultProcessId === null ? \intval(\getmypid()) : self::$defaultProcessId;
     }
 }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
+use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
-use Ramsey\Identifier\SnowflakeFactory;
 
 /**
  * A Snowflake identifier for use with the Discord voice, text, and streaming video platform
@@ -30,7 +30,7 @@ final class SnowflakeDiscord extends BaseSnowflake
      * @see \Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory::create()
      */
     public function __construct(
-        string $field,
+        string $field = 'snowflake',
         ?string $column = null,
         private readonly ?int $workerId = null,
         private readonly ?int $processId = null,
@@ -39,6 +39,18 @@ final class SnowflakeDiscord extends BaseSnowflake
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+    }
+
+    #[\Override]
+    public static function fromInteger(
+        int|string $identifier,
+        DatabaseInterface $database,
+        array $arguments,
+    ): \Ramsey\Identifier\Snowflake {
+        return (new DiscordSnowflakeFactory(
+            $arguments['workerId'],
+            $arguments['processId'],
+        ))->createFromInteger($identifier);
     }
 
     #[\Override]
@@ -67,8 +79,11 @@ final class SnowflakeDiscord extends BaseSnowflake
     }
 
     #[\Override]
-    protected function snowflakeFactory(): SnowflakeFactory
+    protected function getTypecastArgs(): array
     {
-        return new DiscordSnowflakeFactory($this->workerId, $this->processId);
+        return [
+            'workerId' => $this->workerId,
+            'processId' => $this->processId,
+        ];
     }
 }

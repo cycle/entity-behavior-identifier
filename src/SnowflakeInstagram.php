@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
+use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\InstagramSnowflakeFactory;
-use Ramsey\Identifier\SnowflakeFactory;
 
 /**
  * A Snowflake identifier for use with the Instagram photo and video sharing social media platform
@@ -29,7 +29,7 @@ final class SnowflakeInstagram extends BaseSnowflake
      * @see \Ramsey\Identifier\Snowflake\InstagramSnowflakeFactory::create()
      */
     public function __construct(
-        string $field,
+        string $field = 'snowflake',
         ?string $column = null,
         private readonly ?int $shardId = null,
         bool $nullable = false,
@@ -37,6 +37,17 @@ final class SnowflakeInstagram extends BaseSnowflake
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+    }
+
+    #[\Override]
+    public static function fromInteger(
+        int|string $identifier,
+        DatabaseInterface $database,
+        array $arguments,
+    ): \Ramsey\Identifier\Snowflake {
+        return (new InstagramSnowflakeFactory(
+            $arguments['shardId'],
+        ))->createFromInteger($identifier);
     }
 
     #[\Override]
@@ -63,8 +74,10 @@ final class SnowflakeInstagram extends BaseSnowflake
     }
 
     #[\Override]
-    protected function snowflakeFactory(): SnowflakeFactory
+    protected function getTypecastArgs(): array
     {
-        return new InstagramSnowflakeFactory($this->shardId);
+        return [
+            'shardId' => $this->shardId,
+        ];
     }
 }

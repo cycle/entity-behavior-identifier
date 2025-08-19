@@ -107,7 +107,12 @@ abstract class ListenerTest extends BaseTest
 
     public function testAssignManually(): void
     {
-        $this->withListeners(Uuid4Listener::class);
+        $this->withListeners([
+            Uuid4Listener::class,
+            [
+                'field' => 'uuid',
+            ],
+        ]);
 
         $user = new User();
         $user->uuid = (new UuidFactory())->v4();
@@ -144,6 +149,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             Uuid1Listener::class,
             [
+                'field' => 'uuid',
                 'node' => '00000fffffff',
                 'clockSeq' => 0xffff,
             ],
@@ -165,6 +171,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             Uuid2Listener::class,
             [
+                'field' => 'uuid',
                 'localDomain' => DceDomain::Person,
                 'localIdentifier' => 12345678,
             ],
@@ -186,6 +193,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             Uuid3Listener::class,
             [
+                'field' => 'uuid',
                 'namespace' => NamespaceId::Url,
                 'name' => 'https://example.com/foo',
             ],
@@ -204,7 +212,12 @@ abstract class ListenerTest extends BaseTest
 
     public function testUuid4(): void
     {
-        $this->withListeners(Uuid4Listener::class);
+        $this->withListeners([
+            Uuid4Listener::class,
+            [
+                'field' => 'uuid',
+            ],
+        ]);
 
         $user = new User();
         $this->save($user);
@@ -221,7 +234,11 @@ abstract class ListenerTest extends BaseTest
     {
         $this->withListeners([
             Uuid5Listener::class,
-            ['namespace' => NamespaceId::Url, 'name' => 'https://example.com/foo'],
+            [
+                'field' => 'uuid',
+                'namespace' => NamespaceId::Url,
+                'name' => 'https://example.com/foo',
+            ],
         ]);
 
         $user = new User();
@@ -237,7 +254,14 @@ abstract class ListenerTest extends BaseTest
 
     public function testUuid6(): void
     {
-        $this->withListeners([Uuid6Listener::class, ['node' => '00000fffffff', 'clockSeq' => 0x1669]]);
+        $this->withListeners([
+            Uuid6Listener::class,
+            [
+                'field' => 'uuid',
+                'node' => '00000fffffff',
+                'clockSeq' => 0x1669,
+            ],
+        ]);
 
         $user = new User();
         $this->save($user);
@@ -252,7 +276,12 @@ abstract class ListenerTest extends BaseTest
 
     public function testUuid7(): void
     {
-        $this->withListeners(Uuid7Listener::class);
+        $this->withListeners([
+            Uuid7Listener::class,
+            [
+                'field' => 'uuid',
+            ],
+        ]);
 
         $user = new User();
         $this->save($user);

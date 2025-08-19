@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
+use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory;
-use Ramsey\Identifier\SnowflakeFactory;
 
 /**
  * A Snowflake identifier for use with the Mastodon open source platform for decentralized social networking
@@ -29,7 +29,7 @@ final class SnowflakeMastodon extends BaseSnowflake
      * @see \Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory::create()
      */
     public function __construct(
-        string $field,
+        string $field = 'snowflake',
         ?string $column = null,
         private readonly ?string $tableName = null,
         bool $nullable = false,
@@ -37,6 +37,17 @@ final class SnowflakeMastodon extends BaseSnowflake
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+    }
+
+    #[\Override]
+    public static function fromInteger(
+        int|string $identifier,
+        DatabaseInterface $database,
+        array $arguments,
+    ): \Ramsey\Identifier\Snowflake {
+        return (new MastodonSnowflakeFactory(
+            $arguments['tableName'],
+        ))->createFromInteger($identifier);
     }
 
     #[\Override]
@@ -63,8 +74,10 @@ final class SnowflakeMastodon extends BaseSnowflake
     }
 
     #[\Override]
-    protected function snowflakeFactory(): SnowflakeFactory
+    protected function getTypecastArgs(): array
     {
-        return new MastodonSnowflakeFactory($this->tableName);
+        return [
+            'tableName' => $this->tableName,
+        ];
     }
 }

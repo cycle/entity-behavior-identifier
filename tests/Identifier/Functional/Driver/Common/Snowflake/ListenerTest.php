@@ -29,7 +29,12 @@ abstract class ListenerTest extends BaseTest
 
     public function testAssignManually(): void
     {
-        $this->withListeners(SnowflakeGenericListener::class);
+        $this->withListeners([
+            SnowflakeGenericListener::class,
+            [
+                'field' => 'snowflake',
+            ],
+        ]);
 
         $user = new User();
         $user->snowflake = (new GenericSnowflakeFactory(0, 0))->create();
@@ -48,6 +53,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             SnowflakeDiscordListener::class,
             [
+                'field' => 'snowflake',
                 'workerId' => 10,
                 'processId' => 20,
             ],
@@ -90,6 +96,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             SnowflakeGenericListener::class,
             [
+                'field' => 'snowflake',
                 'node' => 10,
                 'epochOffset' => 1662744255000,
             ],
@@ -132,6 +139,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             SnowflakeInstagramListener::class,
             [
+                'field' => 'snowflake',
                 'shardId' => 10,
             ],
         ]);
@@ -173,6 +181,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             SnowflakeMastodonListener::class,
             [
+                'field' => 'snowflake',
                 'tableName' => 'users',
             ],
         ]);
@@ -214,6 +223,7 @@ abstract class ListenerTest extends BaseTest
         $this->withListeners([
             SnowflakeTwitterListener::class,
             [
+                'field' => 'snowflake',
                 'machineId' => 10,
             ],
         ]);

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
+use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Schema\BaseModifier;
 use Cycle\ORM\Entity\Behavior\Schema\RegistryModifier;
 use Cycle\ORM\Schema\GeneratedField;
 use Cycle\Schema\Registry;
-use Ramsey\Identifier\SnowflakeFactory;
 
 abstract class Snowflake extends BaseModifier
 {
@@ -24,6 +24,7 @@ abstract class Snowflake extends BaseModifier
     public function compute(Registry $registry): void
     {
         $modifier = new RegistryModifier($registry, $this->role);
+        /** @var non-empty-string column */
         $this->column = $modifier->findColumnName($this->field, $this->column);
         if (\is_string($this->column) && $this->column !== '') {
             $modifier->addSnowflakeColumn(
@@ -32,11 +33,9 @@ abstract class Snowflake extends BaseModifier
                 $this->nullable ? null : GeneratedField::BEFORE_INSERT,
             )->nullable($this->nullable);
 
-            $factory = $this->snowflakeFactory();
-
             $modifier->setTypecast(
                 $registry->getEntity($this->role)->getFields()->get($this->field),
-                [$factory, 'createFromInteger'],
+                [static::class, 'fromInteger', $this->getTypecastArgs()],
             );
         }
     }
@@ -54,13 +53,20 @@ abstract class Snowflake extends BaseModifier
             $this->nullable ? null : GeneratedField::BEFORE_INSERT,
         )->nullable($this->nullable);
 
-        $factory = $this->snowflakeFactory();
-
         $modifier->setTypecast(
             $registry->getEntity($this->role)->getFields()->get($this->field),
-            [$factory, 'createFromInteger'],
+            [static::class, 'fromInteger', $this->getTypecastArgs()],
         );
     }
 
-    abstract protected function snowflakeFactory(): SnowflakeFactory;
+    /**
+     * @param int<0, max>|numeric-string $identifier
+     */
+    abstract public static function fromInteger(
+        int|string $identifier,
+        DatabaseInterface $database,
+        array $arguments,
+    ): \Ramsey\Identifier\Snowflake;
+
+    abstract protected function getTypecastArgs(): array;
 }

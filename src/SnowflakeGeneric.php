@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
+use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\Epoch;
 use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
-use Ramsey\Identifier\SnowflakeFactory;
 
 /**
  * A distributed ID generation system developed by Twitter that produces
@@ -32,7 +32,7 @@ final class SnowflakeGeneric extends BaseSnowflake
      * @see \Ramsey\Identifier\Snowflake\GenericSnowflakeFactory::create()
      */
     public function __construct(
-        string $field,
+        string $field = 'snowflake',
         ?string $column = null,
         private readonly ?int $node = null,
         private readonly Epoch|int|null $epochOffset = null,
@@ -41,6 +41,18 @@ final class SnowflakeGeneric extends BaseSnowflake
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+    }
+
+    #[\Override]
+    public static function fromInteger(
+        int|string $identifier,
+        DatabaseInterface $database,
+        array $arguments,
+    ): \Ramsey\Identifier\Snowflake {
+        return (new GenericSnowflakeFactory(
+            $arguments['node'],
+            $arguments['epochOffset'],
+        ))->createFromInteger($identifier);
     }
 
     #[\Override]
@@ -69,8 +81,11 @@ final class SnowflakeGeneric extends BaseSnowflake
     }
 
     #[\Override]
-    protected function snowflakeFactory(): SnowflakeFactory
+    protected function getTypecastArgs(): array
     {
-        return new GenericSnowflakeFactory($this->node, $this->epochOffset);
+        return [
+            'node' => $this->node,
+            'epochOffset' => $this->epochOffset,
+        ];
     }
 }
