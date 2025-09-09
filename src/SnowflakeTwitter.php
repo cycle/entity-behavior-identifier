@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Ramsey\Identifier\Snowflake\TwitterSnowflake;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
 
 /**
@@ -39,15 +39,23 @@ final class SnowflakeTwitter extends BaseSnowflake
         $this->nullable = $nullable;
     }
 
-    #[\Override]
-    public static function fromInteger(
+    /**
+     * Identifier factory method from an existing identifier value.
+     *
+     * @param int<0, max>|numeric-string $identifier The identifier to create the Snowflake from
+     *
+     * @see TwitterSnowflakeFactory::create()
+     */
+    public static function create(
         int|string $identifier,
-        DatabaseInterface $database,
-        array $arguments,
-    ): \Ramsey\Identifier\Snowflake {
-        return (new TwitterSnowflakeFactory(
-            $arguments['machineId'],
-        ))->createFromInteger($identifier);
+    ): TwitterSnowflake {
+        return new TwitterSnowflake($identifier);
+    }
+
+    #[\Override]
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
     }
 
     #[\Override]
@@ -70,14 +78,6 @@ final class SnowflakeTwitter extends BaseSnowflake
             'field' => $this->field,
             'machineId' => $this->machineId,
             'nullable' => $this->nullable,
-        ];
-    }
-
-    #[\Override]
-    protected function getTypecastArgs(): array
-    {
-        return [
-            'machineId' => $this->machineId,
         ];
     }
 }

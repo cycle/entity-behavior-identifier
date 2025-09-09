@@ -56,6 +56,14 @@ final class SnowflakeGeneric extends \Cycle\ORM\Entity\Behavior\Identifier\Liste
         }
     }
 
+    /**
+     * Get default epoch offset.
+     */
+    public static function getEpochOffset(): Epoch|int
+    {
+        return self::$epochOffset;
+    }
+
     #[\Override]
     protected function createValue(): Snowflake
     {

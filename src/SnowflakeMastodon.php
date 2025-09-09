@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Ramsey\Identifier\Snowflake\MastodonSnowflake;
 use Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory;
 
 /**
@@ -25,8 +25,6 @@ final class SnowflakeMastodon extends BaseSnowflake
      * @param non-empty-string|null $column Snowflake column name
      * @param non-empty-string|null $tableName Database table name ensuring different tables derive separate sequence bases
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
-     *
-     * @see \Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory::create()
      */
     public function __construct(
         string $field = 'snowflake',
@@ -39,15 +37,23 @@ final class SnowflakeMastodon extends BaseSnowflake
         $this->nullable = $nullable;
     }
 
-    #[\Override]
-    public static function fromInteger(
+    /**
+     * Identifier factory method from an existing identifier value.
+     *
+     * @param int<0, max>|numeric-string $identifier The identifier to create the Snowflake from
+     *
+     * @see MastodonSnowflakeFactory::create()
+     */
+    public static function create(
         int|string $identifier,
-        DatabaseInterface $database,
-        array $arguments,
-    ): \Ramsey\Identifier\Snowflake {
-        return (new MastodonSnowflakeFactory(
-            $arguments['tableName'],
-        ))->createFromInteger($identifier);
+    ): MastodonSnowflake {
+        return new MastodonSnowflake($identifier);
+    }
+
+    #[\Override]
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
     }
 
     #[\Override]
@@ -70,14 +76,6 @@ final class SnowflakeMastodon extends BaseSnowflake
             'field' => $this->field,
             'tableName' => $this->tableName,
             'nullable' => $this->nullable,
-        ];
-    }
-
-    #[\Override]
-    protected function getTypecastArgs(): array
-    {
-        return [
-            'tableName' => $this->tableName,
         ];
     }
 }

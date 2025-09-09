@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Schema\BaseModifier;
 use Cycle\ORM\Entity\Behavior\Schema\RegistryModifier;
 use Cycle\ORM\Schema\GeneratedField;
@@ -24,7 +23,6 @@ abstract class Snowflake extends BaseModifier
     public function compute(Registry $registry): void
     {
         $modifier = new RegistryModifier($registry, $this->role);
-        /** @var non-empty-string column */
         $this->column = $modifier->findColumnName($this->field, $this->column);
         if (\is_string($this->column) && $this->column !== '') {
             $modifier->addSnowflakeColumn(
@@ -35,7 +33,7 @@ abstract class Snowflake extends BaseModifier
 
             $modifier->setTypecast(
                 $registry->getEntity($this->role)->getFields()->get($this->field),
-                [static::class, 'fromInteger', $this->getTypecastArgs()],
+                $this->getTypecast(),
             );
         }
     }
@@ -44,7 +42,6 @@ abstract class Snowflake extends BaseModifier
     public function render(Registry $registry): void
     {
         $modifier = new RegistryModifier($registry, $this->role);
-        /** @var non-empty-string column */
         $this->column = $modifier->findColumnName($this->field, $this->column) ?? $this->field;
 
         $modifier->addSnowflakeColumn(
@@ -55,18 +52,12 @@ abstract class Snowflake extends BaseModifier
 
         $modifier->setTypecast(
             $registry->getEntity($this->role)->getFields()->get($this->field),
-            [static::class, 'fromInteger', $this->getTypecastArgs()],
+            $this->getTypecast(),
         );
     }
 
     /**
-     * @param int<0, max>|numeric-string $identifier
+     * @return array{0: class-string, 1: non-empty-string, 2?: non-empty-array}
      */
-    abstract public static function fromInteger(
-        int|string $identifier,
-        DatabaseInterface $database,
-        array $arguments,
-    ): \Ramsey\Identifier\Snowflake;
-
-    abstract protected function getTypecastArgs(): array;
+    abstract protected function getTypecast(): array;
 }

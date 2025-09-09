@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\Database\DatabaseInterface;
 use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as Listener;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\Epoch;
+use Ramsey\Identifier\Snowflake\GenericSnowflake;
 use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
 
 /**
  * A distributed ID generation system developed by Twitter that produces
  * 64-bit unique, sortable identifiers
+ *
+ * Use {@see Listener::setDefaults()} to set default node and epoch offset.
  *
  * @Annotation
  * @NamedArgumentConstructor()
@@ -28,8 +30,6 @@ final class SnowflakeGeneric extends BaseSnowflake
      * @param int<0, 1023>|null $node A node identifier to use when creating Snowflakes
      * @param Epoch|int|null $epochOffset The offset from the Unix Epoch in milliseconds
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
-     *
-     * @see \Ramsey\Identifier\Snowflake\GenericSnowflakeFactory::create()
      */
     public function __construct(
         string $field = 'snowflake',
@@ -43,16 +43,28 @@ final class SnowflakeGeneric extends BaseSnowflake
         $this->nullable = $nullable;
     }
 
-    #[\Override]
-    public static function fromInteger(
+    /**
+     * Identifier factory method from an existing identifier value.
+     *
+     * @param int<0, max>|numeric-string $identifier The identifier to create the Snowflake from
+     * @param int $epochOffset The offset from the Unix Epoch in milliseconds
+     *
+     * @see GenericSnowflakeFactory::create()
+     */
+    public static function create(
         int|string $identifier,
-        DatabaseInterface $database,
-        array $arguments,
-    ): \Ramsey\Identifier\Snowflake {
-        return (new GenericSnowflakeFactory(
-            $arguments['node'],
-            $arguments['epochOffset'],
-        ))->createFromInteger($identifier);
+        int $epochOffset,
+    ): GenericSnowflake {
+        return new GenericSnowflake($identifier, $epochOffset);
+    }
+
+    #[\Override]
+    protected function getTypecast(): array
+    {
+        $epochOffset = $this->epochOffset ?? Listener::getEpochOffset();
+        $epochOffset instanceof Epoch and $epochOffset = $epochOffset->value;
+
+        return [self::class, 'create', [$epochOffset]];
     }
 
     #[\Override]
@@ -77,15 +89,6 @@ final class SnowflakeGeneric extends BaseSnowflake
             'node' => $this->node,
             'epochOffset' => $this->epochOffset,
             'nullable' => $this->nullable,
-        ];
-    }
-
-    #[\Override]
-    protected function getTypecastArgs(): array
-    {
-        return [
-            'node' => $this->node,
-            'epochOffset' => $this->epochOffset,
         ];
     }
 }
