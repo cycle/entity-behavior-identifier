@@ -14,7 +14,7 @@ use Ramsey\Identifier\Uuid\UuidFactory;
  */
 final class Uuid5 extends Base
 {
-    private UuidFactory $factory;
+    private readonly UuidFactory $factory;
 
     /**
      * @param non-empty-string $field The name of the field to store the UUID
