@@ -40,7 +40,7 @@ final class SnowflakeTwitter extends BaseSnowflake
     }
 
     /**
-     * Identifier factory method from an existing identifier value.
+     * Create a new Twitter Snowflake instance from an existing identifier value.
      *
      * @param int<0, max>|numeric-string $identifier The identifier to create the Snowflake from
      *
