@@ -85,8 +85,8 @@ abstract class ListenerTest extends BaseTest
                 SchemaInterface::SCHEMA => [],
                 SchemaInterface::RELATIONS => [],
                 SchemaInterface::TYPECAST => [
-                    'ulid' => [Ulid::class, 'fromString'],
-                    'foo_ulid' => [Ulid::class, 'fromString'],
+                    'ulid' => [Ulid::class, 'create'],
+                    'foo_ulid' => [Ulid::class, 'create'],
                 ],
             ],
         ]));

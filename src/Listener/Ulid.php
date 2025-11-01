@@ -6,6 +6,7 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
 use Cycle\ORM\Entity\Behavior\Attribute\Listen;
 use Cycle\ORM\Entity\Behavior\Event\Mapper\Command\OnCreate;
+use Ramsey\Identifier\Ulid\Ulid as UlidIdentifier;
 use Ramsey\Identifier\Ulid\UlidFactory;
 
 final class Ulid
@@ -22,8 +23,11 @@ final class Ulid
             return;
         }
 
-        $identifier = (new UlidFactory())->create();
+        $event->state->register($this->field, $this->createValue());
+    }
 
-        $event->state->register($this->field, $identifier);
+    protected function createValue(): UlidIdentifier
+    {
+        return (new UlidFactory())->create();
     }
 }

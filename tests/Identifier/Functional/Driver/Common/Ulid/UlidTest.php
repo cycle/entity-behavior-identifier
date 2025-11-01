@@ -35,7 +35,7 @@ abstract class UlidTest extends BaseTest
         $this->assertTrue($fields->has('ulid'));
         $this->assertTrue($fields->hasColumn('ulid'));
         $this->assertSame('ulid', $fields->get('ulid')->getType());
-        $this->assertSame([Ulid::class, 'fromString'], $fields->get('ulid')->getTypecast());
+        $this->assertSame([Ulid::class, 'create'], $fields->get('ulid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('ulid')->getGenerated());
         $this->assertSame(1, $fields->count());
     }
@@ -52,7 +52,7 @@ abstract class UlidTest extends BaseTest
         $this->assertTrue($fields->has('customUlid'));
         $this->assertTrue($fields->hasColumn('custom_ulid'));
         $this->assertSame('ulid', $fields->get('customUlid')->getType());
-        $this->assertSame([Ulid::class, 'fromString'], $fields->get('customUlid')->getTypecast());
+        $this->assertSame([Ulid::class, 'create'], $fields->get('customUlid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('customUlid')->getGenerated());
     }
 
@@ -68,19 +68,19 @@ abstract class UlidTest extends BaseTest
         $this->assertTrue($fields->has('ulid'));
         $this->assertTrue($fields->hasColumn('ulid'));
         $this->assertSame('ulid', $fields->get('ulid')->getType());
-        $this->assertSame([Ulid::class, 'fromString'], $fields->get('ulid')->getTypecast());
+        $this->assertSame([Ulid::class, 'create'], $fields->get('ulid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('ulid')->getGenerated());
 
         $this->assertTrue($fields->has('fooUlid'));
         $this->assertTrue($fields->hasColumn('foo_ulid'));
         $this->assertSame('ulid', $fields->get('fooUlid')->getType());
-        $this->assertSame([Ulid::class, 'fromString'], $fields->get('fooUlid')->getTypecast());
+        $this->assertSame([Ulid::class, 'create'], $fields->get('fooUlid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('fooUlid')->getGenerated());
 
         $this->assertTrue($fields->has('bar'));
         $this->assertTrue($fields->hasColumn('bar'));
         $this->assertSame('ulid', $fields->get('bar')->getType());
-        $this->assertSame([Ulid::class, 'fromString'], $fields->get('bar')->getTypecast());
+        $this->assertSame([Ulid::class, 'create'], $fields->get('bar')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('bar')->getGenerated());
     }
 
@@ -96,7 +96,7 @@ abstract class UlidTest extends BaseTest
         $this->assertTrue($fields->has('notDefinedUlid'));
         $this->assertTrue($fields->hasColumn('not_defined_ulid'));
         $this->assertSame('ulid', $fields->get('notDefinedUlid')->getType());
-        $this->assertSame([Ulid::class, 'fromString'], $fields->get('notDefinedUlid')->getTypecast());
+        $this->assertSame([Ulid::class, 'create'], $fields->get('notDefinedUlid')->getTypecast());
         $this->assertTrue(
             $this->registry
                 ->getTableSchema($this->registry->getEntity(NullableUlid::class))

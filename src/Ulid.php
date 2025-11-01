@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
-use Ramsey\Identifier\Ulid\Ulid as UlidInterface;
+use Ramsey\Identifier\Ulid\Ulid as UlidIdentifier;
 use Ramsey\Identifier\Ulid\UlidFactory;
 
 /**
@@ -30,22 +30,12 @@ final class Ulid extends BaseModifier
      * @param non-empty-string $field Ulid property name
      * @param string|null $column Ulid column name
      * @param bool $nullable Indicates whether to generate a new Ulid or not
-     *
-     * @see \Ramsey\Identifier\Ulid\UlidFactory::create()
      */
     public function __construct(
         private string $field = 'ulid',
         private ?string $column = null,
         private bool $nullable = false,
     ) {}
-
-    /**
-     * @param non-empty-string $value
-     */
-    public static function fromString(string $value): MaxUlid|NilUlid|UlidInterface
-    {
-        return (new UlidFactory())->createFromString($value);
-    }
 
     #[\Override]
     public function compute(Registry $registry): void
@@ -61,7 +51,7 @@ final class Ulid extends BaseModifier
 
             $modifier->setTypecast(
                 $registry->getEntity($this->role)->getFields()->get($this->field),
-                [self::class, 'fromString'],
+                $this->getTypecast(),
             );
         }
     }
@@ -81,8 +71,25 @@ final class Ulid extends BaseModifier
 
         $modifier->setTypecast(
             $registry->getEntity($this->role)->getFields()->get($this->field),
-            [self::class, 'fromString'],
+            $this->getTypecast(),
         );
+    }
+
+    /**
+     * Create a new Ulid instance from an existing identifier value.
+     *
+     * @param non-empty-string $identifier The identifier to create the Ulid from
+     *
+     * @see UlidFactory::create()
+     */
+    public static function create(string $identifier): MaxUlid|NilUlid|UlidIdentifier
+    {
+        return (new UlidFactory())->createFromString($identifier);
+    }
+
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
     }
 
     #[\Override]
