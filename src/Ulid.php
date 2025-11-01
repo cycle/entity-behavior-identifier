@@ -87,6 +87,9 @@ final class Ulid extends BaseModifier
         return (new UlidFactory())->createFromString($identifier);
     }
 
+    /**
+     * @return array{0: class-string, 1: non-empty-string, 2?: non-empty-array}
+     */
     protected function getTypecast(): array
     {
         return [self::class, 'create'];
