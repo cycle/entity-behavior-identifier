@@ -259,6 +259,24 @@ class User
 }
 ```
 
+To avoid redundancy, default values can be set globally, allowing shared attributes across multiple entities.
+
+```php
+use Cycle\ORM\Entity\Behavior\Identifier\Listener;
+
+Listener\SnowflakeGeneric::setDefaults($node, $epochOffset);
+Listener\SnowflakeDiscord::setDefaults($workerId, $processId);
+Listener\SnowflakeInstagram::setDefaults($shardId);
+Listener\SnowflakeMastodon::setDefaults($tableName);
+Listener\SnowflakeTwitter::setDefaults($machineId);
+
+Listener\Uuid1::setDefaults($node, $clockSeq);
+Listener\Uuid2::setDefaults($localDomain, $localIdentifier, $node, $clockSeq);
+Listener\Uuid3::setDefaults($namespace, $name);
+Listener\Uuid5::setDefaults($namespace, $name);
+Listener\Uuid6::setDefaults($node, $clockSeq);
+````
+
 You can find more information about Entity behavior Identifier [here](https://cycle-orm.dev/docs/entity-behaviors-identifier).
 
 ## License:
