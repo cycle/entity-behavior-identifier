@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
-use Ramsey\Identifier\Uuid\UuidV1Factory;
+use Ramsey\Identifier\Uuid\UuidV1;
 
 /**
  * Generates UUIDv1 identifiers for entities.
@@ -16,7 +16,6 @@ final class Uuid1 extends BaseUuid
     private static int|string|null $defaultNode = null;
 
     private static ?int $defaultClockSeq = null;
-    private UuidV1Factory $factory;
 
     /**
      * @param non-empty-string $field The name of the field to store the UUID
@@ -30,7 +29,6 @@ final class Uuid1 extends BaseUuid
         private readonly int|string|null $node = null,
         private readonly ?int $clockSeq = null,
     ) {
-        $this->factory = new UuidV1Factory();
         parent::__construct($field, $nullable);
     }
 
@@ -47,10 +45,10 @@ final class Uuid1 extends BaseUuid
     }
 
     #[\Override]
-    protected function createValue(): \Ramsey\Identifier\Uuid
+    protected function createValue(): UuidV1
     {
         $node = $this->node ?? self::$defaultNode;
         $clockSeq = $this->clockSeq ?? self::$defaultClockSeq;
-        return $this->factory->create($node, $clockSeq);
+        return $this->factory->v1($node, $clockSeq);
     }
 }
