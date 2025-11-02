@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
 use Ramsey\Identifier\Service\Nic\Nic;
-use Ramsey\Identifier\Uuid\UuidV6Factory;
+use Ramsey\Identifier\Uuid\UuidV6;
 
 /**
  * Generates UUIDv6 (ordered-time) identifiers for entities.
@@ -17,7 +17,6 @@ final class Uuid6 extends BaseUuid
     private static int|string|null $defaultNode = null;
 
     private static ?int $defaultClockSeq = null;
-    private UuidV6Factory $factory;
 
     /**
      * @param non-empty-string $field The name of the field to store the UUID
@@ -31,7 +30,6 @@ final class Uuid6 extends BaseUuid
         private readonly int|string|null $node = null,
         private readonly ?int $clockSeq = null,
     ) {
-        $this->factory = new UuidV6Factory();
         parent::__construct($field, $nullable);
     }
 
@@ -48,11 +46,11 @@ final class Uuid6 extends BaseUuid
     }
 
     #[\Override]
-    protected function createValue(): \Ramsey\Identifier\Uuid
+    protected function createValue(): UuidV6
     {
         $node = $this->node ?? self::$defaultNode;
         $clockSeq = $this->clockSeq ?? self::$defaultClockSeq;
         $node = $node instanceof Nic ? $node->address() : $node;
-        return $this->factory->create($node, $clockSeq);
+        return $this->factory->v6($node, $clockSeq);
     }
 }
