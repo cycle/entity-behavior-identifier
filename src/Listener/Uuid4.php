@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
-use Ramsey\Identifier\Uuid\UuidV4Factory;
+use Ramsey\Identifier\Uuid\UuidV4;
 
 /**
  * Generates UUIDv4 (random) identifiers for entities.
  */
 final class Uuid4 extends BaseUuid
 {
-    private UuidV4Factory $factory;
-
     /**
      * @param non-empty-string $field The name of the field to store the UUID
      * @param bool $nullable Indicates whether the UUID can be null
@@ -21,13 +19,12 @@ final class Uuid4 extends BaseUuid
         string $field,
         bool $nullable = false,
     ) {
-        $this->factory = new UuidV4Factory();
         parent::__construct($field, $nullable);
     }
 
     #[\Override]
-    protected function createValue(): \Ramsey\Identifier\Uuid
+    protected function createValue(): UuidV4
     {
-        return $this->factory->create();
+        return $this->factory->v4();
     }
 }
