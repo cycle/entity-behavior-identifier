@@ -71,6 +71,7 @@ final class SnowflakeDiscord extends Snowflake
      */
     private function getProcessId(): int
     {
-        return self::$defaultProcessId ?? \intval(\getmypid());
+        $processId = self::$defaultProcessId ?? \intval(\getmypid());
+        return \min(\max($processId, 0), 281474976710655);
     }
 }
