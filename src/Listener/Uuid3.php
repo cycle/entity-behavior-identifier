@@ -35,8 +35,6 @@ final class Uuid3 extends Base
     /**
      * Set default values for UUIDv3 generation.
      *
-     * @param NamespaceId|Uuid|string|null $namespace
-     * @param string|null $name
      */
     public static function setDefaults(
         NamespaceId|Uuid|string|null $namespace,

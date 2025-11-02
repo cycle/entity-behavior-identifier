@@ -9,7 +9,6 @@ use Cycle\ORM\Entity\Behavior\Identifier\Uuid3;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid3 as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Identifier\Uuid\NamespaceId;
 
 final class Uuid3Test extends TestCase
 {
