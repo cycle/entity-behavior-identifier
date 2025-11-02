@@ -37,6 +37,18 @@ final class Ulid extends BaseModifier
         private bool $nullable = false,
     ) {}
 
+    /**
+     * Create a new Ulid instance from an existing identifier value.
+     *
+     * @param non-empty-string $identifier The identifier to create the Ulid from
+     *
+     * @see UlidFactory::create()
+     */
+    public static function create(string $identifier): MaxUlid|NilUlid|UlidIdentifier
+    {
+        return (new UlidFactory())->createFromString($identifier);
+    }
+
     #[\Override]
     public function compute(Registry $registry): void
     {
@@ -73,18 +85,6 @@ final class Ulid extends BaseModifier
             $registry->getEntity($this->role)->getFields()->get($this->field),
             $this->getTypecast(),
         );
-    }
-
-    /**
-     * Create a new Ulid instance from an existing identifier value.
-     *
-     * @param non-empty-string $identifier The identifier to create the Ulid from
-     *
-     * @see UlidFactory::create()
-     */
-    public static function create(string $identifier): MaxUlid|NilUlid|UlidIdentifier
-    {
-        return (new UlidFactory())->createFromString($identifier);
     }
 
     /**
