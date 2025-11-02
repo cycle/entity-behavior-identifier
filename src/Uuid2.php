@@ -10,6 +10,8 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Uuid\DceDomain;
+use Ramsey\Identifier\Uuid\UuidV2;
+use Ramsey\Identifier\Uuid\UuidV2Factory;
 
 /**
  * Uses a version 2 (DCE Security) UUID from a local domain, local
@@ -68,6 +70,22 @@ final class Uuid2 extends BaseUuid
         $this->clockSeq = $clockSeq;
     }
 
+    /**
+     * Create a new UUIDv2 instance from an existing identifier value.
+     *
+     * @param non-empty-string $identifier The identifier to create the Uuid from
+     */
+    public static function create(string $identifier): UuidV2
+    {
+        return (new UuidV2Factory())->createFromString($identifier);
+    }
+
+    #[\Override]
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
+    }
+
     #[\Override]
     protected function getListenerClass(): string
     {
@@ -87,7 +105,7 @@ final class Uuid2 extends BaseUuid
     {
         return [
             'field' => $this->field,
-            'localDomain' => \is_int($this->localDomain) ? DceDomain::from($this->localDomain) : $this->localDomain,
+            'localDomain' => $this->localDomain instanceof DceDomain ? $this->localDomain->value : $this->localDomain,
             'localIdentifier' => $this->localIdentifier,
             'node' => $this->node instanceof Nic ? $this->node->address() : $this->node,
             'clockSeq' => $this->clockSeq,
