@@ -36,6 +36,142 @@ abstract class ListenerTest extends BaseTest
 {
     use TableTrait;
 
+    public static function snowflakeGenerationDataProvider(): array
+    {
+        return [
+            'generic' => [
+                'listeners' => [
+                    SnowflakeGenericListener::class,
+                    [
+                        'field' => 'generic',
+                        'node' => 10,
+                        'epochOffset' => 1662744255000,
+                    ],
+                ],
+                'field' => 'generic',
+                'expectedClass' => GenericSnowflake::class,
+                'expectedLength' => 18,
+            ],
+            'discord' => [
+                'listeners' => [
+                    SnowflakeDiscordListener::class,
+                    [
+                        'field' => 'discord',
+                        'workerId' => 10,
+                        'processId' => 20,
+                    ],
+                ],
+                'field' => 'discord',
+                'expectedClass' => DiscordSnowflake::class,
+                'expectedLength' => 19,
+            ],
+            'discord-omit-process-id' => [
+                'listeners' => [
+                    SnowflakeDiscordListener::class,
+                    [
+                        'field' => 'discord',
+                        'workerId' => 10,
+                    ],
+                ],
+                'field' => 'discord',
+                'expectedClass' => DiscordSnowflake::class,
+                'expectedLength' => 19,
+            ],
+            'instagram' => [
+                'listeners' => [
+                    SnowflakeInstagramListener::class,
+                    [
+                        'field' => 'instagram',
+                        'shardId' => 10,
+                    ],
+                ],
+                'field' => 'instagram',
+                'expectedClass' => InstagramSnowflake::class,
+                'expectedLength' => 19,
+            ],
+            'mastodon' => [
+                'listeners' => [
+                    SnowflakeMastodonListener::class,
+                    [
+                        'field' => 'mastodon',
+                        'tableName' => 'foo',
+                    ],
+                ],
+                'field' => 'mastodon',
+                'expectedClass' => MastodonSnowflake::class,
+                'expectedLength' => 18,
+            ],
+            'twitter' => [
+                'listeners' => [
+                    SnowflakeTwitterListener::class,
+                    [
+                        'field' => 'twitter',
+                        'machineId' => 10,
+                    ],
+                ],
+                'field' => 'twitter',
+                'expectedClass' => TwitterSnowflake::class,
+                'expectedLength' => 19,
+            ],
+        ];
+    }
+
+    public static function snowflakeExceptionDataProvider(): array
+    {
+        return [
+            'generic-node-minimum' => [
+                'listenerClass' => SnowflakeGenericListener::class,
+                'defaults' => [-1, 1662744250000],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'generic-node-maximum' => [
+                'listenerClass' => SnowflakeGenericListener::class,
+                'defaults' => [1024, 1662744250000],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'discord-worker-id-minimum' => [
+                'listenerClass' => SnowflakeDiscordListener::class,
+                'defaults' => [-1, 30],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'discord-worker-id-maximum' => [
+                'listenerClass' => SnowflakeDiscordListener::class,
+                'defaults' => [281474976710656, 30],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'discord-process-id-minimum' => [
+                'listenerClass' => SnowflakeDiscordListener::class,
+                'defaults' => [20, -1],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'discord-process-id-maximum' => [
+                'listenerClass' => SnowflakeDiscordListener::class,
+                'defaults' => [20, 281474976710656],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'instagram-shard-id-minimum' => [
+                'listenerClass' => SnowflakeInstagramListener::class,
+                'defaults' => [-1],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'instagram-shard-id-maximum' => [
+                'listenerClass' => SnowflakeInstagramListener::class,
+                'defaults' => [1024],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'twitter-machine-id-minimum' => [
+                'listenerClass' => SnowflakeTwitterListener::class,
+                'defaults' => [-1],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'twitter-machine-id-maximum' => [
+                'listenerClass' => SnowflakeTwitterListener::class,
+                'defaults' => [1024],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+        ];
+    }
+
     public function testNullable(): void
     {
         $this->withListeners([
@@ -102,16 +238,16 @@ abstract class ListenerTest extends BaseTest
         $this->assertSame($entity->twitter->toString(), $data->twitter->toString());
     }
 
-    public function testGenericSnowflake(): void
-    {
-        $this->withListeners([
-            SnowflakeGenericListener::class,
-            [
-                'field' => 'generic',
-                'node' => 10,
-                'epochOffset' => 1662744255000,
-            ],
-        ]);
+    /**
+     * @dataProvider snowflakeGenerationDataProvider
+     */
+    public function testSnowflakeGeneration(
+        array $listeners,
+        string $field,
+        string $expectedClass,
+        int $expectedLength,
+    ): void {
+        $this->withListeners($listeners);
 
         $entity = new AllSnowflake();
         $this->save($entity);
@@ -119,252 +255,25 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
         $data = $select->fetchOne();
 
-        $this->assertInstanceOf(GenericSnowflake::class, $data->generic);
-        $this->assertIsString($data->generic->toString());
-        $this->assertSame(18, \strlen($data->generic->toString()));
+        $snowflake = $data->$field;
+        $this->assertInstanceOf($expectedClass, $snowflake);
+        $this->assertIsString($snowflake->toString());
+        $this->assertSame($expectedLength, \strlen($snowflake->toString()));
     }
 
-    public function testGenericDefaults(): void
-    {
-        SnowflakeGenericListener::setDefaults(20, 1662744250000);
+    /**
+     * @dataProvider snowflakeExceptionDataProvider
+     */
+    public function testSnowflakeException(
+        string $listenerClass,
+        array $defaults,
+        string $expectedException,
+    ): void {
+        $this->expectException($expectedException);
 
-        $this->withListeners([
-            SnowflakeGenericListener::class,
-            [
-                'field' => 'generic',
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(GenericSnowflake::class, $data->generic);
-        $this->assertIsString($data->generic->toString());
-        $this->assertSame(18, \strlen($data->generic->toString()));
-    }
-
-    public function testGenericNodeMinimumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeGenericListener::setDefaults(-1, 1662744250000);
-    }
-
-    public function testGenericNodeMaximumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeGenericListener::setDefaults(1024, 1662744250000);
-    }
-
-    public function testDiscordSnowflake(): void
-    {
-        $this->withListeners([
-            SnowflakeDiscordListener::class,
-            [
-                'field' => 'discord',
-                'workerId' => 10,
-                'processId' => 20,
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $data->discord);
-        $this->assertIsString($data->discord->toString());
-        $this->assertSame(19, \strlen($data->discord->toString()));
-    }
-
-    public function testDiscordDefaults(): void
-    {
-        SnowflakeDiscordListener::setDefaults(20, 30);
-
-        $this->withListeners([
-            SnowflakeDiscordListener::class,
-            [
-                'field' => 'discord',
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $data->discord);
-        $this->assertIsString($data->discord->toString());
-        $this->assertSame(19, \strlen($data->discord->toString()));
-    }
-
-    public function testDiscordWorkerIdMinimumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeDiscordListener::setDefaults(-1, 30);
-    }
-
-    public function testDiscordWorkerIdMaximumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeDiscordListener::setDefaults(281474976710656, 30);
-    }
-
-    public function testDiscordProcessIdMinimumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeDiscordListener::setDefaults(20, -1);
-    }
-
-    public function testDiscordProcessIdMaximumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeDiscordListener::setDefaults(20, 281474976710656);
-    }
-
-    public function testInstagramSnowflake(): void
-    {
-        $this->withListeners([
-            SnowflakeInstagramListener::class,
-            [
-                'field' => 'instagram',
-                'shardId' => 10,
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(InstagramSnowflake::class, $data->instagram);
-        $this->assertIsString($data->instagram->toString());
-        $this->assertSame(19, \strlen($data->instagram->toString()));
-    }
-
-    public function testInstagramDefaults(): void
-    {
-        SnowflakeInstagramListener::setDefaults(20);
-
-        $this->withListeners([
-            SnowflakeInstagramListener::class,
-            [
-                'field' => 'instagram',
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(InstagramSnowflake::class, $data->instagram);
-        $this->assertIsString($data->instagram->toString());
-        $this->assertSame(19, \strlen($data->instagram->toString()));
-    }
-
-    public function testInstagramShardIdMinimumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeInstagramListener::setDefaults(-1);
-    }
-
-    public function testInstagramShardIdMaximumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeInstagramListener::setDefaults(1024);
-    }
-
-    public function testMastodonSnowflake(): void
-    {
-        $this->withListeners([
-            SnowflakeMastodonListener::class,
-            [
-                'field' => 'mastodon',
-                'tableName' => 'users',
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(MastodonSnowflake::class, $data->mastodon);
-        $this->assertIsString($data->mastodon->toString());
-        $this->assertSame(18, \strlen($data->mastodon->toString()));
-    }
-
-    public function testTwitterSnowflake(): void
-    {
-        $this->withListeners([
-            SnowflakeTwitterListener::class,
-            [
-                'field' => 'twitter',
-                'machineId' => 10,
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(TwitterSnowflake::class, $data->twitter);
-        $this->assertIsString($data->twitter->toString());
-        $this->assertSame(19, \strlen($data->twitter->toString()));
-    }
-
-    public function testTwitterDefaults(): void
-    {
-        SnowflakeTwitterListener::setDefaults(20);
-
-        $this->withListeners([
-            SnowflakeTwitterListener::class,
-            [
-                'field' => 'twitter',
-            ],
-        ]);
-
-        $entity = new AllSnowflake();
-        $this->save($entity);
-
-        $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(TwitterSnowflake::class, $data->twitter);
-        $this->assertIsString($data->twitter->toString());
-        $this->assertSame(19, \strlen($data->twitter->toString()));
-    }
-
-    public function testTwitterMachineIdMinimumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeTwitterListener::setDefaults(-1);
-    }
-
-    public function testTwitterMachineIdMaximumThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        SnowflakeTwitterListener::setDefaults(1024);
+        if (\class_exists($listenerClass) && \method_exists($listenerClass, 'setDefaults')) {
+            $listenerClass::setDefaults(...$defaults);
+        }
     }
 
     public function withListeners(array|string|null $listeners = null): void
