@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
 use Ramsey\Identifier\Uuid\DceDomain;
-use Ramsey\Identifier\Uuid\UuidV2Factory;
+use Ramsey\Identifier\Uuid\UuidV2;
 
 /**
  * Generates UUIDv2 (DCE Security) identifiers for entities.
@@ -22,8 +22,6 @@ final class Uuid2 extends BaseUuid
     private static int|string|null $defaultNode = null;
 
     private static ?int $defaultClockSeq = null;
-    private readonly UuidV2Factory $factory;
-    private readonly ?DceDomain $localDomain;
 
     /**
      * @param non-empty-string $field The name of the field to store the UUID
@@ -36,13 +34,11 @@ final class Uuid2 extends BaseUuid
     public function __construct(
         string $field,
         bool $nullable = false,
-        DceDomain|int|null $localDomain = null,
+        private readonly DceDomain|int|null $localDomain = null,
         private readonly ?int $localIdentifier = null,
         private readonly int|string|null $node = null,
         private readonly ?int $clockSeq = null,
     ) {
-        $this->localDomain = \is_int($localDomain) ? DceDomain::from($localDomain) : $localDomain;
-        $this->factory = new UuidV2Factory();
         parent::__construct($field, $nullable);
     }
 
@@ -60,16 +56,14 @@ final class Uuid2 extends BaseUuid
         int|string|null $node,
         ?int $clockSeq,
     ): void {
-        if ($localDomain !== null) {
-            self::$defaultLocalDomain = $localDomain;
-        }
+        self::$defaultLocalDomain = $localDomain;
         self::$defaultLocalIdentifier = $localIdentifier;
         self::$defaultNode = $node;
         self::$defaultClockSeq = $clockSeq;
     }
 
     #[\Override]
-    protected function createValue(): \Ramsey\Identifier\Uuid
+    protected function createValue(): UuidV2
     {
         $localDomain = $this->localDomain ?? self::$defaultLocalDomain;
         $localIdentifier = $this->localIdentifier ?? self::$defaultLocalIdentifier;
@@ -78,6 +72,6 @@ final class Uuid2 extends BaseUuid
 
         $localDomain = \is_int($localDomain) ? DceDomain::from($localDomain) : $localDomain;
 
-        return $this->factory->create($localDomain, $localIdentifier, $node, $clockSeq);
+        return $this->factory->v2($localDomain, $localIdentifier, $node, $clockSeq);
     }
 }
