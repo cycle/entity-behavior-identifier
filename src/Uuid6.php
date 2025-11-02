@@ -9,6 +9,8 @@ use Cycle\ORM\Entity\Behavior\Identifier\Uuid as BaseUuid;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Service\Nic\Nic;
+use Ramsey\Identifier\Uuid\UuidV6;
+use Ramsey\Identifier\Uuid\UuidV6Factory;
 
 /**
  * Uses a version 6 (ordered-time) UUID from a host ID, sequence number,
@@ -52,6 +54,22 @@ final class Uuid6 extends BaseUuid
         $this->nullable = $nullable;
         $this->node = $node;
         $this->clockSeq = $clockSeq;
+    }
+
+    /**
+     * Create a new UUIDv6 instance from an existing identifier value.
+     *
+     * @param non-empty-string $identifier The identifier to create the Uuid from
+     */
+    public static function create(string $identifier): UuidV6
+    {
+        return (new UuidV6Factory())->createFromString($identifier);
+    }
+
+    #[\Override]
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
     }
 
     #[\Override]
