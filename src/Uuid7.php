@@ -8,6 +8,8 @@ use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid7 as Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid as BaseUuid;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
+use Ramsey\Identifier\Uuid\UuidV7;
+use Ramsey\Identifier\Uuid\UuidV7Factory;
 
 /**
  * Uses a version 7 (Unix Epoch Time) UUID
@@ -34,6 +36,22 @@ final class Uuid7 extends BaseUuid
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+    }
+
+    /**
+     * Create a new UUIDv7 instance from an existing identifier value.
+     *
+     * @param non-empty-string $identifier The identifier to create the Uuid from
+     */
+    public static function create(string $identifier): UuidV7
+    {
+        return (new UuidV7Factory())->createFromString($identifier);
+    }
+
+    #[\Override]
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
     }
 
     #[\Override]
