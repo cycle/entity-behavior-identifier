@@ -10,7 +10,9 @@ use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\NullableUuid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\Post;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\User;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid4;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid7;
 use Cycle\ORM\Schema\GeneratedField;
 use Cycle\Schema\Registry;
 use Spiral\Attributes\AttributeReader;
@@ -35,7 +37,7 @@ abstract class UuidTest extends BaseTest
         $this->assertTrue($fields->has('uuid'));
         $this->assertTrue($fields->hasColumn('uuid'));
         $this->assertSame('uuid', $fields->get('uuid')->getType());
-        $this->assertSame([Uuid::class, 'fromString'], $fields->get('uuid')->getTypecast());
+        $this->assertSame([Uuid1::class, 'create'], $fields->get('uuid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('uuid')->getGenerated());
         $this->assertSame(1, $fields->count());
     }
@@ -52,7 +54,7 @@ abstract class UuidTest extends BaseTest
         $this->assertTrue($fields->has('customUuid'));
         $this->assertTrue($fields->hasColumn('custom_uuid'));
         $this->assertSame('uuid', $fields->get('customUuid')->getType());
-        $this->assertSame([Uuid::class, 'fromString'], $fields->get('customUuid')->getTypecast());
+        $this->assertSame([Uuid4::class, 'create'], $fields->get('customUuid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('customUuid')->getGenerated());
     }
 
@@ -68,25 +70,25 @@ abstract class UuidTest extends BaseTest
         $this->assertTrue($fields->has('uuid'));
         $this->assertTrue($fields->hasColumn('uuid'));
         $this->assertSame('uuid', $fields->get('uuid')->getType());
-        $this->assertSame([Uuid::class, 'fromString'], $fields->get('uuid')->getTypecast());
+        $this->assertSame([Uuid1::class, 'create'], $fields->get('uuid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('uuid')->getGenerated());
 
         $this->assertTrue($fields->has('otherUuid'));
         $this->assertTrue($fields->hasColumn('other_uuid'));
         $this->assertSame('uuid', $fields->get('otherUuid')->getType());
-        $this->assertSame([Uuid::class, 'fromString'], $fields->get('otherUuid')->getTypecast());
+        $this->assertSame([Uuid1::class, 'create'], $fields->get('otherUuid')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('otherUuid')->getGenerated());
 
         $this->assertTrue($fields->has('uuid7'));
         $this->assertTrue($fields->hasColumn('uuid7'));
         $this->assertSame('uuid', $fields->get('uuid7')->getType());
-        $this->assertSame([Uuid::class, 'fromString'], $fields->get('uuid7')->getTypecast());
+        $this->assertSame([Uuid7::class, 'create'], $fields->get('uuid7')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('uuid7')->getGenerated());
 
         $this->assertTrue($fields->has('otherUuid7'));
         $this->assertTrue($fields->hasColumn('other_uuid7'));
         $this->assertSame('uuid', $fields->get('otherUuid7')->getType());
-        $this->assertSame([Uuid::class, 'fromString'], $fields->get('otherUuid7')->getTypecast());
+        $this->assertSame([Uuid7::class, 'create'], $fields->get('otherUuid7')->getTypecast());
         $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('otherUuid7')->getGenerated());
     }
 
@@ -102,7 +104,7 @@ abstract class UuidTest extends BaseTest
         $this->assertTrue($fields->has('notDefinedUuid'));
         $this->assertTrue($fields->hasColumn('not_defined_uuid'));
         $this->assertSame('uuid', $fields->get('notDefinedUuid')->getType());
-        $this->assertSame([Uuid::class, 'fromString'], $fields->get('notDefinedUuid')->getTypecast());
+        $this->assertSame([Uuid1::class, 'create'], $fields->get('notDefinedUuid')->getTypecast());
         $this->assertTrue(
             $this->registry
                 ->getTableSchema($this->registry->getEntity(NullableUuid::class))

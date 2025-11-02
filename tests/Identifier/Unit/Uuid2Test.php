@@ -22,7 +22,7 @@ final class Uuid2Test extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'uuid',
-                            'localDomain' => DceDomain::Person,
+                            'localDomain' => DceDomain::Person->value,
                             'localIdentifier' => null,
                             'node' => null,
                             'clockSeq' => null,
@@ -40,7 +40,7 @@ final class Uuid2Test extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_uuid',
-                            'localDomain' => DceDomain::Person,
+                            'localDomain' => DceDomain::Person->value,
                             'localIdentifier' => null,
                             'node' => null,
                             'clockSeq' => null,
@@ -58,7 +58,7 @@ final class Uuid2Test extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_uuid',
-                            'localDomain' => DceDomain::Person,
+                            'localDomain' => DceDomain::Person->value,
                             'localIdentifier' => 3,
                             'node' => null,
                             'clockSeq' => null,
@@ -76,7 +76,7 @@ final class Uuid2Test extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_uuid',
-                            'localDomain' => DceDomain::Person,
+                            'localDomain' => DceDomain::Person->value,
                             'localIdentifier' => 3,
                             'node' => 'bar',
                             'clockSeq' => null,
@@ -85,7 +85,7 @@ final class Uuid2Test extends TestCase
                     ],
                 ],
             ],
-            ['custom_uuid', null, 0, 3, 'bar'],
+            ['custom_uuid', null, DceDomain::Person, 3, 'bar'],
         ];
         yield [
             [
@@ -94,7 +94,7 @@ final class Uuid2Test extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_uuid',
-                            'localDomain' => DceDomain::Group,
+                            'localDomain' => DceDomain::Group->value,
                             'localIdentifier' => 3,
                             'node' => 'bar',
                             'clockSeq' => 4,
@@ -103,7 +103,7 @@ final class Uuid2Test extends TestCase
                     ],
                 ],
             ],
-            ['custom_uuid', null, 1, 3, 'bar', 4],
+            ['custom_uuid', null, DceDomain::Group, 3, 'bar', 4],
         ];
         yield [
             [
@@ -112,7 +112,7 @@ final class Uuid2Test extends TestCase
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_uuid',
-                            'localDomain' => DceDomain::Org,
+                            'localDomain' => DceDomain::Org->value,
                             'localIdentifier' => 3,
                             'node' => 'bar',
                             'clockSeq' => 4,
@@ -121,7 +121,7 @@ final class Uuid2Test extends TestCase
                     ],
                 ],
             ],
-            ['custom_uuid', null, 2, 3, 'bar', 4, true],
+            ['custom_uuid', null, DceDomain::Org, 3, 'bar', 4, true],
         ];
     }
 
@@ -149,7 +149,7 @@ final class Uuid2Test extends TestCase
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'uuid',
-                        'localDomain' => DceDomain::Person,
+                        'localDomain' => DceDomain::Person->value,
                         'localIdentifier' => null,
                         'node' => null,
                         'clockSeq' => null,

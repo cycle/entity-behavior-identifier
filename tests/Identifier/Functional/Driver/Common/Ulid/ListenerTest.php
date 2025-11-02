@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Ulid;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\User;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\AllUlid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
@@ -20,73 +20,74 @@ abstract class ListenerTest extends BaseTest
 {
     use TableTrait;
 
-    public function testAssignManually(): void
-    {
-        $this->withListeners(UlidListener::class);
-
-        $user = new User();
-        $user->ulid = (new UlidFactory())->create();
-        $bytes = $user->ulid->toBytes();
-
-        $this->save($user);
-
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchOne();
-
-        $this->assertSame($bytes, $data->ulid->toBytes());
-    }
-
-    public function testWithNullableTrue(): void
+    public function testNullable(): void
     {
         $this->withListeners([
             UlidListener::class,
             [
-                'field' => 'foo_ulid',
+                'field' => 'ulid',
                 'nullable' => true,
             ],
         ]);
 
-        $user = new User();
-        $user->ulid = (new UlidFactory())->create();
+        $entity = new AllUlid();
+        $this->save($entity);
 
-        $this->save($user);
+        $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
+        $data = $select->fetchOne();
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchData();
+        $this->assertNull($data->ulid);
+    }
 
-        $this->assertNull($data[0]['foo_ulid']);
+    public function testAssignManually(): void
+    {
+        $this->withListeners();
+
+        $entity = new AllUlid();
+        $entity->ulid = (new UlidFactory())->create();
+
+        $this->save($entity);
+
+        $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
+        $data = $select->fetchOne();
+
+        $this->assertSame($entity->ulid->toString(), $data->ulid->toString());
     }
 
     public function testUlid(): void
     {
-        $this->withListeners(UlidListener::class);
+        $this->withListeners([
+            UlidListener::class,
+            [
+                'field' => 'ulid',
+            ],
+        ]);
 
-        $user = new User();
-        $this->save($user);
+        $entity = new AllUlid();
+        $this->save($entity);
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
+        $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
         $data = $select->fetchOne();
 
         $this->assertInstanceOf(UlidInterface::class, $data->ulid);
-        $this->assertIsString($data->ulid->toBytes());
         $this->assertIsString($data->ulid->toString());
+        $this->assertSame(26, \strlen($data->ulid->toString()));
     }
 
-    public function withListeners(array|string $listeners): void
+    public function withListeners(array|string|null $listeners = null): void
     {
         $this->withSchema(new Schema([
-            User::class => [
-                SchemaInterface::ROLE => 'user',
+            AllUlid::class => [
+                SchemaInterface::ROLE => 'all_ulid',
                 SchemaInterface::DATABASE => 'default',
-                SchemaInterface::TABLE => 'users',
-                SchemaInterface::PRIMARY_KEY => 'ulid',
-                SchemaInterface::COLUMNS => ['ulid', 'foo_ulid'],
-                SchemaInterface::LISTENERS => [$listeners],
+                SchemaInterface::TABLE => 'all_ulids',
+                SchemaInterface::PRIMARY_KEY => 'id',
+                SchemaInterface::COLUMNS => ['id', 'ulid'],
+                SchemaInterface::LISTENERS => $listeners ? [$listeners] : [],
                 SchemaInterface::SCHEMA => [],
                 SchemaInterface::RELATIONS => [],
                 SchemaInterface::TYPECAST => [
                     'ulid' => [Ulid::class, 'create'],
-                    'foo_ulid' => [Ulid::class, 'create'],
                 ],
             ],
         ]));
@@ -98,10 +99,10 @@ abstract class ListenerTest extends BaseTest
         parent::setUp();
 
         $this->makeTable(
-            'users',
+            'all_ulids',
             [
-                'ulid' => 'string',
-                'foo_ulid' => 'string,nullable',
+                'id' => 'integer',
+                'ulid' => 'ulid,nullable',
             ],
         );
     }
