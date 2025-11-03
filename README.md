@@ -110,7 +110,8 @@ class User
 
 ## ULID Examples
 
-**ULID (Universally Unique Lexicographically Sortable Identifier):** A 128-bit identifier designed for high uniqueness and lexicographical sortability. It combines a timestamp component with random data, allowing for ordered IDs that can be generated rapidly and are human-readable, making it ideal for databases and distributed systems.
+### ULID (Universally Unique Lexicographically Sortable Identifier)
+A 128-bit identifier designed for high uniqueness and lexicographical sortability. It combines a timestamp component with random data, allowing for ordered IDs that can be generated rapidly and are human-readable, making it ideal for databases and distributed systems.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -165,7 +166,8 @@ class User
 }
 ```
 
-**UUID Version 3 (Name-based, MD5):** Created by hashing a namespace identifier and name using MD5, resulting in a deterministic UUID based on input data.
+### UUID Version 3 (Name-based, MD5)
+Created by hashing a namespace identifier and name using MD5, resulting in a deterministic UUID based on input data.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -186,7 +188,8 @@ class User
 }
 ```
 
-**UUID Version 4 (Random):** Generated entirely from random or pseudo-random numbers, offering high unpredictability and uniqueness.
+### UUID Version 4 (Random)
+Generated entirely from random or pseudo-random numbers, offering high unpredictability and uniqueness.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -203,7 +206,8 @@ class User
 }
 ```
 
-**UUID Version 5 (Name-based, SHA-1):** Similar to version 3 but uses SHA-1 hashing, providing a different deterministic UUID based on namespace and name.
+### UUID Version 5 (Name-based, SHA-1)
+Similar to version 3 but uses SHA-1 hashing, providing a different deterministic UUID based on namespace and name.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -242,7 +246,8 @@ class User
 }
 ```
 
-**UUID Version 7 (Draft/Upcoming):** A newer proposal designed to incorporate sortable features based on Unix timestamp, enhancing performance in database indexing.
+### UUID Version 7 (Draft/Upcoming)
+A newer proposal designed to incorporate sortable features based on Unix timestamp, enhancing performance in database indexing.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -259,7 +264,15 @@ class User
 }
 ```
 
-To avoid redundancy, default values can be set globally, allowing shared attributes across multiple entities.
+## Global Configuration
+
+Some listener classes provide static functions allowing you to define global default values for various attributes. This approach helps you to:
+
+* Initialize defaults at a suitable point in your application's lifecycle.
+* Customize defaults dynamically based on environment-specific conditions.
+* Minimize redundancy by setting shared attribute values once, instead of repeatedly specifying them across entities.
+
+**Sample code:**
 
 ```php
 use Cycle\ORM\Entity\Behavior\Identifier\Listener;
