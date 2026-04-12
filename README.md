@@ -16,10 +16,27 @@ Install this package as a dependency using Composer.
 composer require cycle/entity-behavior-identifier
 ```
 
-## Snowflake Examples
+## Usage
 
-### Generic
-A flexible Snowflake format that can use a node identifier and any epoch offset, suitable for various applications requiring unique identifiers. Default values for `node` and `epochOffset` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric::setDefaults()` method.
+The package provides various types of identifiers, for generating unique values or as alternatives to auto-increment
+IDs, helping ensure uniqueness and flexibility across an application.
+
+> **Note: ** Most identifiers encode metadata such as node ID and epoch offset. These values are typically
+> derived from the platform or system rather than defined within an entity. Each applicable listener class provides a
+> `setDefaults` method to allow these values to be set at an appropriate time within your application.
+
+For example:
+
+```php
+\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric::setDefaults(0, 1_446_940_800_000);
+\Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1::setDefaults('00000fffffff', 0xffff);
+```
+
+
+### Snowflake Examples
+
+**Snowflake (Generic):** A flexible Snowflake implementation that generates globally unique, time-ordered 64-bit IDs
+without adhering to any specific platform’s conventions, suitable for general distributed systems.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -28,16 +45,16 @@ use Cycle\ORM\Entity\Behavior\Identifier;
 use Ramsey\Identifier\Snowflake;
 
 #[Entity]
-#[Identifier\SnowflakeGeneric(field: 'id', node: 1, epochOffset: 1738265600000)]
+#[Identifier\SnowflakeGeneric(field: 'id')]
 class User
 {
-    #[Column(type: 'snowflake', primary: true)]
-    private Snowflake $id;
+    #[Column(type: 'id', primary: true)]
+    public Snowflake $id;
 }
 ```
 
-### Discord
-Snowflake identifier for Discord's platform (voice, text, video), starting from epoch `2015-01-01`. Can incorporate a worker and process ID's to generate distinct Snowflakes. Default values for `workerId` and `processId` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord::setDefaults()` method.
+**Snowflake (Discord):** Implements Discord’s Snowflake format, generating 64-bit IDs that encode a timestamp,
+worker ID, and sequence number. Useful when interoperating with Discord’s API or matching its ID structure.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -46,16 +63,16 @@ use Cycle\ORM\Entity\Behavior\Identifier;
 use Ramsey\Identifier\Snowflake;
 
 #[Entity]
-#[Identifier\SnowflakeDiscord(field: 'id', workerId: 12, processId: 24)]
+#[Identifier\SnowflakeDiscord(field: 'id')]
 class User
 {
-    #[Column(type: 'snowflake', primary: true)]
-    private Snowflake $id;
+    #[Column(type: 'id', primary: true)]
+    public Snowflake $id;
 }
 ```
 
-### Instagram
-Snowflake identifier for Instagram's photo and video sharing platform, with an epoch starting at `2011-08-24`. Can incorporate a shard ID to generate distinct Snowflakes. Default values for `shardId` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram::setDefaults()` method.
+**Snowflake (Instagram):** Follows Instagram’s Snowflake structure to produce unique, sortable 64-bit IDs suitable for
+applications that need compatibility with Instagram-style ID sequences.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -64,16 +81,16 @@ use Cycle\ORM\Entity\Behavior\Identifier;
 use Ramsey\Identifier\Snowflake;
 
 #[Entity]
-#[Identifier\SnowflakeInstagram(field: 'id', shardId: 16)]
+#[Identifier\SnowflakeInstagram(field: 'id')]
 class User
 {
-    #[Column(type: 'snowflake', primary: true)]
-    private Snowflake $id;
+    #[Column(type: 'id', primary: true)]
+    public Snowflake $id;
 }
 ```
 
-### Mastodon
-Snowflake identifier for Mastodon's decentralized social network, generated within a database to ensure uniqueness and approximate order within 1ms. Can include a table name for distinct sequences per table; IDs are unique on a single database but not guaranteed across multiple machines. Default values for `tableName` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon::setDefaults()` method.
+**Snowflake (Mastodon):** Generates IDs compatible with Mastodon’s distributed Snowflake system, encoding time and node
+information to ensure uniqueness across instances.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -82,16 +99,16 @@ use Cycle\ORM\Entity\Behavior\Identifier;
 use Ramsey\Identifier\Snowflake;
 
 #[Entity]
-#[Identifier\SnowflakeMastodon(field: 'id', tableName: 'users')]
+#[Identifier\SnowflakeMastodon(field: 'id')]
 class User
 {
-    #[Column(type: 'snowflake', primary: true)]
-    private Snowflake $id;
+    #[Column(type: 'id', primary: true)]
+    public Snowflake $id;
 }
 ```
 
-### Twitter
-Snowflake identifier for Twitter (X), beginning from `2010-11-04`. Can incorporate a machine ID to generate distinct Snowflakes. Default values for `machineId` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter::setDefaults()` method.
+**Snowflake (Twitter):** Produces 64-bit IDs in the format used by Twitter, encoding timestamp, machine ID, and sequence
+number for globally unique, time-sortable identifiers. Ideal for high-throughput distributed systems.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -100,18 +117,19 @@ use Cycle\ORM\Entity\Behavior\Identifier;
 use Ramsey\Identifier\Snowflake;
 
 #[Entity]
-#[Identifier\SnowflakeTwitter(field: 'id', machineId: 30)]
+#[Identifier\SnowflakeTwitter(field: 'id')]
 class User
 {
-    #[Column(type: 'snowflake', primary: true)]
-    private Snowflake $id;
+    #[Column(type: 'id', primary: true)]
+    public Snowflake $id;
 }
 ```
 
-## ULID Examples
+### ULID Examples
 
-### ULID (Universally Unique Lexicographically Sortable Identifier)
-A 128-bit identifier designed for high uniqueness and lexicographical sortability. It combines a timestamp component with random data, allowing for ordered IDs that can be generated rapidly and are human-readable, making it ideal for databases and distributed systems.
+**ULID (Universally Unique Lexicographically Sortable Identifier):** A 128-bit identifier designed for high uniqueness
+and lexicographical sortability. It combines a timestamp component with random data, allowing for ordered IDs that can
+be generated rapidly and are human-readable, making it ideal for databases and distributed systems.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -128,10 +146,10 @@ class User
 }
 ```
 
-## UUID Examples
+### UUID Examples
 
-### UUID Version 1 (Time-based)
-Generated using the current timestamp and the MAC address of the computer, ensuring unique identification based on time and hardware. Default values for `node` and `clockSeq` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1::setDefaults()` method.
+**UUID Version 1 (Time-based):** Generated using the current timestamp and the MAC address of the computer, ensuring
+unique identification based on time and hardware.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -148,8 +166,8 @@ class User
 }
 ```
 
-### UUID Version 2 (DCE Security)
-Similar to version 1 but includes a local identifier such as a user ID or group ID, primarily used in DCE security contexts. Default values for `localDomain`, `localIdentifier`, `node` and `clockSeq` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2::setDefaults()` method.
+**UUID Version 2 (DCE Security):** Similar to version 1 but includes a local identifier such as a user ID or group ID,
+primarily used in DCE security contexts.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -166,8 +184,8 @@ class User
 }
 ```
 
-### UUID Version 3 (Name-based, MD5)
-Created by hashing a namespace identifier and name using MD5, resulting in a deterministic UUID based on input data.
+**UUID Version 3 (Name-based, MD5):** Created by hashing a namespace identifier and name using MD5, resulting in a
+deterministic UUID based on input data.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -188,8 +206,8 @@ class User
 }
 ```
 
-### UUID Version 4 (Random)
-Generated entirely from random or pseudo-random numbers, offering high unpredictability and uniqueness.
+**UUID Version 4 (Random):** Generated entirely from random or pseudo-random numbers, offering high unpredictability
+and uniqueness.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -206,8 +224,8 @@ class User
 }
 ```
 
-### UUID Version 5 (Name-based, SHA-1)
-Similar to version 3 but uses SHA-1 hashing, providing a different deterministic UUID based on namespace and name.
+**UUID Version 5 (Name-based, SHA-1):** Similar to version 3 but uses SHA-1 hashing, providing a different deterministic
+UUID based on namespace and name.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -228,8 +246,8 @@ class User
 }
 ```
 
-### UUID Version 6 (Draft/Upcoming)
-An experimental or proposed version focused on improving time-based UUIDs with more sortable properties (not yet widely adopted). Default values for `node` and `clockSeq` can be defined globally via the `\Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid6::setDefaults()` method.
+**UUID Version 6 (Draft/Upcoming):** An experimental or proposed version focused on improving time-based UUIDs with more
+sortable properties (not yet widely adopted).
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -246,8 +264,8 @@ class User
 }
 ```
 
-### UUID Version 7 (Draft/Upcoming)
-A newer proposal designed to incorporate sortable features based on Unix timestamp, enhancing performance in database indexing.
+**UUID Version 7 (Draft/Upcoming):** A newer proposal designed to incorporate sortable features based on Unix timestamp,
+enhancing performance in database indexing.
 
 ```php
 use Cycle\Annotated\Annotation\Column;
@@ -264,33 +282,7 @@ class User
 }
 ```
 
-## Global Configuration
-
-Some listener classes provide static functions allowing you to define global default values for various attributes. This approach helps you to:
-
-* Initialize defaults at a suitable point in your application's lifecycle.
-* Customize defaults dynamically based on environment-specific conditions.
-* Minimize redundancy by setting shared attribute values once, instead of repeatedly specifying them across entities.
-
-**Sample code:**
-
-```php
-use Cycle\ORM\Entity\Behavior\Identifier\Listener;
-
-Listener\SnowflakeGeneric::setDefaults($node, $epochOffset);
-Listener\SnowflakeDiscord::setDefaults($workerId, $processId);
-Listener\SnowflakeInstagram::setDefaults($shardId);
-Listener\SnowflakeMastodon::setDefaults($tableName);
-Listener\SnowflakeTwitter::setDefaults($machineId);
-
-Listener\Uuid1::setDefaults($node, $clockSeq);
-Listener\Uuid2::setDefaults($localDomain, $localIdentifier, $node, $clockSeq);
-Listener\Uuid3::setDefaults($namespace, $name);
-Listener\Uuid5::setDefaults($namespace, $name);
-Listener\Uuid6::setDefaults($node, $clockSeq);
-````
-
-You can find more information about Entity behavior Identifier [here](https://cycle-orm.dev/docs/entity-behaviors-identifier).
+Read more about identifier generation in [Entity Behaviors: Identifiers](https://cycle-orm.dev/docs/entity-behaviors/identifiers.md).
 
 ## License:
 
