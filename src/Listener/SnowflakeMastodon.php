@@ -40,6 +40,8 @@ final class SnowflakeMastodon extends Snowflake
      */
     public static function setDefaults(?string $tableName): void
     {
+        $tableName === '' and throw new \InvalidArgumentException('Table name must not be an empty string.');
+
         self::$tableName = $tableName;
     }
 

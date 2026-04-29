@@ -10,8 +10,6 @@ use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as SnowflakeGenericListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid4 as Uuid4Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;
 use Cycle\ORM\SchemaInterface;
@@ -30,9 +28,9 @@ abstract class ListenerTest extends BaseTest
     public function testAssignManually(): void
     {
         $this->withListeners([
-            Uuid4Listener::class,
-            UlidListener::class,
-            SnowflakeGenericListener::class,
+            [Uuid4Listener::class, ['field' => 'uuid']],
+            [UlidListener::class, ['field' => 'ulid']],
+            [SnowflakeGenericListener::class, ['field' => 'snowflake']],
         ]);
 
         $identifiers = new MultipleIdentifiers();
@@ -56,9 +54,9 @@ abstract class ListenerTest extends BaseTest
     public function testWithNullableTrue(): void
     {
         $this->withListeners([
-            Uuid4Listener::class,
-            UlidListener::class,
-            SnowflakeGenericListener::class,
+            [Uuid4Listener::class, ['field' => 'uuid']],
+            [UlidListener::class, ['field' => 'ulid']],
+            [SnowflakeGenericListener::class, ['field' => 'snowflake']],
         ]);
 
         $identifiers = new MultipleIdentifiers();
@@ -68,7 +66,7 @@ abstract class ListenerTest extends BaseTest
 
         $this->save($identifiers);
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
+        $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
         $data = $select->fetchData();
 
         $this->assertNull($data[0]['uuid_nullable']);
@@ -79,15 +77,16 @@ abstract class ListenerTest extends BaseTest
     public function testCombined(): void
     {
         $this->withListeners([
-            Uuid4Listener::class,
-            UlidListener::class,
-            SnowflakeGenericListener::class,
+            [Uuid4Listener::class, ['field' => 'uuid']],
+            [UlidListener::class, ['field' => 'ulid']],
+            [SnowflakeGenericListener::class, ['field' => 'snowflake']],
         ]);
 
         $identifiers = new MultipleIdentifiers();
         $this->save($identifiers);
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
+        $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
+        /** @var MultipleIdentifiers $data */
         $data = $select->fetchOne();
 
         $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
@@ -107,9 +106,9 @@ abstract class ListenerTest extends BaseTest
     public function testComparison(): void
     {
         $this->withListeners([
-            Uuid4Listener::class,
-            UlidListener::class,
-            SnowflakeGenericListener::class,
+            [Uuid4Listener::class, ['field' => 'uuid']],
+            [UlidListener::class, ['field' => 'ulid']],
+            [SnowflakeGenericListener::class, ['field' => 'snowflake']],
         ]);
 
         $expectedDate = '2025-06-17 03:24:36.160 +00:00';
@@ -131,9 +130,11 @@ abstract class ListenerTest extends BaseTest
         $this->assertFalse($data->uuid->equals($data->snowflake));
     }
 
-    public function withListeners(array|string $listeners): void
+    public function withListeners(array $listeners): void
     {
-        $factory = new GenericSnowflakeFactory(0, 0);
+        $snowflakeFactory = new GenericSnowflakeFactory(0, 0);
+        $uuidFactory = new UuidFactory();
+        $ulidFactory = new UlidFactory();
 
         $this->withSchema(new Schema([
             MultipleIdentifiers::class => [
@@ -149,16 +150,16 @@ abstract class ListenerTest extends BaseTest
                     'snowflake',
                     'snowflake_nullable',
                 ],
-                SchemaInterface::LISTENERS => [$listeners],
+                SchemaInterface::LISTENERS => $listeners,
                 SchemaInterface::SCHEMA => [],
                 SchemaInterface::RELATIONS => [],
                 SchemaInterface::TYPECAST => [
-                    'uuid' => [Uuid::class, 'create'],
-                    'uuid_nullable' => [Uuid::class, 'create'],
-                    'ulid' => [Ulid::class, 'create'],
-                    'ulid_nullable' => [Ulid::class, 'create'],
-                    'snowflake' => [$factory, 'createFromInteger'],
-                    'snowflake_nullable' => [$factory, 'createFromInteger'],
+                    'uuid' => [$uuidFactory, 'createFromString'],
+                    'uuid_nullable' => [$uuidFactory, 'createFromString'],
+                    'ulid' => [$ulidFactory, 'createFromString'],
+                    'ulid_nullable' => [$ulidFactory, 'createFromString'],
+                    'snowflake' => [$snowflakeFactory, 'createFromInteger'],
+                    'snowflake_nullable' => [$snowflakeFactory, 'createFromInteger'],
                 ],
             ],
         ]));

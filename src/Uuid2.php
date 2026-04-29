@@ -40,7 +40,7 @@ final class Uuid2 extends BaseUuid
      * @param DceDomain|int|null $localDomain The local domain to which the local identifier belongs; this defaults to "Person"
      *      and if $localIdentifier is not provided, the factory will attempt to get a suitable local ID for the domain
      *      (e.g., the UID or GID of the user running the script).
-     * @param int<0, 4294967295> | null $localIdentifier A 32-bit local identifier belonging to the local domain
+     * @param int<0, 4294967295>|null $localIdentifier A 32-bit local identifier belonging to the local domain
      *      specified in `$localDomain`; if no identifier is provided, the factory will attempt to get a suitable local
      *      ID for the domain (e.g., the UID or GID of the user running the script).
      * @param Nic|int<0, 281474976710655>|non-empty-string|null $node A 48-bit integer or hexadecimal string

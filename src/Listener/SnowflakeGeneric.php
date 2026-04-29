@@ -51,9 +51,7 @@ final class SnowflakeGeneric extends \Cycle\ORM\Entity\Behavior\Identifier\Liste
         }
 
         self::$node = (int) $node;
-        if ($epochOffset !== null) {
-            self::$epochOffset = $epochOffset;
-        }
+        self::$epochOffset = $epochOffset ?? 0;
     }
 
     /**

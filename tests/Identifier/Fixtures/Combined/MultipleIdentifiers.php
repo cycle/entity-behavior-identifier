@@ -24,7 +24,7 @@ use Ramsey\Identifier\Uuid;
 #[Identifier\Uuid4]
 #[Identifier\Uuid4(field: 'uuidNullable', column: 'uuid_nullable', nullable: true)]
 #[Identifier\Ulid(field: 'ulid')]
-#[Identifier\Uuid4(field: 'ulidNullable', column: 'ulid_nullable', nullable: true)]
+#[Identifier\Ulid(field: 'ulidNullable', column: 'ulid_nullable', nullable: true)]
 #[Identifier\SnowflakeGeneric(field: 'snowflake')]
 #[Identifier\SnowflakeGeneric(field: 'snowflakeNullable', column: 'snowflake_nullable', nullable: true)]
 class MultipleIdentifiers
