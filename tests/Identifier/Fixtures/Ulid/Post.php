@@ -6,14 +6,14 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid;
 
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
+use Cycle\ORM\Entity\Behavior\Identifier;
 
 /**
  * @Entity
- * @Ulid(field="customUlid", column="custom_ulid")
+ * @Identifier\Ulid(field="customUlid", column="custom_ulid")
  */
 #[Entity]
-#[Ulid(field: 'customUlid', column: 'custom_ulid')]
+#[Identifier\Ulid(field: 'customUlid', column: 'custom_ulid')]
 class Post
 {
     /**

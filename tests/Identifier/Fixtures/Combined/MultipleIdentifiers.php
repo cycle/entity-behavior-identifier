@@ -6,23 +6,27 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Combined;
 
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid4;
-use Ramsey\Identifier\Ulid as UlidInterface;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Snowflake;
+use Ramsey\Identifier\Ulid;
 use Ramsey\Identifier\Uuid;
 
 /**
  * @Entity
- * @Uuid4
- * @Uuid4(field="uuidNullable", column="uuid_nullable", nullable=true)
- * @Ulid(field="ulid")
- * @Ulid(field="ulidNullable", column="ulid_nullable", nullable=true)
+ * @Identifier\Uuid4
+ * @Identifier\Uuid4(field="uuidNullable", column="uuid_nullable", nullable=true)
+ * @Identifier\Ulid(field="ulid")
+ * @Identifier\Ulid(field="ulidNullable", column="ulid_nullable", nullable=true)
+ * @Identifier\SnowflakeGeneric(field="snowflake")
+ * @Identifier\SnowflakeGeneric(field="snowflakeNullable", column="snowflake_nullable", nullable=true)
  */
 #[Entity]
-#[Uuid4]
-#[Uuid4(field: 'uuidNullable', column: 'uuid_nullable', nullable: true)]
-#[Ulid(field: 'ulid')]
-#[Uuid4(field: 'ulidNullable', column: 'ulid_nullable', nullable: true)]
+#[Identifier\Uuid4]
+#[Identifier\Uuid4(field: 'uuidNullable', column: 'uuid_nullable', nullable: true)]
+#[Identifier\Ulid(field: 'ulid')]
+#[Identifier\Ulid(field: 'ulidNullable', column: 'ulid_nullable', nullable: true)]
+#[Identifier\SnowflakeGeneric(field: 'snowflake')]
+#[Identifier\SnowflakeGeneric(field: 'snowflakeNullable', column: 'snowflake_nullable', nullable: true)]
 class MultipleIdentifiers
 {
     /**
@@ -41,11 +45,23 @@ class MultipleIdentifiers
      * @Column(type="ulid")
      */
     #[Column(type: 'ulid')]
-    public UlidInterface $ulid;
+    public Ulid $ulid;
 
     /**
      * @Column(type="ulid", nullable=true)
      */
     #[Column(type: 'ulid')]
-    public ?UlidInterface $ulidNullable = null;
+    public ?Ulid $ulidNullable = null;
+
+    /**
+     * @Column(type="snowflake")
+     */
+    #[Column(type: 'snowflake')]
+    public Snowflake $snowflake;
+
+    /**
+     * @Column(type="snowflake", nullable=true)
+     */
+    #[Column(type: 'snowflake')]
+    public ?Snowflake $snowflakeNullable = null;
 }

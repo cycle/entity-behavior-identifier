@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
-use Ramsey\Identifier\Ulid\Ulid as UlidInterface;
+use Ramsey\Identifier\Ulid\Ulid as UlidIdentifier;
 use Ramsey\Identifier\Ulid\UlidFactory;
 
 /**
@@ -30,8 +30,6 @@ final class Ulid extends BaseModifier
      * @param non-empty-string $field Ulid property name
      * @param string|null $column Ulid column name
      * @param bool $nullable Indicates whether to generate a new Ulid or not
-     *
-     * @see \Ramsey\Identifier\Ulid\UlidFactory::create()
      */
     public function __construct(
         private string $field = 'ulid',
@@ -40,11 +38,15 @@ final class Ulid extends BaseModifier
     ) {}
 
     /**
-     * @param non-empty-string $value
+     * Create a new Ulid instance from an existing identifier value.
+     *
+     * @param non-empty-string $identifier The identifier to create the Ulid from
+     *
+     * @see UlidFactory::create()
      */
-    public static function fromString(string $value): MaxUlid|NilUlid|UlidInterface
+    public static function create(string $identifier): MaxUlid|NilUlid|UlidIdentifier
     {
-        return (new UlidFactory())->createFromString($value);
+        return (new UlidFactory())->createFromString($identifier);
     }
 
     #[\Override]
@@ -52,7 +54,7 @@ final class Ulid extends BaseModifier
     {
         $modifier = new RegistryModifier($registry, $this->role);
         $this->column = $modifier->findColumnName($this->field, $this->column);
-        if ($this->column !== null) {
+        if (\is_string($this->column) && $this->column !== '') {
             $modifier->addUlidColumn(
                 $this->column,
                 $this->field,
@@ -61,7 +63,7 @@ final class Ulid extends BaseModifier
 
             $modifier->setTypecast(
                 $registry->getEntity($this->role)->getFields()->get($this->field),
-                [self::class, 'fromString'],
+                $this->getTypecast(),
             );
         }
     }
@@ -70,6 +72,7 @@ final class Ulid extends BaseModifier
     public function render(Registry $registry): void
     {
         $modifier = new RegistryModifier($registry, $this->role);
+        /** @var non-empty-string column */
         $this->column = $modifier->findColumnName($this->field, $this->column) ?? $this->field;
 
         $modifier->addUlidColumn(
@@ -80,8 +83,16 @@ final class Ulid extends BaseModifier
 
         $modifier->setTypecast(
             $registry->getEntity($this->role)->getFields()->get($this->field),
-            [self::class, 'fromString'],
+            $this->getTypecast(),
         );
+    }
+
+    /**
+     * @return array{0: class-string, 1: non-empty-string, 2?: non-empty-array}
+     */
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
     }
 
     #[\Override]

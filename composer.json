@@ -41,7 +41,7 @@
     },
     "require": {
         "php": ">=8.2",
-        "cycle/entity-behavior": "^1.6",
+        "cycle/entity-behavior": "^1.7",
         "ramsey/identifier": "^0.1"
     },
     "require-dev": {

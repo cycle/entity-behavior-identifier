@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Uuid;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\User;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\AllUuid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Uuid1Listener;
@@ -14,286 +14,340 @@ use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid4 as Uuid4Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid5 as Uuid5Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid6 as Uuid6Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid7 as Uuid7Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid2;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid3;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid4;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid5;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid6;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid7;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;
 use Cycle\ORM\SchemaInterface;
 use Cycle\ORM\Select;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\NamespaceId;
-use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidFactory;
+use Ramsey\Identifier\Uuid\UuidV1;
+use Ramsey\Identifier\Uuid\UuidV2;
+use Ramsey\Identifier\Uuid\UuidV3;
+use Ramsey\Identifier\Uuid\UuidV4;
+use Ramsey\Identifier\Uuid\UuidV5;
+use Ramsey\Identifier\Uuid\UuidV6;
+use Ramsey\Identifier\Uuid\UuidV7;
 
 abstract class ListenerTest extends BaseTest
 {
     use TableTrait;
 
-    public static function nullableTrueDataProvider(): \Traversable
+    private UuidFactory $factory;
+
+    public static function uuidGenerationDataProvider(): array
     {
-        yield [
-            [
-                Uuid1Listener::class,
-                [
-                    'nullable' => true,
-                    'field' => 'optional_uuid',
-                    'node' => '00000fffffff',
-                    'clockSeq' => 0xffff,
+        return [
+            'uuid1' => [
+                'listeners' => [
+                    Uuid1Listener::class,
+                    [
+                        'field' => 'uuid1',
+                        'node' => '00000fffffff',
+                        'clockSeq' => 0xffff,
+                    ],
                 ],
+                'field' => 'uuid1',
+                'expectedClass' => UuidV1::class,
+                'expectedVersion' => 1,
             ],
-        ];
-        yield [
-            [
-                Uuid2Listener::class,
-                [
-                    'nullable' => true,
-                    'field' => 'optional_uuid',
-                    'localDomain' => DceDomain::Person,
-                    'localIdentifier' => 12345678,
+            'uuid2' => [
+                'listeners' => [
+                    Uuid2Listener::class,
+                    [
+                        'field' => 'uuid2',
+                        'localDomain' => DceDomain::Person,
+                        'localIdentifier' => 12345678,
+                        'node' => '3c1239b4f540',
+                    ],
                 ],
+                'field' => 'uuid2',
+                'expectedClass' => UuidV2::class,
+                'expectedVersion' => 2,
             ],
-        ];
-        yield [
-            [
-                Uuid3Listener::class,
-                [
-                    'nullable' => true,
-                    'field' => 'optional_uuid',
-                    'namespace' => NamespaceId::Url,
-                    'name' => 'https://example.com/foo',
+            'uuid3' => [
+                'listeners' => [
+                    Uuid3Listener::class,
+                    [
+                        'field' => 'uuid3',
+                        'namespace' => NamespaceId::Url,
+                        'name' => 'https://example.com/foo',
+                    ],
                 ],
+                'field' => 'uuid3',
+                'expectedClass' => UuidV3::class,
+                'expectedVersion' => 3,
             ],
-        ];
-        yield [
-            [
-                Uuid4Listener::class,
-                [
-                    'nullable' => true,
-                    'field' => 'optional_uuid',
+            'uuid4' => [
+                'listeners' => [
+                    Uuid4Listener::class,
+                    [
+                        'field' => 'uuid4',
+                    ],
                 ],
+                'field' => 'uuid4',
+                'expectedClass' => UuidV4::class,
+                'expectedVersion' => 4,
             ],
-        ];
-        yield [
-            [
-                Uuid5Listener::class,
-                [
-                    'nullable' => true,
-                    'field' => 'optional_uuid',
-                    'namespace' => NamespaceId::Url,
-                    'name' => 'https://example.com/foo',
+            'uuid5' => [
+                'listeners' => [
+                    Uuid5Listener::class,
+                    [
+                        'field' => 'uuid5',
+                        'namespace' => NamespaceId::Url,
+                        'name' => 'https://example.com/foo',
+                    ],
                 ],
+                'field' => 'uuid5',
+                'expectedClass' => UuidV5::class,
+                'expectedVersion' => 5,
             ],
-        ];
-        yield [
-            [
-                Uuid6Listener::class,
-                [
-                    'nullable' => true,
-                    'field' => 'optional_uuid',
-                    'node' => '00000fffffff',
-                    'clockSeq' => 0x1669,
+            'uuid6' => [
+                'listeners' => [
+                    Uuid6Listener::class,
+                    [
+                        'field' => 'uuid6',
+                        'node' => '00000fffffff',
+                        'clockSeq' => 0xffff,
+                    ],
                 ],
+                'field' => 'uuid6',
+                'expectedClass' => UuidV6::class,
+                'expectedVersion' => 6,
             ],
-        ];
-        yield [
-            [
-                Uuid7Listener::class,
-                [
-                    'nullable' => true,
-                    'field' => 'optional_uuid',
+            'uuid7' => [
+                'listeners' => [
+                    Uuid7Listener::class,
+                    [
+                        'field' => 'uuid7',
+                    ],
                 ],
+                'field' => 'uuid7',
+                'expectedClass' => UuidV7::class,
+                'expectedVersion' => 7,
             ],
         ];
     }
 
-    public function testAssignManually(): void
+    public static function uuidExceptionDataProvider(): array
     {
-        $this->withListeners(Uuid4Listener::class);
-
-        $user = new User();
-        $user->uuid = (new UuidFactory())->v4();
-        $bytes = $user->uuid->toBytes();
-
-        $this->save($user);
-
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchOne();
-
-        $this->assertSame($bytes, $data->uuid->toBytes());
+        return [
+            'uuid3-undefined-namespace' => [
+                'listeners' => [
+                    Uuid3Listener::class,
+                    [
+                        'field' => 'uuid3',
+                        'name' => 'https://example.com/foo',
+                    ],
+                ],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'uuid3-undefined-name' => [
+                'listeners' => [
+                    Uuid3Listener::class,
+                    [
+                        'field' => 'uuid3',
+                        'namespace' => NamespaceId::Url,
+                    ],
+                ],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'uuid5-undefined-namespace' => [
+                'listeners' => [
+                    Uuid5Listener::class,
+                    [
+                        'field' => 'uuid5',
+                        'name' => 'https://example.com/foo',
+                    ],
+                ],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+            'uuid5-undefined-name' => [
+                'listeners' => [
+                    Uuid5Listener::class,
+                    [
+                        'field' => 'uuid5',
+                        'namespace' => NamespaceId::Url,
+                    ],
+                ],
+                'expectedException' => \InvalidArgumentException::class,
+            ],
+        ];
     }
 
-    /**
-     * @dataProvider nullableTrueDataProvider
-     */
-    public function testWithNullableTrue(array $listener): void
-    {
-        $this->withListeners($listener);
-
-        $user = new User();
-        $user->uuid = (new UuidFactory())->v4();
-
-        $this->save($user);
-
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchData();
-
-        $this->assertNull($data[0]['optional_uuid']);
-    }
-
-    public function testUuid1(): void
+    public function testNullable(): void
     {
         $this->withListeners([
             Uuid1Listener::class,
             [
-                'node' => '00000fffffff',
-                'clockSeq' => 0xffff,
+                'field' => 'uuid1',
+                'nullable' => true,
             ],
-        ]);
-
-        $user = new User();
-        $this->save($user);
-
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertSame(1, $data->uuid->getVersion()->value);
-        $this->assertIsString($data->uuid->toString());
-    }
-
-    public function testUuid2(): void
-    {
-        $this->withListeners([
             Uuid2Listener::class,
             [
-                'localDomain' => DceDomain::Person,
-                'localIdentifier' => 12345678,
+                'field' => 'uuid2',
+                'nullable' => true,
             ],
-        ]);
-
-        $user = new User();
-        $this->save($user);
-
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertSame(2, $data->uuid->getVersion()->value);
-        $this->assertIsString($data->uuid->toString());
-    }
-
-    public function testUuid3(): void
-    {
-        $this->withListeners([
             Uuid3Listener::class,
             [
-                'namespace' => NamespaceId::Url,
-                'name' => 'https://example.com/foo',
+                'field' => 'uuid3',
+                'nullable' => true,
+            ],
+            Uuid4Listener::class,
+            [
+                'field' => 'uuid4',
+                'nullable' => true,
+            ],
+            Uuid5Listener::class,
+            [
+                'field' => 'uuid5',
+                'nullable' => true,
+            ],
+            Uuid6Listener::class,
+            [
+                'field' => 'uuid6',
+                'nullable' => true,
+            ],
+            Uuid7Listener::class,
+            [
+                'field' => 'uuid7',
+                'nullable' => true,
             ],
         ]);
 
-        $user = new User();
-        $this->save($user);
+        $entity = new AllUuid();
+        $this->save($entity);
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
+        $select = new Select($this->orm->with(heap: new Heap()), AllUuid::class);
         $data = $select->fetchOne();
 
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertSame(3, $data->uuid->getVersion()->value);
-        $this->assertIsString($data->uuid->toString());
+        $this->assertNull($data->uuid1);
+        $this->assertNull($data->uuid2);
+        $this->assertNull($data->uuid3);
+        $this->assertNull($data->uuid4);
+        $this->assertNull($data->uuid5);
+        $this->assertNull($data->uuid6);
+        $this->assertNull($data->uuid7);
     }
 
-    public function testUuid4(): void
+    public function testAssignManually(): void
     {
-        $this->withListeners(Uuid4Listener::class);
+        $this->withListeners();
 
-        $user = new User();
-        $this->save($user);
+        $entity = new AllUuid();
+        $entity->uuid1 = $this->factory->v1();
+        $entity->uuid2 = $this->factory->v2();
+        $entity->uuid3 = $this->factory->v3(NamespaceId::Url, 'https://cycle-orm.dev');
+        $entity->uuid4 = $this->factory->v4();
+        $entity->uuid5 = $this->factory->v5(NamespaceId::Url, 'https://cycle-orm.dev');
+        $entity->uuid6 = $this->factory->v6();
+        $entity->uuid7 = $this->factory->v7();
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
+        $this->save($entity);
+
+        $select = new Select($this->orm->with(heap: new Heap()), AllUuid::class);
         $data = $select->fetchOne();
 
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertSame(4, $data->uuid->getVersion()->value);
-        $this->assertIsString($data->uuid->toString());
+        $this->assertSame($entity->uuid1->toString(), $data->uuid1->toString());
+        $this->assertSame($entity->uuid2->toString(), $data->uuid2->toString());
+        $this->assertSame($entity->uuid3->toString(), $data->uuid3->toString());
+        $this->assertSame($entity->uuid4->toString(), $data->uuid4->toString());
+        $this->assertSame($entity->uuid5->toString(), $data->uuid5->toString());
+        $this->assertSame($entity->uuid6->toString(), $data->uuid6->toString());
+        $this->assertSame($entity->uuid7->toString(), $data->uuid7->toString());
     }
 
-    public function testUuid5(): void
-    {
-        $this->withListeners([
-            Uuid5Listener::class,
-            ['namespace' => NamespaceId::Url, 'name' => 'https://example.com/foo'],
-        ]);
+    /**
+     * @dataProvider uuidGenerationDataProvider
+     */
+    public function testUuidGeneration(
+        array $listeners,
+        string $field,
+        string $expectedClass,
+        int $expectedVersion,
+    ): void {
+        $this->withListeners($listeners);
 
-        $user = new User();
-        $this->save($user);
+        $entity = new AllUuid();
+        $this->save($entity);
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
+        $select = new Select($this->orm->with(heap: new Heap()), AllUuid::class);
         $data = $select->fetchOne();
 
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertSame(5, $data->uuid->getVersion()->value);
-        $this->assertIsString($data->uuid->toString());
+        $uuid = $data->$field;
+        $this->assertInstanceOf($expectedClass, $uuid);
+        $this->assertSame($expectedVersion, $uuid->getVersion()->value);
+        $this->assertIsString($uuid->toString());
     }
 
-    public function testUuid6(): void
-    {
-        $this->withListeners([Uuid6Listener::class, ['node' => '00000fffffff', 'clockSeq' => 0x1669]]);
+    /**
+     * @dataProvider uuidExceptionDataProvider
+     */
+    public function testUuidException(
+        array $listeners,
+        string $expectedException,
+    ): void {
+        $this->expectException($expectedException);
 
-        $user = new User();
-        $this->save($user);
+        $this->withListeners($listeners);
 
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertSame(6, $data->uuid->getVersion()->value);
-        $this->assertIsString($data->uuid->toString());
+        $entity = new AllUuid();
+        $this->save($entity);
     }
 
-    public function testUuid7(): void
-    {
-        $this->withListeners(Uuid7Listener::class);
-
-        $user = new User();
-        $this->save($user);
-
-        $select = new Select($this->orm->with(heap: new Heap()), User::class);
-        $data = $select->fetchOne();
-
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertSame(7, $data->uuid->getVersion()->value);
-        $this->assertIsString($data->uuid->toString());
-    }
-
-    public function withListeners(array|string $listeners): void
+    public function withListeners(array|string|null $listeners = null): void
     {
         $this->withSchema(new Schema([
-            User::class => [
-                SchemaInterface::ROLE => 'user',
+            AllUuid::class => [
+                SchemaInterface::ROLE => 'all_uuid',
                 SchemaInterface::DATABASE => 'default',
-                SchemaInterface::TABLE => 'users',
-                SchemaInterface::PRIMARY_KEY => 'uuid',
-                SchemaInterface::COLUMNS => ['uuid', 'optional_uuid'],
-                SchemaInterface::LISTENERS => [$listeners],
+                SchemaInterface::TABLE => 'all_uuids',
+                SchemaInterface::PRIMARY_KEY => 'id',
+                SchemaInterface::COLUMNS => ['id', 'uuid1', 'uuid2', 'uuid3', 'uuid4', 'uuid5', 'uuid6', 'uuid7'],
+                SchemaInterface::LISTENERS => $listeners ? [$listeners] : [],
                 SchemaInterface::SCHEMA => [],
                 SchemaInterface::RELATIONS => [],
                 SchemaInterface::TYPECAST => [
-                    'uuid' => [Uuid::class, 'fromString'],
-                    'optional_uuid' => [Uuid::class, 'fromString'],
+                    'uuid1' => [Uuid1::class, 'create'],
+                    'uuid2' => [Uuid2::class, 'create'],
+                    'uuid3' => [Uuid3::class, 'create'],
+                    'uuid4' => [Uuid4::class, 'create'],
+                    'uuid5' => [Uuid5::class, 'create'],
+                    'uuid6' => [Uuid6::class, 'create'],
+                    'uuid7' => [Uuid7::class, 'create'],
                 ],
             ],
         ]));
     }
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
 
+        Uuid3Listener::setDefaults(null, null);
+        Uuid5Listener::setDefaults(null, null);
+
+        $this->factory = new UuidFactory();
+
         $this->makeTable(
-            'users',
+            'all_uuids',
             [
-                'uuid' => 'string',
-                'optional_uuid' => 'string,nullable',
+                'id' => 'integer',
+                'uuid1' => 'uuid,nullable',
+                'uuid2' => 'uuid,nullable',
+                'uuid3' => 'uuid,nullable',
+                'uuid4' => 'uuid,nullable',
+                'uuid5' => 'uuid,nullable',
+                'uuid6' => 'uuid,nullable',
+                'uuid7' => 'uuid,nullable',
             ],
         );
     }

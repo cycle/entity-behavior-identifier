@@ -6,22 +6,22 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid;
 
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
-use Ramsey\Identifier\Ulid as UlidInterface;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Ulid;
 
 /**
  * @Entity
- * @Ulid
- * @Ulid(field="notDefinedUlid", column="not_defined_ulid", nullable=true)
+ * @Identifier\Ulid
+ * @Identifier\Ulid(field="notDefinedUlid", column="not_defined_ulid", nullable=true)
  */
 #[Entity]
-#[Ulid]
-#[Ulid(field: 'notDefinedUlid', column: 'not_defined_ulid', nullable: true)]
+#[Identifier\Ulid]
+#[Identifier\Ulid(field: 'notDefinedUlid', column: 'not_defined_ulid', nullable: true)]
 final class NullableUlid
 {
     /**
      * @Column(type="ulid", primary=true)
      */
     #[Column(type: 'ulid', primary: true)]
-    public UlidInterface $ulid;
+    public Ulid $ulid;
 }

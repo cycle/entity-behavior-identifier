@@ -9,6 +9,8 @@ use Cycle\ORM\Entity\Behavior\Identifier\Uuid as BaseUuid;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Identifier\Service\Nic\Nic;
+use Ramsey\Identifier\Uuid\UuidV6;
+use Ramsey\Identifier\Uuid\UuidV6Factory;
 
 /**
  * Uses a version 6 (ordered-time) UUID from a host ID, sequence number,
@@ -21,6 +23,13 @@ use Ramsey\Identifier\Service\Nic\Nic;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE), NamedArgumentConstructor]
 final class Uuid6 extends BaseUuid
 {
+    /**
+     * @var Nic|int<0, 281474976710655>|non-empty-string|null $node
+     */
+    private Nic|int|string|null $node = null;
+
+    private ?int $clockSeq = null;
+
     /**
      * @param non-empty-string $field Uuid property name
      * @param non-empty-string|null $column Uuid column name
@@ -36,13 +45,31 @@ final class Uuid6 extends BaseUuid
     public function __construct(
         string $field = 'uuid',
         ?string $column = null,
-        private Nic|int|string|null $node = null,
-        private ?int $clockSeq = null,
+        Nic|int|string|null $node = null,
+        ?int $clockSeq = null,
         bool $nullable = false,
     ) {
         $this->field = $field;
         $this->column = $column;
         $this->nullable = $nullable;
+        $this->node = $node;
+        $this->clockSeq = $clockSeq;
+    }
+
+    /**
+     * Create a new UUIDv6 instance from an existing identifier value.
+     *
+     * @param non-empty-string $identifier The identifier to create the Uuid from
+     */
+    public static function create(string $identifier): UuidV6
+    {
+        return (new UuidV6Factory())->createFromString($identifier);
+    }
+
+    #[\Override]
+    protected function getTypecast(): array
+    {
+        return [self::class, 'create'];
     }
 
     #[\Override]

@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Listener;
 
-use Cycle\ORM\Entity\Behavior\Attribute\Listen;
-use Cycle\ORM\Entity\Behavior\Event\Mapper\Command\OnCreate;
-use Ramsey\Identifier\Uuid\UuidFactory;
+use Ramsey\Identifier\Uuid\UuidV4;
 
-final class Uuid4
+/**
+ * Generates UUIDv4 (random) identifiers for entities.
+ */
+final class Uuid4 extends BaseUuid
 {
+    /**
+     * @param non-empty-string $field The name of the field to store the UUID
+     * @param bool $nullable Indicates whether the UUID can be null
+     */
     public function __construct(
-        private string $field = 'uuid',
-        private bool $nullable = false,
-    ) {}
+        string $field,
+        bool $nullable = false,
+    ) {
+        parent::__construct($field, $nullable);
+    }
 
-    #[Listen(OnCreate::class)]
-    public function __invoke(OnCreate $event): void
+    #[\Override]
+    protected function createValue(): UuidV4
     {
-        if ($this->nullable || isset($event->state->getData()[$this->field])) {
-            return;
-        }
-
-        $identifier = (new UuidFactory())->v4();
-
-        $event->state->register($this->field, $identifier);
+        return $this->factory->v4();
     }
 }

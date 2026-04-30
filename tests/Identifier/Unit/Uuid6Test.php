@@ -107,4 +107,39 @@ final class Uuid6Test extends TestCase
 
         $this->assertSame($expected, $schema);
     }
+
+    public function testModifySchemaWithDefaults(): void
+    {
+        Listener::setDefaults('foo', 1);
+
+        $args = ['uuid', null, null, null, false];
+
+        $expected = [
+            SchemaInterface::LISTENERS => [
+                [
+                    ListenerProvider::DEFINITION_CLASS => Listener::class,
+                    ListenerProvider::DEFINITION_ARGS => [
+                        'field' => 'uuid',
+                        'node' => null,
+                        'clockSeq' => null,
+                        'nullable' => false,
+                    ],
+                ],
+            ],
+        ];
+
+        $schema = [];
+        $snowflake = new Uuid6(...$args);
+        $snowflake->modifySchema($schema);
+
+        $this->assertSame($expected, $schema);
+    }
+
+    #[\Override]
+    protected function setUp(): void
+    {
+        Listener::setDefaults(null, null);
+
+        parent::setUp();
+    }
 }

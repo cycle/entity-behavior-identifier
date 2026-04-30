@@ -6,36 +6,36 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid;
 
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
-use Ramsey\Identifier\Ulid as UlidInterface;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Ulid;
 
 /**
  * @Entity
- * @Ulid
- * @Ulid(field="fooUlid", column="foo_ulid")
- * @Ulid(field="bar")
+ * @Identifier\Ulid
+ * @Identifier\Ulid(field="fooUlid", column="foo_ulid")
+ * @Identifier\Ulid(field="bar")
  */
 #[Entity]
-#[Ulid]
-#[Ulid(field: 'fooUlid', column: 'foo_ulid')]
-#[Ulid(field: 'bar')]
+#[Identifier\Ulid]
+#[Identifier\Ulid(field: 'fooUlid', column: 'foo_ulid')]
+#[Identifier\Ulid(field: 'bar')]
 final class MultipleUlid
 {
     /**
      * @Column(type="ulid", primary=true)
      */
     #[Column(type: 'ulid', primary: true)]
-    public UlidInterface $ulid;
+    public Ulid $ulid;
 
     /**
      * @Column(type="ulid", name="foo_ulid")
      */
     #[Column(type: 'ulid', name: 'foo_ulid')]
-    public UlidInterface $fooUlid;
+    public Ulid $fooUlid;
 
     /**
      * @Column(type="ulid")
      */
     #[Column(type: 'ulid')]
-    public UlidInterface $bar;
+    public Ulid $bar;
 }

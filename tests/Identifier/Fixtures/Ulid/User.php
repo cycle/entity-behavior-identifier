@@ -6,20 +6,20 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid;
 
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
-use Ramsey\Identifier\Ulid as UlidInterface;
+use Cycle\ORM\Entity\Behavior\Identifier;
+use Ramsey\Identifier\Ulid;
 
 /**
  * @Entity
- * @Ulid
+ * @Identifier\Ulid
  */
 #[Entity]
-#[Ulid]
+#[Identifier\Ulid]
 class User
 {
     /**
      * @Column(type="ulid", primary=true)
      */
     #[Column(type: 'ulid', primary: true)]
-    public UlidInterface $ulid;
+    public Ulid $ulid;
 }

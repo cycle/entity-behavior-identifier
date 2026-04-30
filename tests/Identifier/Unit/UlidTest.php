@@ -6,7 +6,7 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as Listener;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +18,7 @@ final class UlidTest extends TestCase
             [
                 SchemaInterface::LISTENERS => [
                     [
-                        ListenerProvider::DEFINITION_CLASS => UlidListener::class,
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'ulid',
                             'nullable' => false,
@@ -32,7 +32,7 @@ final class UlidTest extends TestCase
             [
                 SchemaInterface::LISTENERS => [
                     [
-                        ListenerProvider::DEFINITION_CLASS => UlidListener::class,
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_ulid',
                             'nullable' => false,
@@ -46,7 +46,7 @@ final class UlidTest extends TestCase
             [
                 SchemaInterface::LISTENERS => [
                     [
-                        ListenerProvider::DEFINITION_CLASS => UlidListener::class,
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_ulid',
                             'nullable' => true,

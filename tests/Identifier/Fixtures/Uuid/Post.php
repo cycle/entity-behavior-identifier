@@ -6,14 +6,14 @@ namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid;
 
 use Cycle\Annotated\Annotation\Column;
 use Cycle\Annotated\Annotation\Entity;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid4;
+use Cycle\ORM\Entity\Behavior\Identifier;
 
 /**
  * @Entity
- * @Uuid4(field="customUuid", column="custom_uuid")
+ * @Identifier\Uuid4(field="customUuid", column="custom_uuid")
  */
 #[Entity]
-#[Uuid4(field: 'customUuid', column: 'custom_uuid')]
+#[Identifier\Uuid4(field: 'customUuid', column: 'custom_uuid')]
 class Post
 {
     /**
