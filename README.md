@@ -1,27 +1,51 @@
-# Cycle ORM Entity Behavior Identifier
-[![Latest Stable Version](https://poser.pugx.org/cycle/entity-behavior-identifier/version)](https://packagist.org/packages/cycle/entity-behavior-identifier)
-[![Build Status](https://github.com/cycle/entity-behavior-identifier/workflows/build/badge.svg)](https://github.com/cycle/entity-behavior-identifier/actions)
-[![Codecov](https://codecov.io/gh/cycle/entity-behavior-identifier/graph/badge.svg)](https://codecov.io/gh/cycle/entity-behavior)
-<a href="https://discord.gg/TFeEmCs"><img src="https://img.shields.io/badge/discord-chat-magenta.svg"></a>
+<div align="center">
+    <a href="https://cycle-orm.dev" target="_blank">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://github.com/cycle/.github/blob/main/logo/words-vector-dark.svg?raw=true">
+            <img width="50%" align="center" src="https://github.com/cycle/.github/blob/main/logo/words-vector-light.svg?raw=true" alt="CycleORM Logo">
+        </picture>
+    </a>
+</div>
+
+<p align="center">ramsey/identifier identifiers for Cycle ORM entities</p>
+
+<div align="center">
+
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=gitbook&logoColor=white)](https://cycle-orm.dev/docs/entity-behaviors-install)
+[![Sponsor](https://img.shields.io/static/v1?style=for-the-badge&label=&message=Sponsor&logo=githubsponsors&logoColor=white&color=%23EA4AAA)](https://github.com/sponsors/cycle)
+[![Discord](https://img.shields.io/discord/538114875570913290?style=for-the-badge&logo=discord&labelColor=7289d9&logoColor=white&color=39456d)](https://discord.gg/spiralphp)
+
+[![Psalm Level](https://shepherd.dev/github/cycle/entity-behavior-identifier/level.svg)](https://shepherd.dev/github/cycle/entity-behavior-identifier)
+[![Type Coverage](https://shepherd.dev/github/cycle/entity-behavior-identifier/coverage.svg)](https://shepherd.dev/github/cycle/entity-behavior-identifier)
+[![Codecov](https://codecov.io/gh/cycle/entity-behavior-identifier/branch/1.x/graph/badge.svg)](https://codecov.io/gh/cycle/entity-behavior-identifier)
+
+</div>
+
+<br />
 
 The package provides the ability to use `ramsey/identifier` as various Cycle ORM entity column types.
 
-## Installation
+## Get Started
 
-> **Note:** Due to a dependency on `ramsey/identifier` this package requires PHP `8.2` or newer.
-
-Install this package as a dependency using Composer.
+### Installation
 
 ```bash
 composer require cycle/entity-behavior-identifier
 ```
+
+[![PHP](https://img.shields.io/packagist/php-v/cycle/entity-behavior-identifier.svg?style=flat-square&logo=php)](https://packagist.org/packages/cycle/entity-behavior-identifier)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/cycle/entity-behavior-identifier.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/cycle/entity-behavior-identifier)
+[![License](https://img.shields.io/packagist/l/cycle/entity-behavior-identifier.svg?style=flat-square)](LICENSE)
+[![Total Downloads](https://img.shields.io/packagist/dt/cycle/entity-behavior-identifier.svg?style=flat-square)](https://packagist.org/packages/cycle/entity-behavior-identifier/stats)
+
+Requires PHP 8.2+ (a requirement of `ramsey/identifier`).
 
 ## Usage
 
 The package provides various types of identifiers, for generating unique values or as alternatives to auto-increment
 IDs, helping ensure uniqueness and flexibility across an application.
 
-> **Note: ** Most identifiers encode metadata such as node ID and epoch offset. These values are typically
+> **Note:** Most identifiers encode metadata such as node ID and epoch offset. These values are typically
 > derived from the platform or system rather than defined within an entity. Each applicable listener class provides a
 > `setDefaults` method to allow these values to be set at an appropriate time within your application.
 
@@ -281,10 +305,3 @@ class User
     private Uuid $id;
 }
 ```
-
-Read more about identifier generation in [Entity Behaviors: Identifiers](https://cycle-orm.dev/docs/entity-behaviors/identifiers.md).
-
-## License:
-
-The MIT License (MIT). Please see [`LICENSE`](./LICENSE) for more information.
-Maintained by [Spiral Scout](https://spiralscout.com).
