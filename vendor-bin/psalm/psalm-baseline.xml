@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="7.11.0@9e0d0f88bc0a4233357a9aeb4b32da060644e196">
+  <file src="src/Listener/SnowflakeMastodon.php">
+    <TypeDoesNotContainType>
+      <code><![CDATA[$tableName === '']]></code>
+    </TypeDoesNotContainType>
+  </file>
+</files>

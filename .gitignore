@@ -10,3 +10,5 @@ clover.xml
 docker-compose.override.yml
 .phpunit.result.cache
 /composer.lock
+/vendor-bin/*/vendor/
+/vendor-bin/*/composer.lock
