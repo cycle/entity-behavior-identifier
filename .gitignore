@@ -9,3 +9,4 @@
 clover.xml
 docker-compose.override.yml
 .phpunit.result.cache
+/composer.lock

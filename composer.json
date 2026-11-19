@@ -45,11 +45,11 @@
         "ramsey/identifier": "^0.1"
     },
     "require-dev": {
-        "cycle/annotated": "^4.3",
-        "doctrine/annotations": "^1.14 || ^2.0",
-        "phpunit/phpunit": "^9.5",
+        "cycle/annotated": "^4.6",
+        "doctrine/annotations": "^2.0.2",
+        "phpunit/phpunit": "^11.5",
         "spiral/code-style": "^2.2",
-        "spiral/tokenizer": "^2.14 || ^3.0",
+        "spiral/tokenizer": "^3.18",
         "vimeo/psalm": "^5.26 || ^6.6"
     },
     "autoload": {
