@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Ulid;
 
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\AllUlid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;

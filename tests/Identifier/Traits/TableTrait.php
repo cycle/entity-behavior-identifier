@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Utils\TableRenderer;
 use Cycle\Database\Database;
 use Cycle\Database\ForeignKeyInterface;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Utils\TableRenderer;
 
 trait TableTrait
 {

@@ -31,7 +31,7 @@ final class Uuid3 extends BaseUuid
      * @param non-empty-string|null $name The name used to create the version 3 identifier in the given namespace
      * @param bool $nullable Indicates whether to generate a new UUID or not
      *
-     * @see \Ramsey\Identifier\Uuid\UuidFactory::v3()
+     * @see Uuid\UuidFactory::v3()
      */
     public function __construct(
         string $field = 'uuid',

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\MastodonSnowflake;
 use Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory;

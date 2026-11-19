@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Snowflake;
 
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as SnowflakeDiscordListener;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as SnowflakeGenericListener;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram as SnowflakeInstagramListener;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as SnowflakeMastodonListener;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as SnowflakeTwitterListener;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeGeneric;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeInstagram;
@@ -12,11 +17,6 @@ use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeTwitter;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\AllSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as SnowflakeDiscordListener;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as SnowflakeGenericListener;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram as SnowflakeInstagramListener;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as SnowflakeMastodonListener;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as SnowflakeTwitterListener;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;
 use Cycle\ORM\SchemaInterface;

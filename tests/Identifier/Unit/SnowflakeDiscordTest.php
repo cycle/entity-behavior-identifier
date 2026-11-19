@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\DiscordSnowflake;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
