@@ -41,6 +41,13 @@
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true,
             "llm/skills": true
+        },
+        "policy": {
+            "abandoned": {
+                "ignore": {
+                    "doctrine/annotations": "Dev-only: the tests read Doctrine annotations through spiral/attributes"
+                }
+            }
         }
     },
     "require": {
