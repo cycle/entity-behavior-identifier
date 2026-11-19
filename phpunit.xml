@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         cacheDirectory="runtime/phpunit"
          backupGlobals="false"
          colors="true"
-         verbose="true"
          bootstrap="tests/bootstrap.php"
          failOnRisky="true"
          failOnWarning="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          stopOnFailure="false"
          executionOrder="random"
          resolveDependencies="true"
@@ -20,14 +17,15 @@
     </php>
 
     <testsuites>
-        <testsuite name="Cycle ORM Entity Behavior UUID">
+        <testsuite name="Cycle ORM Entity Behavior Identifier">
             <directory>./tests/</directory>
+            <exclude>./tests/Identifier/Functional/Driver/Common</exclude>
         </testsuite>
     </testsuites>
 
-    <coverage>
+    <source>
         <include>
             <directory>src</directory>
         </include>
-    </coverage>
+    </source>
 </phpunit>

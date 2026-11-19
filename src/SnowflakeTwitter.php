@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Snowflake as BaseSnowflake;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Ramsey\Identifier\Snowflake\TwitterSnowflake;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
@@ -26,7 +26,7 @@ final class SnowflakeTwitter extends BaseSnowflake
      * @param int<0, 1023>|null $machineId A machine identifier to use when creating Snowflakes
      * @param bool $nullable Indicates whether to generate a new Snowflake or not
      *
-     * @see \Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory::create()
+     * @see TwitterSnowflakeFactory::create()
      */
     public function __construct(
         string $field = 'snowflake',

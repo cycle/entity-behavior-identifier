@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Combined;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Combined\MultipleIdentifiers;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as SnowflakeGenericListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid4 as Uuid4Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Combined\MultipleIdentifiers;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;
 use Cycle\ORM\SchemaInterface;
 use Cycle\ORM\Select;
-use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
 use Ramsey\Identifier\Snowflake as SnowflakeInterface;
+use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
 use Ramsey\Identifier\Ulid as UlidInterface;
 use Ramsey\Identifier\Ulid\UlidFactory;
 use Ramsey\Identifier\Uuid\UntypedUuid;

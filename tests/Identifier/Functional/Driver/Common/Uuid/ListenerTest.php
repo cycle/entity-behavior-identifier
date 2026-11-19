@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Uuid;
 
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\AllUuid;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Uuid1Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2 as Uuid2Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid3 as Uuid3Listener;
@@ -14,6 +11,9 @@ use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid4 as Uuid4Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid5 as Uuid5Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid6 as Uuid6Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid7 as Uuid7Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\AllUuid;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid2;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid3;
