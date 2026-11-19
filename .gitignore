@@ -12,3 +12,5 @@ docker-compose.override.yml
 /composer.lock
 /vendor-bin/*/vendor/
 /vendor-bin/*/composer.lock
+/.agents/
+/.claude/
