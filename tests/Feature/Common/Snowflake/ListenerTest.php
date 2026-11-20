@@ -379,21 +379,6 @@ final class ListenerTest extends IdentifierTestCase
         ]));
     }
 
-    /**
-     * Saves a new entity with the given listener and returns the generated Snowflake as an integer.
-     */
-    private function generate(array $listener): int
-    {
-        $this->getDatabase()->table('all_snowflakes')->delete()->run();
-        $this->withListeners($listener);
-        $this->save(new AllSnowflake());
-
-        $field = $listener[1]['field'];
-        $data = (new Select($this->orm->with(heap: new Heap()), AllSnowflake::class))->fetchOne();
-
-        return (int) $data->$field->toString();
-    }
-
     #[BeforeTest]
     protected function setUp(): void
     {
@@ -422,5 +407,20 @@ final class ListenerTest extends IdentifierTestCase
         SnowflakeInstagramListener::setDefaults(0);
         SnowflakeMastodonListener::setDefaults(null);
         SnowflakeTwitterListener::setDefaults(0);
+    }
+
+    /**
+     * Saves a new entity with the given listener and returns the generated Snowflake as an integer.
+     */
+    private function generate(array $listener): int
+    {
+        $this->getDatabase()->table('all_snowflakes')->delete()->run();
+        $this->withListeners($listener);
+        $this->save(new AllSnowflake());
+
+        $field = $listener[1]['field'];
+        $data = (new Select($this->orm->with(heap: new Heap()), AllSnowflake::class))->fetchOne();
+
+        return (int) $data->$field->toString();
     }
 }

@@ -185,6 +185,41 @@ final class ListenerTest extends IdentifierTestCase
         ];
     }
 
+    public static function argumentsOverDefaultsDataProvider(): iterable
+    {
+        $factory = new UuidFactory();
+
+        yield 'uuid1' => [
+            [Uuid1Listener::class, ['field' => 'uuid1', 'node' => '01000fffffff', 'clockSeq' => 0x0fff]],
+            '/-8fff-01000fffffff$/',
+        ];
+        yield 'uuid2' => [
+            [
+                Uuid2Listener::class,
+                [
+                    'field' => 'uuid2',
+                    'localDomain' => DceDomain::Person,
+                    'localIdentifier' => 12345678,
+                    'node' => '3d1239b4f540',
+                    'clockSeq' => 5,
+                ],
+            ],
+            '/^00bc614e-.{4}-2.{3}-8500-3d1239b4f540$/',
+        ];
+        yield 'uuid3' => [
+            [Uuid3Listener::class, ['field' => 'uuid3', 'namespace' => NamespaceId::Url, 'name' => 'foo']],
+            '/^' . $factory->v3(NamespaceId::Url, 'foo')->toString() . '$/',
+        ];
+        yield 'uuid5' => [
+            [Uuid5Listener::class, ['field' => 'uuid5', 'namespace' => NamespaceId::Url, 'name' => 'foo']],
+            '/^' . $factory->v5(NamespaceId::Url, 'foo')->toString() . '$/',
+        ];
+        yield 'uuid6' => [
+            [Uuid6Listener::class, ['field' => 'uuid6', 'node' => '01000fffffff', 'clockSeq' => 0x0fff]],
+            '/-8fff-01000fffffff$/',
+        ];
+    }
+
     #[Test]
     public function testNullable(): void
     {
@@ -303,41 +338,6 @@ final class ListenerTest extends IdentifierTestCase
 
         $entity = new AllUuid();
         $this->save($entity);
-    }
-
-    public static function argumentsOverDefaultsDataProvider(): iterable
-    {
-        $factory = new UuidFactory();
-
-        yield 'uuid1' => [
-            [Uuid1Listener::class, ['field' => 'uuid1', 'node' => '01000fffffff', 'clockSeq' => 0x0fff]],
-            '/-8fff-01000fffffff$/',
-        ];
-        yield 'uuid2' => [
-            [
-                Uuid2Listener::class,
-                [
-                    'field' => 'uuid2',
-                    'localDomain' => DceDomain::Person,
-                    'localIdentifier' => 12345678,
-                    'node' => '3d1239b4f540',
-                    'clockSeq' => 5,
-                ],
-            ],
-            '/^00bc614e-.{4}-2.{3}-8500-3d1239b4f540$/',
-        ];
-        yield 'uuid3' => [
-            [Uuid3Listener::class, ['field' => 'uuid3', 'namespace' => NamespaceId::Url, 'name' => 'foo']],
-            '/^' . $factory->v3(NamespaceId::Url, 'foo')->toString() . '$/',
-        ];
-        yield 'uuid5' => [
-            [Uuid5Listener::class, ['field' => 'uuid5', 'namespace' => NamespaceId::Url, 'name' => 'foo']],
-            '/^' . $factory->v5(NamespaceId::Url, 'foo')->toString() . '$/',
-        ];
-        yield 'uuid6' => [
-            [Uuid6Listener::class, ['field' => 'uuid6', 'node' => '01000fffffff', 'clockSeq' => 0x0fff]],
-            '/-8fff-01000fffffff$/',
-        ];
     }
 
     #[Test]
