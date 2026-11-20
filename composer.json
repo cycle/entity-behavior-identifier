@@ -59,7 +59,7 @@
         "bamarni/composer-bin-plugin": "^1.8",
         "buggregator/trap": "^1.20",
         "cycle/annotated": "^4.6",
-        "cycle/testing": "1.x-dev",
+        "cycle/testing": "^0.1",
         "doctrine/annotations": "^2.0.2",
         "llm/skills": "^1.20",
         "roxblnfk/unpoly": "^1.8",
@@ -78,11 +78,8 @@
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "../../testing",
-            "options": {
-                "symlink": true
-            }
+            "type": "vcs",
+            "url": "https://github.com/cycle/testing"
         }
     ],
     "scripts": {
