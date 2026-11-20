@@ -12,5 +12,13 @@
         "stryker": {
             "report": "1.x"
         }
+    },
+    "mutators": {
+        "@default": true,
+        "AssignCoalesce": {
+            "ignore": [
+                "Cycle\\ORM\\Entity\\Behavior\\Identifier\\Listener\\SnowflakeMastodon::__construct"
+            ]
+        }
     }
 }
