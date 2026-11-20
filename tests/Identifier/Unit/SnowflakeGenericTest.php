@@ -10,7 +10,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeGeneric;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeGenericTest extends TestCase
+final class SnowflakeGenericTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -64,18 +64,18 @@ final class SnowflakeGenericTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider schemaDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $snowflake = new SnowflakeGeneric(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
+    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults(1, 1738265600000);
@@ -100,14 +100,12 @@ final class SnowflakeGenericTest extends TestCase
         $snowflake = new SnowflakeGeneric(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
-    #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     protected function setUp(): void
     {
         Listener::setDefaults(null, null);
-
-        parent::setUp();
     }
 }

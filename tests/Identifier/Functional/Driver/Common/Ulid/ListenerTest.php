@@ -20,6 +20,7 @@ abstract class ListenerTest extends BaseTest
 {
     use TableTrait;
 
+    #[\Testo\Test]
     public function testNullable(): void
     {
         $this->withListeners([
@@ -36,9 +37,10 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
         $data = $select->fetchOne();
 
-        $this->assertNull($data->ulid);
+        \Testo\Assert::null($data->ulid);
     }
 
+    #[\Testo\Test]
     public function testAssignManually(): void
     {
         $this->withListeners();
@@ -51,9 +53,10 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
         $data = $select->fetchOne();
 
-        $this->assertSame($entity->ulid->toString(), $data->ulid->toString());
+        \Testo\Assert::same($data->ulid->toString(), $entity->ulid->toString());
     }
 
+    #[\Testo\Test]
     public function testUlid(): void
     {
         $this->withListeners([
@@ -69,9 +72,9 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
         $data = $select->fetchOne();
 
-        $this->assertInstanceOf(UlidInterface::class, $data->ulid);
-        $this->assertIsString($data->ulid->toString());
-        $this->assertSame(26, \strlen($data->ulid->toString()));
+        \Testo\Assert::instanceOf($data->ulid, UlidInterface::class);
+        \Testo\Assert::string($data->ulid->toString());
+        \Testo\Assert::same(\strlen($data->ulid->toString()), 26);
     }
 
     public function withListeners(array|string|null $listeners = null): void
@@ -94,6 +97,7 @@ abstract class ListenerTest extends BaseTest
     }
 
     #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     public function setUp(): void
     {
         parent::setUp();

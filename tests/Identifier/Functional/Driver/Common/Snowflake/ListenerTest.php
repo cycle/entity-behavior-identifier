@@ -172,6 +172,7 @@ abstract class ListenerTest extends BaseTest
         ];
     }
 
+    #[\Testo\Test]
     public function testNullable(): void
     {
         $this->withListeners([
@@ -208,13 +209,14 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
         $data = $select->fetchOne();
 
-        $this->assertNull($data->generic);
-        $this->assertNull($data->discord);
-        $this->assertNull($data->instagram);
-        $this->assertNull($data->mastodon);
-        $this->assertNull($data->twitter);
+        \Testo\Assert::null($data->generic);
+        \Testo\Assert::null($data->discord);
+        \Testo\Assert::null($data->instagram);
+        \Testo\Assert::null($data->mastodon);
+        \Testo\Assert::null($data->twitter);
     }
 
+    #[\Testo\Test]
     public function testAssignManually(): void
     {
         $this->withListeners();
@@ -231,16 +233,15 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
         $data = $select->fetchOne();
 
-        $this->assertSame($entity->generic->toString(), $data->generic->toString());
-        $this->assertSame($entity->discord->toString(), $data->discord->toString());
-        $this->assertSame($entity->instagram->toString(), $data->instagram->toString());
-        $this->assertSame($entity->mastodon->toString(), $data->mastodon->toString());
-        $this->assertSame($entity->twitter->toString(), $data->twitter->toString());
+        \Testo\Assert::same($data->generic->toString(), $entity->generic->toString());
+        \Testo\Assert::same($data->discord->toString(), $entity->discord->toString());
+        \Testo\Assert::same($data->instagram->toString(), $entity->instagram->toString());
+        \Testo\Assert::same($data->mastodon->toString(), $entity->mastodon->toString());
+        \Testo\Assert::same($data->twitter->toString(), $entity->twitter->toString());
     }
 
-    /**
-     * @dataProvider snowflakeGenerationDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('snowflakeGenerationDataProvider')]
     public function testSnowflakeGeneration(
         array $listeners,
         string $field,
@@ -256,20 +257,19 @@ abstract class ListenerTest extends BaseTest
         $data = $select->fetchOne();
 
         $snowflake = $data->$field;
-        $this->assertInstanceOf($expectedClass, $snowflake);
-        $this->assertIsString($snowflake->toString());
-        $this->assertSame($expectedLength, \strlen($snowflake->toString()));
+        \Testo\Assert::instanceOf($snowflake, $expectedClass);
+        \Testo\Assert::string($snowflake->toString());
+        \Testo\Assert::same(\strlen($snowflake->toString()), $expectedLength);
     }
 
-    /**
-     * @dataProvider snowflakeExceptionDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('snowflakeExceptionDataProvider')]
     public function testSnowflakeException(
         string $listenerClass,
         array $defaults,
         string $expectedException,
     ): void {
-        $this->expectException($expectedException);
+        \Testo\Expect::exception($expectedException);
 
         if (\class_exists($listenerClass) && \method_exists($listenerClass, 'setDefaults')) {
             $listenerClass::setDefaults(...$defaults);
@@ -300,6 +300,7 @@ abstract class ListenerTest extends BaseTest
     }
 
     #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     public function setUp(): void
     {
         parent::setUp();

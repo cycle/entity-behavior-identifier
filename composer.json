@@ -65,6 +65,7 @@
         "phpunit/phpunit": "^11.5",
         "roxblnfk/unpoly": "^1.8",
         "spiral/tokenizer": "^3.18",
+        "testo/bridge-rector": "^0.3.6",
         "testo/testo": "^0.10.60"
     },
     "autoload": {

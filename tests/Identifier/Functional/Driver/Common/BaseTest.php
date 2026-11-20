@@ -38,7 +38,7 @@ use Spiral\Attributes\AttributeReader;
 use Spiral\Attributes\Composite\SelectiveReader;
 use Spiral\Attributes\ReaderInterface;
 
-abstract class BaseTest extends TestCase
+abstract class BaseTest
 {
     use Loggable;
 
@@ -104,6 +104,7 @@ abstract class BaseTest extends TestCase
         ]);
     }
 
+    #[\Testo\Lifecycle\BeforeTest]
     public function setUp(): void
     {
         $this->dbal = new DatabaseManager(new DatabaseConfig());
@@ -121,6 +122,7 @@ abstract class BaseTest extends TestCase
         }
     }
 
+    #[\Testo\Lifecycle\AfterTest]
     public function tearDown(): void
     {
         $this->dropDatabase($this->dbal->database('default'));

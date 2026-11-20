@@ -10,7 +10,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\Uuid6;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class Uuid6Test extends TestCase
+final class Uuid6Test
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -96,18 +96,18 @@ final class Uuid6Test extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider schemaDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $uuid = new Uuid6(...$args);
         $uuid->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
+    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults('foo', 1);
@@ -132,14 +132,12 @@ final class Uuid6Test extends TestCase
         $snowflake = new Uuid6(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
-    #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     protected function setUp(): void
     {
         Listener::setDefaults(null, null);
-
-        parent::setUp();
     }
 }

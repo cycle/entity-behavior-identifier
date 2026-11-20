@@ -182,6 +182,7 @@ abstract class ListenerTest extends BaseTest
         ];
     }
 
+    #[\Testo\Test]
     public function testNullable(): void
     {
         $this->withListeners([
@@ -228,15 +229,16 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllUuid::class);
         $data = $select->fetchOne();
 
-        $this->assertNull($data->uuid1);
-        $this->assertNull($data->uuid2);
-        $this->assertNull($data->uuid3);
-        $this->assertNull($data->uuid4);
-        $this->assertNull($data->uuid5);
-        $this->assertNull($data->uuid6);
-        $this->assertNull($data->uuid7);
+        \Testo\Assert::null($data->uuid1);
+        \Testo\Assert::null($data->uuid2);
+        \Testo\Assert::null($data->uuid3);
+        \Testo\Assert::null($data->uuid4);
+        \Testo\Assert::null($data->uuid5);
+        \Testo\Assert::null($data->uuid6);
+        \Testo\Assert::null($data->uuid7);
     }
 
+    #[\Testo\Test]
     public function testAssignManually(): void
     {
         $this->withListeners();
@@ -255,18 +257,17 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), AllUuid::class);
         $data = $select->fetchOne();
 
-        $this->assertSame($entity->uuid1->toString(), $data->uuid1->toString());
-        $this->assertSame($entity->uuid2->toString(), $data->uuid2->toString());
-        $this->assertSame($entity->uuid3->toString(), $data->uuid3->toString());
-        $this->assertSame($entity->uuid4->toString(), $data->uuid4->toString());
-        $this->assertSame($entity->uuid5->toString(), $data->uuid5->toString());
-        $this->assertSame($entity->uuid6->toString(), $data->uuid6->toString());
-        $this->assertSame($entity->uuid7->toString(), $data->uuid7->toString());
+        \Testo\Assert::same($data->uuid1->toString(), $entity->uuid1->toString());
+        \Testo\Assert::same($data->uuid2->toString(), $entity->uuid2->toString());
+        \Testo\Assert::same($data->uuid3->toString(), $entity->uuid3->toString());
+        \Testo\Assert::same($data->uuid4->toString(), $entity->uuid4->toString());
+        \Testo\Assert::same($data->uuid5->toString(), $entity->uuid5->toString());
+        \Testo\Assert::same($data->uuid6->toString(), $entity->uuid6->toString());
+        \Testo\Assert::same($data->uuid7->toString(), $entity->uuid7->toString());
     }
 
-    /**
-     * @dataProvider uuidGenerationDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('uuidGenerationDataProvider')]
     public function testUuidGeneration(
         array $listeners,
         string $field,
@@ -282,19 +283,18 @@ abstract class ListenerTest extends BaseTest
         $data = $select->fetchOne();
 
         $uuid = $data->$field;
-        $this->assertInstanceOf($expectedClass, $uuid);
-        $this->assertSame($expectedVersion, $uuid->getVersion()->value);
-        $this->assertIsString($uuid->toString());
+        \Testo\Assert::instanceOf($uuid, $expectedClass);
+        \Testo\Assert::same($uuid->getVersion()->value, $expectedVersion);
+        \Testo\Assert::string($uuid->toString());
     }
 
-    /**
-     * @dataProvider uuidExceptionDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('uuidExceptionDataProvider')]
     public function testUuidException(
         array $listeners,
         string $expectedException,
     ): void {
-        $this->expectException($expectedException);
+        \Testo\Expect::exception($expectedException);
 
         $this->withListeners($listeners);
 
@@ -328,6 +328,7 @@ abstract class ListenerTest extends BaseTest
     }
 
     #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     public function setUp(): void
     {
         parent::setUp();

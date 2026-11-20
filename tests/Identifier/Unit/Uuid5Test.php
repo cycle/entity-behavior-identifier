@@ -10,7 +10,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\Uuid5;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class Uuid5Test extends TestCase
+final class Uuid5Test
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -80,18 +80,18 @@ final class Uuid5Test extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider schemaDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $uuid = new Uuid5(...$args);
         $uuid->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
+    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults('foo', 'bar');
@@ -116,14 +116,12 @@ final class Uuid5Test extends TestCase
         $uuid = new Uuid5(...$args);
         $uuid->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
-    #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     protected function setUp(): void
     {
         Listener::setDefaults(null, null);
-
-        parent::setUp();
     }
 }

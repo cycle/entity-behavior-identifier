@@ -10,7 +10,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeDiscordTest extends TestCase
+final class SnowflakeDiscordTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -64,18 +64,18 @@ final class SnowflakeDiscordTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider schemaDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $snowflake = new SnowflakeDiscord(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
+    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults(1, 2);
@@ -100,14 +100,12 @@ final class SnowflakeDiscordTest extends TestCase
         $snowflake = new SnowflakeDiscord(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
-    #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     protected function setUp(): void
     {
         Listener::setDefaults(null, null);
-
-        parent::setUp();
     }
 }

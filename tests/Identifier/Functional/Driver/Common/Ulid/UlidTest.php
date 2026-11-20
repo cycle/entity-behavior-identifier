@@ -23,90 +23,85 @@ abstract class UlidTest extends BaseTest
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
 
-    /**
-     * @dataProvider readersDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('readersDataProvider')]
     public function testColumnExist(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(User::class)->getFields();
 
-        $this->assertTrue($fields->has('ulid'));
-        $this->assertTrue($fields->hasColumn('ulid'));
-        $this->assertSame('ulid', $fields->get('ulid')->getType());
-        $this->assertSame([Ulid::class, 'create'], $fields->get('ulid')->getTypecast());
-        $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('ulid')->getGenerated());
-        $this->assertSame(1, $fields->count());
+        \Testo\Assert::true($fields->has('ulid'));
+        \Testo\Assert::true($fields->hasColumn('ulid'));
+        \Testo\Assert::same($fields->get('ulid')->getType(), 'ulid');
+        \Testo\Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
+        \Testo\Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        \Testo\Assert::same($fields->count(), 1);
     }
 
-    /**
-     * @dataProvider readersDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('readersDataProvider')]
     public function testAddColumn(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(Post::class)->getFields();
 
-        $this->assertTrue($fields->has('customUlid'));
-        $this->assertTrue($fields->hasColumn('custom_ulid'));
-        $this->assertSame('ulid', $fields->get('customUlid')->getType());
-        $this->assertSame([Ulid::class, 'create'], $fields->get('customUlid')->getTypecast());
-        $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('customUlid')->getGenerated());
+        \Testo\Assert::true($fields->has('customUlid'));
+        \Testo\Assert::true($fields->hasColumn('custom_ulid'));
+        \Testo\Assert::same($fields->get('customUlid')->getType(), 'ulid');
+        \Testo\Assert::same($fields->get('customUlid')->getTypecast(), [Ulid::class, 'create']);
+        \Testo\Assert::same($fields->get('customUlid')->getGenerated(), GeneratedField::BEFORE_INSERT);
     }
 
-    /**
-     * @dataProvider readersDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('readersDataProvider')]
     public function testMultipleUlid(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(MultipleUlid::class)->getFields();
 
-        $this->assertTrue($fields->has('ulid'));
-        $this->assertTrue($fields->hasColumn('ulid'));
-        $this->assertSame('ulid', $fields->get('ulid')->getType());
-        $this->assertSame([Ulid::class, 'create'], $fields->get('ulid')->getTypecast());
-        $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('ulid')->getGenerated());
+        \Testo\Assert::true($fields->has('ulid'));
+        \Testo\Assert::true($fields->hasColumn('ulid'));
+        \Testo\Assert::same($fields->get('ulid')->getType(), 'ulid');
+        \Testo\Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
+        \Testo\Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        $this->assertTrue($fields->has('fooUlid'));
-        $this->assertTrue($fields->hasColumn('foo_ulid'));
-        $this->assertSame('ulid', $fields->get('fooUlid')->getType());
-        $this->assertSame([Ulid::class, 'create'], $fields->get('fooUlid')->getTypecast());
-        $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('fooUlid')->getGenerated());
+        \Testo\Assert::true($fields->has('fooUlid'));
+        \Testo\Assert::true($fields->hasColumn('foo_ulid'));
+        \Testo\Assert::same($fields->get('fooUlid')->getType(), 'ulid');
+        \Testo\Assert::same($fields->get('fooUlid')->getTypecast(), [Ulid::class, 'create']);
+        \Testo\Assert::same($fields->get('fooUlid')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        $this->assertTrue($fields->has('bar'));
-        $this->assertTrue($fields->hasColumn('bar'));
-        $this->assertSame('ulid', $fields->get('bar')->getType());
-        $this->assertSame([Ulid::class, 'create'], $fields->get('bar')->getTypecast());
-        $this->assertSame(GeneratedField::BEFORE_INSERT, $fields->get('bar')->getGenerated());
+        \Testo\Assert::true($fields->has('bar'));
+        \Testo\Assert::true($fields->hasColumn('bar'));
+        \Testo\Assert::same($fields->get('bar')->getType(), 'ulid');
+        \Testo\Assert::same($fields->get('bar')->getTypecast(), [Ulid::class, 'create']);
+        \Testo\Assert::same($fields->get('bar')->getGenerated(), GeneratedField::BEFORE_INSERT);
     }
 
-    /**
-     * @dataProvider readersDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('readersDataProvider')]
     public function testAddNullableColumn(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(NullableUlid::class)->getFields();
 
-        $this->assertTrue($fields->has('notDefinedUlid'));
-        $this->assertTrue($fields->hasColumn('not_defined_ulid'));
-        $this->assertSame('ulid', $fields->get('notDefinedUlid')->getType());
-        $this->assertSame([Ulid::class, 'create'], $fields->get('notDefinedUlid')->getTypecast());
-        $this->assertTrue(
-            $this->registry
-                ->getTableSchema($this->registry->getEntity(NullableUlid::class))
-                ->column('not_defined_ulid')
-                ->isNullable(),
-        );
-        $this->assertNull($fields->get('notDefinedUlid')->getGenerated());
+        \Testo\Assert::true($fields->has('notDefinedUlid'));
+        \Testo\Assert::true($fields->hasColumn('not_defined_ulid'));
+        \Testo\Assert::same($fields->get('notDefinedUlid')->getType(), 'ulid');
+        \Testo\Assert::same($fields->get('notDefinedUlid')->getTypecast(), [Ulid::class, 'create']);
+        \Testo\Assert::true($this->registry
+            ->getTableSchema($this->registry->getEntity(NullableUlid::class))
+            ->column('not_defined_ulid')
+            ->isNullable());
+        \Testo\Assert::null($fields->get('notDefinedUlid')->getGenerated());
     }
 
     #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     public function setUp(): void
     {
         parent::setUp();

@@ -10,7 +10,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeMastodon;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeMastodonTest extends TestCase
+final class SnowflakeMastodonTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -61,18 +61,18 @@ final class SnowflakeMastodonTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider schemaDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $snowflake = new SnowflakeMastodon(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
+    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults('users');
@@ -96,14 +96,12 @@ final class SnowflakeMastodonTest extends TestCase
         $snowflake = new SnowflakeMastodon(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
-    #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     protected function setUp(): void
     {
         Listener::setDefaults(null);
-
-        parent::setUp();
     }
 }

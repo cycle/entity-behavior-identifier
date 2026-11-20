@@ -10,7 +10,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeTwitter;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeTwitterTest extends TestCase
+final class SnowflakeTwitterTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -61,18 +61,18 @@ final class SnowflakeTwitterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider schemaDataProvider
-     */
+    #[\Testo\Test]
+    #[\Testo\Data\DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $snowflake = new SnowflakeTwitter(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
+    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults(1);
@@ -96,14 +96,12 @@ final class SnowflakeTwitterTest extends TestCase
         $snowflake = new SnowflakeTwitter(...$args);
         $snowflake->modifySchema($schema);
 
-        $this->assertSame($expected, $schema);
+        \Testo\Assert::same($schema, $expected);
     }
 
-    #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     protected function setUp(): void
     {
         Listener::setDefaults(null);
-
-        parent::setUp();
     }
 }

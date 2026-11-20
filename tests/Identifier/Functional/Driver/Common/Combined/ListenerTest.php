@@ -25,6 +25,7 @@ abstract class ListenerTest extends BaseTest
 {
     use TableTrait;
 
+    #[\Testo\Test]
     public function testAssignManually(): void
     {
         $this->withListeners([
@@ -46,11 +47,12 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
         $data = $select->fetchOne();
 
-        $this->assertSame($uuidBytes, $data->uuid->toBytes());
-        $this->assertSame($ulidBytes, $data->ulid->toBytes());
-        $this->assertSame($snowflakeBytes, $data->snowflake->toBytes());
+        \Testo\Assert::same($data->uuid->toBytes(), $uuidBytes);
+        \Testo\Assert::same($data->ulid->toBytes(), $ulidBytes);
+        \Testo\Assert::same($data->snowflake->toBytes(), $snowflakeBytes);
     }
 
+    #[\Testo\Test]
     public function testWithNullableTrue(): void
     {
         $this->withListeners([
@@ -69,11 +71,12 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
         $data = $select->fetchData();
 
-        $this->assertNull($data[0]['uuid_nullable']);
-        $this->assertNull($data[0]['ulid_nullable']);
-        $this->assertNull($data[0]['snowflake_nullable']);
+        \Testo\Assert::null($data[0]['uuid_nullable']);
+        \Testo\Assert::null($data[0]['ulid_nullable']);
+        \Testo\Assert::null($data[0]['snowflake_nullable']);
     }
 
+    #[\Testo\Test]
     public function testCombined(): void
     {
         $this->withListeners([
@@ -89,20 +92,21 @@ abstract class ListenerTest extends BaseTest
         /** @var MultipleIdentifiers $data */
         $data = $select->fetchOne();
 
-        $this->assertInstanceOf(UntypedUuid::class, $data->uuid);
-        $this->assertInstanceOf(UlidInterface::class, $data->ulid);
-        $this->assertInstanceOf(SnowflakeInterface::class, $data->snowflake);
-        $this->assertNull($data->uuidNullable);
-        $this->assertNull($data->ulidNullable);
-        $this->assertNull($data->snowflakeNullable);
-        $this->assertIsString($data->uuid->toBytes());
-        $this->assertIsString($data->uuid->toString());
-        $this->assertIsString($data->ulid->toBytes());
-        $this->assertIsString($data->ulid->toString());
-        $this->assertIsString($data->snowflake->toBytes());
-        $this->assertIsString($data->snowflake->toString());
+        \Testo\Assert::instanceOf($data->uuid, UntypedUuid::class);
+        \Testo\Assert::instanceOf($data->ulid, UlidInterface::class);
+        \Testo\Assert::instanceOf($data->snowflake, SnowflakeInterface::class);
+        \Testo\Assert::null($data->uuidNullable);
+        \Testo\Assert::null($data->ulidNullable);
+        \Testo\Assert::null($data->snowflakeNullable);
+        \Testo\Assert::string($data->uuid->toBytes());
+        \Testo\Assert::string($data->uuid->toString());
+        \Testo\Assert::string($data->ulid->toBytes());
+        \Testo\Assert::string($data->ulid->toString());
+        \Testo\Assert::string($data->snowflake->toBytes());
+        \Testo\Assert::string($data->snowflake->toString());
     }
 
+    #[\Testo\Test]
     public function testComparison(): void
     {
         $this->withListeners([
@@ -123,11 +127,11 @@ abstract class ListenerTest extends BaseTest
         $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
         $data = $select->fetchOne();
 
-        $this->assertSame($expectedDate, $data->uuid->getDateTime()->format('Y-m-d H:i:s.v P'));
-        $this->assertSame($expectedDate, $data->ulid->getDateTime()->format('Y-m-d H:i:s.v P'));
-        $this->assertSame($expectedDate, $data->snowflake->getDateTime()->format('Y-m-d H:i:s.v P'));
-        $this->assertTrue($data->uuid->equals($data->ulid));
-        $this->assertFalse($data->uuid->equals($data->snowflake));
+        \Testo\Assert::same($data->uuid->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
+        \Testo\Assert::same($data->ulid->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
+        \Testo\Assert::same($data->snowflake->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
+        \Testo\Assert::true($data->uuid->equals($data->ulid));
+        \Testo\Assert::false($data->uuid->equals($data->snowflake));
     }
 
     public function withListeners(array $listeners): void
@@ -166,6 +170,7 @@ abstract class ListenerTest extends BaseTest
     }
 
     #[\Override]
+    #[\Testo\Lifecycle\BeforeTest]
     public function setUp(): void
     {
         parent::setUp();
