@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid5 as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid5;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class Uuid1Test
+final class Uuid5Test
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -21,8 +21,8 @@ final class Uuid1Test
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'uuid',
-                            'node' => null,
-                            'clockSeq' => null,
+                            'namespace' => null,
+                            'name' => null,
                             'nullable' => false,
                         ],
                     ],
@@ -36,15 +36,15 @@ final class Uuid1Test
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_uuid',
-                            'node' => null,
-                            'clockSeq' => null,
+                            'field' => 'uuid',
+                            'namespace' => 'foo',
+                            'name' => 'bar',
                             'nullable' => false,
                         ],
                     ],
                 ],
             ],
-            ['custom_uuid'],
+            ['uuid', null, 'foo', 'bar'],
         ];
         yield [
             [
@@ -53,14 +53,14 @@ final class Uuid1Test
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_uuid',
-                            'node' => 'foo',
-                            'clockSeq' => null,
+                            'namespace' => 'foo',
+                            'name' => 'bar',
                             'nullable' => false,
                         ],
                     ],
                 ],
             ],
-            ['custom_uuid', null, 'foo'],
+            ['custom_uuid', null, 'foo', 'bar'],
         ];
         yield [
             [
@@ -69,30 +69,14 @@ final class Uuid1Test
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_uuid',
-                            'node' => 'foo',
-                            'clockSeq' => 3,
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            ['custom_uuid', null, 'foo', 3],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_uuid',
-                            'node' => 'foo',
-                            'clockSeq' => 3,
+                            'namespace' => 'foo',
+                            'name' => 'bar',
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_uuid', null, 'foo', 3, true],
+            ['custom_uuid', null, 'foo', 'bar', true],
         ];
     }
 
@@ -101,7 +85,7 @@ final class Uuid1Test
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
-        $uuid = new Uuid1(...$args);
+        $uuid = new Uuid5(...$args);
         $uuid->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
@@ -110,7 +94,7 @@ final class Uuid1Test
     #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
-        Listener::setDefaults('foo', 1);
+        Listener::setDefaults('foo', 'bar');
 
         $args = ['uuid', null, null, null, false];
 
@@ -120,8 +104,8 @@ final class Uuid1Test
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'uuid',
-                        'node' => null,
-                        'clockSeq' => null,
+                        'namespace' => null,
+                        'name' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -129,14 +113,15 @@ final class Uuid1Test
         ];
 
         $schema = [];
-        $snowflake = new Uuid1(...$args);
-        $snowflake->modifySchema($schema);
+        $uuid = new Uuid5(...$args);
+        $uuid->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
         Listener::setDefaults(null, null);
     }

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid3 as Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid3;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class Uuid3Test
+final class SnowflakeDiscordTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -20,15 +20,15 @@ final class Uuid3Test
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'uuid',
-                            'namespace' => null,
-                            'name' => null,
+                            'field' => 'custom_snowflake',
+                            'workerId' => null,
+                            'processId' => null,
                             'nullable' => false,
                         ],
                     ],
                 ],
             ],
-            [],
+            ['custom_snowflake'],
         ];
         yield [
             [
@@ -36,47 +36,31 @@ final class Uuid3Test
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'uuid',
-                            'namespace' => 'foo',
-                            'name' => 'bar',
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            ['uuid', null, 'foo', 'bar'],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_uuid',
-                            'namespace' => 'foo',
-                            'name' => 'bar',
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            ['custom_uuid', null, 'foo', 'bar'],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_uuid',
-                            'namespace' => 'foo',
-                            'name' => 'bar',
+                            'field' => 'custom_snowflake',
+                            'workerId' => null,
+                            'processId' => null,
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_uuid', null, 'foo', 'bar', true],
+            ['custom_snowflake', null, null, null, true],
+        ];
+        yield [
+            [
+                SchemaInterface::LISTENERS => [
+                    [
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
+                        ListenerProvider::DEFINITION_ARGS => [
+                            'field' => 'custom_snowflake',
+                            'workerId' => 3,
+                            'processId' => 6,
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            ['custom_snowflake', null, 3, 6],
         ];
     }
 
@@ -85,8 +69,8 @@ final class Uuid3Test
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
-        $uuid = new Uuid3(...$args);
-        $uuid->modifySchema($schema);
+        $snowflake = new SnowflakeDiscord(...$args);
+        $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
@@ -94,18 +78,18 @@ final class Uuid3Test
     #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
-        Listener::setDefaults('foo', 'bar');
+        Listener::setDefaults(1, 2);
 
-        $args = ['uuid', null, null, null, false];
+        $args = ['snowflake', null, null, null, false];
 
         $expected = [
             SchemaInterface::LISTENERS => [
                 [
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
-                        'field' => 'uuid',
-                        'namespace' => null,
-                        'name' => null,
+                        'field' => 'snowflake',
+                        'workerId' => null,
+                        'processId' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -113,14 +97,15 @@ final class Uuid3Test
         ];
 
         $schema = [];
-        $uuid = new Uuid3(...$args);
-        $uuid->modifySchema($schema);
+        $snowflake = new SnowflakeDiscord(...$args);
+        $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
         Listener::setDefaults(null, null);
     }

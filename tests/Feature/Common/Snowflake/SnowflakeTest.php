@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Snowflake;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Snowflake;
 
 use Cycle\Annotated\Locator\TokenizerEntityLocator;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\MultipleSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\NullableSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\Post;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\User;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Schema\GeneratedField;
 use Cycle\Schema\Registry;
 use Spiral\Attributes\AttributeReader;
@@ -17,7 +17,7 @@ use Spiral\Attributes\ReaderInterface;
 use Spiral\Tokenizer\ClassLocator;
 use Symfony\Component\Finder\Finder;
 
-abstract class SnowflakeTest extends BaseTest
+final class SnowflakeTest extends IdentifierTestCase
 {
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
@@ -104,13 +104,10 @@ abstract class SnowflakeTest extends BaseTest
         \Testo\Assert::null($fields->get('notDefinedSnowflake')->getGenerated());
     }
 
-    #[\Override]
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    protected function setUp(): void
     {
-        parent::setUp();
-
-        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 4) . '/Fixtures/Snowflake']));
+        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 3) . '/Fixtures/Snowflake']));
         $reader = new AttributeReader();
         $this->tokenizer = new TokenizerEntityLocator($locator, $reader);
     }

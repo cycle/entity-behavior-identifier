@@ -100,7 +100,8 @@ final class SnowflakeTwitterTest
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
         Listener::setDefaults(null);
     }

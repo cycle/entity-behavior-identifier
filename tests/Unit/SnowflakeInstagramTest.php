@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeMastodon;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeInstagram;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeMastodonTest
+final class SnowflakeInstagramTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -21,7 +21,7 @@ final class SnowflakeMastodonTest
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'tableName' => null,
+                            'shardId' => null,
                             'nullable' => false,
                         ],
                     ],
@@ -36,7 +36,7 @@ final class SnowflakeMastodonTest
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'tableName' => null,
+                            'shardId' => null,
                             'nullable' => true,
                         ],
                     ],
@@ -51,13 +51,13 @@ final class SnowflakeMastodonTest
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'tableName' => 'users',
+                            'shardId' => 3,
                             'nullable' => false,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake', null, 'users'],
+            ['custom_snowflake', null, 3],
         ];
     }
 
@@ -66,7 +66,7 @@ final class SnowflakeMastodonTest
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
-        $snowflake = new SnowflakeMastodon(...$args);
+        $snowflake = new SnowflakeInstagram(...$args);
         $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
@@ -75,7 +75,7 @@ final class SnowflakeMastodonTest
     #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
-        Listener::setDefaults('users');
+        Listener::setDefaults(1);
 
         $args = ['snowflake', null, null, false];
 
@@ -85,7 +85,7 @@ final class SnowflakeMastodonTest
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'snowflake',
-                        'tableName' => null,
+                        'shardId' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -93,14 +93,15 @@ final class SnowflakeMastodonTest
         ];
 
         $schema = [];
-        $snowflake = new SnowflakeMastodon(...$args);
+        $snowflake = new SnowflakeInstagram(...$args);
         $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
         Listener::setDefaults(null);
     }

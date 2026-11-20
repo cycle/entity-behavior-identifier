@@ -75,7 +75,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Cycle\\ORM\\Entity\\Behavior\\Identifier\\Tests\\": "tests/Identifier"
+            "Cycle\\ORM\\Entity\\Behavior\\Identifier\\Tests\\": "tests/"
         }
     },
     "repositories": [

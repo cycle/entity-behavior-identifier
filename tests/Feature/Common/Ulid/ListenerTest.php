@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Ulid;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Ulid;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\AllUlid;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;
@@ -16,10 +15,8 @@ use Cycle\ORM\Select;
 use Ramsey\Identifier\Ulid as UlidInterface;
 use Ramsey\Identifier\Ulid\UlidFactory;
 
-abstract class ListenerTest extends BaseTest
+final class ListenerTest extends IdentifierTestCase
 {
-    use TableTrait;
-
     #[\Testo\Test]
     public function testNullable(): void
     {
@@ -96,12 +93,9 @@ abstract class ListenerTest extends BaseTest
         ]));
     }
 
-    #[\Override]
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    protected function setUp(): void
     {
-        parent::setUp();
-
         $this->makeTable(
             'all_ulids',
             [

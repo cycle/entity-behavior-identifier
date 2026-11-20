@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid5 as Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\Uuid5;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeMastodon as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeMastodon;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class Uuid5Test
+final class SnowflakeMastodonTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -20,15 +20,14 @@ final class Uuid5Test
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'uuid',
-                            'namespace' => null,
-                            'name' => null,
+                            'field' => 'custom_snowflake',
+                            'tableName' => null,
                             'nullable' => false,
                         ],
                     ],
                 ],
             ],
-            [],
+            ['custom_snowflake'],
         ];
         yield [
             [
@@ -36,47 +35,29 @@ final class Uuid5Test
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'uuid',
-                            'namespace' => 'foo',
-                            'name' => 'bar',
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            ['uuid', null, 'foo', 'bar'],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_uuid',
-                            'namespace' => 'foo',
-                            'name' => 'bar',
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            ['custom_uuid', null, 'foo', 'bar'],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_uuid',
-                            'namespace' => 'foo',
-                            'name' => 'bar',
+                            'field' => 'custom_snowflake',
+                            'tableName' => null,
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_uuid', null, 'foo', 'bar', true],
+            ['custom_snowflake', null, null, true],
+        ];
+        yield [
+            [
+                SchemaInterface::LISTENERS => [
+                    [
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
+                        ListenerProvider::DEFINITION_ARGS => [
+                            'field' => 'custom_snowflake',
+                            'tableName' => 'users',
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            ['custom_snowflake', null, 'users'],
         ];
     }
 
@@ -85,8 +66,8 @@ final class Uuid5Test
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
-        $uuid = new Uuid5(...$args);
-        $uuid->modifySchema($schema);
+        $snowflake = new SnowflakeMastodon(...$args);
+        $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
@@ -94,18 +75,17 @@ final class Uuid5Test
     #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
-        Listener::setDefaults('foo', 'bar');
+        Listener::setDefaults('users');
 
-        $args = ['uuid', null, null, null, false];
+        $args = ['snowflake', null, null, false];
 
         $expected = [
             SchemaInterface::LISTENERS => [
                 [
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
-                        'field' => 'uuid',
-                        'namespace' => null,
-                        'name' => null,
+                        'field' => 'snowflake',
+                        'tableName' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -113,15 +93,16 @@ final class Uuid5Test
         ];
 
         $schema = [];
-        $uuid = new Uuid5(...$args);
-        $uuid->modifySchema($schema);
+        $snowflake = new SnowflakeMastodon(...$args);
+        $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
-        Listener::setDefaults(null, null);
+        Listener::setDefaults(null);
     }
 }

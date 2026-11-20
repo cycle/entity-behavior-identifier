@@ -167,7 +167,8 @@ final class Uuid2Test
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
         Listener::setDefaults(DceDomain::Person, null, null, null);
     }

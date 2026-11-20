@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Uuid;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Uuid;
 
 use Cycle\Annotated\Locator\TokenizerEntityLocator;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\MultipleUuid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\NullableUuid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\Post;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\User;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid4;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid7;
@@ -20,7 +20,7 @@ use Spiral\Attributes\ReaderInterface;
 use Spiral\Tokenizer\ClassLocator;
 use Symfony\Component\Finder\Finder;
 
-abstract class UuidTest extends BaseTest
+final class UuidTest extends IdentifierTestCase
 {
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
@@ -108,13 +108,10 @@ abstract class UuidTest extends BaseTest
         \Testo\Assert::null($fields->get('notDefinedUuid')->getGenerated());
     }
 
-    #[\Override]
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    protected function setUp(): void
     {
-        parent::setUp();
-
-        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 4) . '/Fixtures/Uuid']));
+        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 3) . '/Fixtures/Uuid']));
         $reader = new AttributeReader();
         $this->tokenizer = new TokenizerEntityLocator($locator, $reader);
     }

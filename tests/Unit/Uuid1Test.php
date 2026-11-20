@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeGeneric;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeGenericTest
+final class Uuid1Test
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -20,15 +20,15 @@ final class SnowflakeGenericTest
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_snowflake',
+                            'field' => 'uuid',
                             'node' => null,
-                            'epochOffset' => null,
+                            'clockSeq' => null,
                             'nullable' => false,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake'],
+            [],
         ];
         yield [
             [
@@ -36,31 +36,63 @@ final class SnowflakeGenericTest
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_snowflake',
+                            'field' => 'custom_uuid',
                             'node' => null,
-                            'epochOffset' => null,
+                            'clockSeq' => null,
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            ['custom_uuid'],
+        ];
+        yield [
+            [
+                SchemaInterface::LISTENERS => [
+                    [
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
+                        ListenerProvider::DEFINITION_ARGS => [
+                            'field' => 'custom_uuid',
+                            'node' => 'foo',
+                            'clockSeq' => null,
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            ['custom_uuid', null, 'foo'],
+        ];
+        yield [
+            [
+                SchemaInterface::LISTENERS => [
+                    [
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
+                        ListenerProvider::DEFINITION_ARGS => [
+                            'field' => 'custom_uuid',
+                            'node' => 'foo',
+                            'clockSeq' => 3,
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            ['custom_uuid', null, 'foo', 3],
+        ];
+        yield [
+            [
+                SchemaInterface::LISTENERS => [
+                    [
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
+                        ListenerProvider::DEFINITION_ARGS => [
+                            'field' => 'custom_uuid',
+                            'node' => 'foo',
+                            'clockSeq' => 3,
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake', null, null, null, true],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_snowflake',
-                            'node' => 3,
-                            'epochOffset' => 6,
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            ['custom_snowflake', null, 3, 6],
+            ['custom_uuid', null, 'foo', 3, true],
         ];
     }
 
@@ -69,8 +101,8 @@ final class SnowflakeGenericTest
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
-        $snowflake = new SnowflakeGeneric(...$args);
-        $snowflake->modifySchema($schema);
+        $uuid = new Uuid1(...$args);
+        $uuid->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
@@ -78,18 +110,18 @@ final class SnowflakeGenericTest
     #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
-        Listener::setDefaults(1, 1738265600000);
+        Listener::setDefaults('foo', 1);
 
-        $args = ['snowflake', null, null, null, false];
+        $args = ['uuid', null, null, null, false];
 
         $expected = [
             SchemaInterface::LISTENERS => [
                 [
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
-                        'field' => 'snowflake',
+                        'field' => 'uuid',
                         'node' => null,
-                        'epochOffset' => null,
+                        'clockSeq' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -97,14 +129,15 @@ final class SnowflakeGenericTest
         ];
 
         $schema = [];
-        $snowflake = new SnowflakeGeneric(...$args);
+        $snowflake = new Uuid1(...$args);
         $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
         Listener::setDefaults(null, null);
     }

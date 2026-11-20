@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Combined;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Combined;
 
 use Cycle\Annotated\Locator\TokenizerEntityLocator;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeGeneric;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Combined\MultipleIdentifiers;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid4;
 use Cycle\ORM\Schema\GeneratedField;
@@ -17,7 +17,7 @@ use Spiral\Attributes\ReaderInterface;
 use Spiral\Tokenizer\ClassLocator;
 use Symfony\Component\Finder\Finder;
 
-abstract class CombinedTest extends BaseTest
+final class CombinedTest extends IdentifierTestCase
 {
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
@@ -69,13 +69,10 @@ abstract class CombinedTest extends BaseTest
         \Testo\Assert::same($fields->get('snowflakeNullable')->getTypecast(), [SnowflakeGeneric::class, 'create', [0]]);
     }
 
-    #[\Override]
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    protected function setUp(): void
     {
-        parent::setUp();
-
-        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 4) . '/Fixtures/Combined']));
+        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 3) . '/Fixtures/Combined']));
         $reader = new AttributeReader();
         $this->tokenizer = new TokenizerEntityLocator($locator, $reader);
     }

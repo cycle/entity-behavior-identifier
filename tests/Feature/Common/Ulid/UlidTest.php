@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Ulid;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Ulid;
 
 use Cycle\Annotated\Locator\TokenizerEntityLocator;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\MultipleUlid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\NullableUlid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\Post;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\User;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Entity\Behavior\Identifier\Ulid;
 use Cycle\ORM\Schema\GeneratedField;
 use Cycle\Schema\Registry;
@@ -18,7 +18,7 @@ use Spiral\Attributes\ReaderInterface;
 use Spiral\Tokenizer\ClassLocator;
 use Symfony\Component\Finder\Finder;
 
-abstract class UlidTest extends BaseTest
+final class UlidTest extends IdentifierTestCase
 {
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
@@ -100,13 +100,10 @@ abstract class UlidTest extends BaseTest
         \Testo\Assert::null($fields->get('notDefinedUlid')->getGenerated());
     }
 
-    #[\Override]
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    protected function setUp(): void
     {
-        parent::setUp();
-
-        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 4) . '/Fixtures/Ulid']));
+        $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 3) . '/Fixtures/Ulid']));
         $reader = new AttributeReader();
         $this->tokenizer = new TokenizerEntityLocator($locator, $reader);
     }

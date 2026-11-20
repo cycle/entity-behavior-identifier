@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Snowflake;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Snowflake;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as SnowflakeDiscordListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as SnowflakeGenericListener;
@@ -15,8 +15,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeInstagram;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeMastodon;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeTwitter;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\AllSnowflake;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;
 use Cycle\ORM\SchemaInterface;
@@ -32,10 +31,8 @@ use Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory;
 use Ramsey\Identifier\Snowflake\TwitterSnowflake;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
 
-abstract class ListenerTest extends BaseTest
+final class ListenerTest extends IdentifierTestCase
 {
-    use TableTrait;
-
     public static function snowflakeGenerationDataProvider(): array
     {
         return [
@@ -299,17 +296,23 @@ abstract class ListenerTest extends BaseTest
         ]));
     }
 
-    #[\Override]
+    /**
+     * The listener defaults are static: reset them after each test too, so they never leak into other classes.
+     */
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
-        parent::setUp();
-
         SnowflakeGenericListener::setDefaults(0, 0);
         SnowflakeDiscordListener::setDefaults(0, null);
         SnowflakeInstagramListener::setDefaults(0);
+        SnowflakeMastodonListener::setDefaults(null);
         SnowflakeTwitterListener::setDefaults(0);
+    }
 
+    #[\Testo\Lifecycle\BeforeTest]
+    protected function setUp(): void
+    {
         $this->makeTable(
             'all_snowflakes',
             [

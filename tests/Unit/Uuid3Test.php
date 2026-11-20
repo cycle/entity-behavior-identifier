@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeInstagram as Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeInstagram;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid3 as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\Uuid3;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeInstagramTest
+final class Uuid3Test
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -20,14 +20,15 @@ final class SnowflakeInstagramTest
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_snowflake',
-                            'shardId' => null,
+                            'field' => 'uuid',
+                            'namespace' => null,
+                            'name' => null,
                             'nullable' => false,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake'],
+            [],
         ];
         yield [
             [
@@ -35,29 +36,47 @@ final class SnowflakeInstagramTest
                     [
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_snowflake',
-                            'shardId' => null,
+                            'field' => 'uuid',
+                            'namespace' => 'foo',
+                            'name' => 'bar',
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            ['uuid', null, 'foo', 'bar'],
+        ];
+        yield [
+            [
+                SchemaInterface::LISTENERS => [
+                    [
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
+                        ListenerProvider::DEFINITION_ARGS => [
+                            'field' => 'custom_uuid',
+                            'namespace' => 'foo',
+                            'name' => 'bar',
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            ['custom_uuid', null, 'foo', 'bar'],
+        ];
+        yield [
+            [
+                SchemaInterface::LISTENERS => [
+                    [
+                        ListenerProvider::DEFINITION_CLASS => Listener::class,
+                        ListenerProvider::DEFINITION_ARGS => [
+                            'field' => 'custom_uuid',
+                            'namespace' => 'foo',
+                            'name' => 'bar',
                             'nullable' => true,
                         ],
                     ],
                 ],
             ],
-            ['custom_snowflake', null, null, true],
-        ];
-        yield [
-            [
-                SchemaInterface::LISTENERS => [
-                    [
-                        ListenerProvider::DEFINITION_CLASS => Listener::class,
-                        ListenerProvider::DEFINITION_ARGS => [
-                            'field' => 'custom_snowflake',
-                            'shardId' => 3,
-                            'nullable' => false,
-                        ],
-                    ],
-                ],
-            ],
-            ['custom_snowflake', null, 3],
+            ['custom_uuid', null, 'foo', 'bar', true],
         ];
     }
 
@@ -66,8 +85,8 @@ final class SnowflakeInstagramTest
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
-        $snowflake = new SnowflakeInstagram(...$args);
-        $snowflake->modifySchema($schema);
+        $uuid = new Uuid3(...$args);
+        $uuid->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
@@ -75,17 +94,18 @@ final class SnowflakeInstagramTest
     #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
-        Listener::setDefaults(1);
+        Listener::setDefaults('foo', 'bar');
 
-        $args = ['snowflake', null, null, false];
+        $args = ['uuid', null, null, null, false];
 
         $expected = [
             SchemaInterface::LISTENERS => [
                 [
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
-                        'field' => 'snowflake',
-                        'shardId' => null,
+                        'field' => 'uuid',
+                        'namespace' => null,
+                        'name' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -93,15 +113,16 @@ final class SnowflakeInstagramTest
         ];
 
         $schema = [];
-        $snowflake = new SnowflakeInstagram(...$args);
-        $snowflake->modifySchema($schema);
+        $uuid = new Uuid3(...$args);
+        $uuid->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
-        Listener::setDefaults(null);
+        Listener::setDefaults(null, null);
     }
 }

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Unit;
 
 use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
-use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeDiscord as Listener;
-use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
+use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as Listener;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeGeneric;
 use Cycle\ORM\SchemaInterface;
 use PHPUnit\Framework\TestCase;
 
-final class SnowflakeDiscordTest
+final class SnowflakeGenericTest
 {
     public static function schemaDataProvider(): \Traversable
     {
@@ -21,8 +21,8 @@ final class SnowflakeDiscordTest
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'workerId' => null,
-                            'processId' => null,
+                            'node' => null,
+                            'epochOffset' => null,
                             'nullable' => false,
                         ],
                     ],
@@ -37,8 +37,8 @@ final class SnowflakeDiscordTest
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'workerId' => null,
-                            'processId' => null,
+                            'node' => null,
+                            'epochOffset' => null,
                             'nullable' => true,
                         ],
                     ],
@@ -53,8 +53,8 @@ final class SnowflakeDiscordTest
                         ListenerProvider::DEFINITION_CLASS => Listener::class,
                         ListenerProvider::DEFINITION_ARGS => [
                             'field' => 'custom_snowflake',
-                            'workerId' => 3,
-                            'processId' => 6,
+                            'node' => 3,
+                            'epochOffset' => 6,
                             'nullable' => false,
                         ],
                     ],
@@ -69,7 +69,7 @@ final class SnowflakeDiscordTest
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
-        $snowflake = new SnowflakeDiscord(...$args);
+        $snowflake = new SnowflakeGeneric(...$args);
         $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
@@ -78,7 +78,7 @@ final class SnowflakeDiscordTest
     #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
-        Listener::setDefaults(1, 2);
+        Listener::setDefaults(1, 1738265600000);
 
         $args = ['snowflake', null, null, null, false];
 
@@ -88,8 +88,8 @@ final class SnowflakeDiscordTest
                     ListenerProvider::DEFINITION_CLASS => Listener::class,
                     ListenerProvider::DEFINITION_ARGS => [
                         'field' => 'snowflake',
-                        'workerId' => null,
-                        'processId' => null,
+                        'node' => null,
+                        'epochOffset' => null,
                         'nullable' => false,
                     ],
                 ],
@@ -97,14 +97,15 @@ final class SnowflakeDiscordTest
         ];
 
         $schema = [];
-        $snowflake = new SnowflakeDiscord(...$args);
+        $snowflake = new SnowflakeGeneric(...$args);
         $snowflake->modifySchema($schema);
 
         \Testo\Assert::same($schema, $expected);
     }
 
     #[\Testo\Lifecycle\BeforeTest]
-    protected function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
         Listener::setDefaults(null, null);
     }

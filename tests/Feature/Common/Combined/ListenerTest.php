@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Combined;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Combined;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeGeneric as SnowflakeGenericListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Ulid as UlidListener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid4 as Uuid4Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Combined\MultipleIdentifiers;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Heap\Heap;
 use Cycle\ORM\Schema;
 use Cycle\ORM\SchemaInterface;
@@ -21,10 +20,8 @@ use Ramsey\Identifier\Ulid\UlidFactory;
 use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidFactory;
 
-abstract class ListenerTest extends BaseTest
+final class ListenerTest extends IdentifierTestCase
 {
-    use TableTrait;
-
     #[\Testo\Test]
     public function testAssignManually(): void
     {
@@ -169,12 +166,9 @@ abstract class ListenerTest extends BaseTest
         ]));
     }
 
-    #[\Override]
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    protected function setUp(): void
     {
-        parent::setUp();
-
         $this->makeTable(
             'multiple_identifiers',
             [

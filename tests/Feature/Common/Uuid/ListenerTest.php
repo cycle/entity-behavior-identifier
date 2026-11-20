@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\Uuid;
+namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Uuid;
 
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid1 as Uuid1Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2 as Uuid2Listener;
@@ -12,8 +12,7 @@ use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid5 as Uuid5Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid6 as Uuid6Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid7 as Uuid7Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Uuid\AllUuid;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Functional\Driver\Common\BaseTest;
-use Cycle\ORM\Entity\Behavior\Identifier\Tests\Traits\TableTrait;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Support\IdentifierTestCase;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid1;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid2;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid3;
@@ -36,10 +35,8 @@ use Ramsey\Identifier\Uuid\UuidV5;
 use Ramsey\Identifier\Uuid\UuidV6;
 use Ramsey\Identifier\Uuid\UuidV7;
 
-abstract class ListenerTest extends BaseTest
+final class ListenerTest extends IdentifierTestCase
 {
-    use TableTrait;
-
     private UuidFactory $factory;
 
     public static function uuidGenerationDataProvider(): array
@@ -327,15 +324,20 @@ abstract class ListenerTest extends BaseTest
         ]));
     }
 
-    #[\Override]
+    /**
+     * The listener defaults are static: reset them after each test too, so they never leak into other classes.
+     */
     #[\Testo\Lifecycle\BeforeTest]
-    public function setUp(): void
+    #[\Testo\Lifecycle\AfterTest]
+    protected function resetDefaults(): void
     {
-        parent::setUp();
-
         Uuid3Listener::setDefaults(null, null);
         Uuid5Listener::setDefaults(null, null);
+    }
 
+    #[\Testo\Lifecycle\BeforeTest]
+    protected function setUp(): void
+    {
         $this->factory = new UuidFactory();
 
         $this->makeTable(
