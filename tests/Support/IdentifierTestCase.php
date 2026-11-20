@@ -74,4 +74,17 @@ abstract class IdentifierTestCase extends OrmTestCase
             new GenerateTypecast(),
         ]);
     }
+
+    /**
+     * Stops after the modifiers' compute phase, before render can fill in what compute left out.
+     */
+    protected function computeWithTokenizer(EntityLocatorInterface $tokenizer, ReaderInterface $reader): void
+    {
+        (new Compiler())->compile($this->registry = new Registry($this->dbal), [
+            new Entities($tokenizer, $reader),
+            new ResetTables(),
+            new MergeColumns($reader),
+            new GenerateModifiers(),
+        ]);
+    }
 }

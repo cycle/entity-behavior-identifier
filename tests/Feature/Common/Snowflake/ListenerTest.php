@@ -279,6 +279,83 @@ final class ListenerTest extends IdentifierTestCase
         }
     }
 
+    #[Test]
+    public function testListenerArgumentsOverrideDefaults(): void
+    {
+        SnowflakeGenericListener::setDefaults(5, 0);
+        SnowflakeDiscordListener::setDefaults(3, 7);
+        SnowflakeInstagramListener::setDefaults(5);
+        SnowflakeTwitterListener::setDefaults(5);
+
+        $generic = $this->generate([SnowflakeGenericListener::class, ['field' => 'generic', 'node' => 10]]);
+        $discord = $this->generate([
+            SnowflakeDiscordListener::class,
+            ['field' => 'discord', 'workerId' => 10, 'processId' => 20],
+        ]);
+        $instagram = $this->generate([SnowflakeInstagramListener::class, ['field' => 'instagram', 'shardId' => 10]]);
+        $twitter = $this->generate([SnowflakeTwitterListener::class, ['field' => 'twitter', 'machineId' => 10]]);
+
+        Assert::same($generic >> 12 & 0x3FF, 10);
+        Assert::same($discord >> 17 & 0x1F, 10);
+        Assert::same($discord >> 12 & 0x1F, 20);
+        Assert::same($instagram >> 10 & 0x1FFF, 10);
+        Assert::same($twitter >> 12 & 0x3FF, 10);
+    }
+
+    #[Test]
+    public function testDefaultsAcceptUpperBounds(): void
+    {
+        SnowflakeGenericListener::setDefaults(1023, 0);
+        SnowflakeInstagramListener::setDefaults(1023);
+        SnowflakeTwitterListener::setDefaults(1023);
+        SnowflakeDiscordListener::setDefaults(281474976710655, 281474976710655);
+
+        $generic = $this->generate([SnowflakeGenericListener::class, ['field' => 'generic']]);
+        $instagram = $this->generate([SnowflakeInstagramListener::class, ['field' => 'instagram']]);
+        $twitter = $this->generate([SnowflakeTwitterListener::class, ['field' => 'twitter']]);
+        $discord = $this->generate([SnowflakeDiscordListener::class, ['field' => 'discord']]);
+
+        Assert::same($generic >> 12 & 0x3FF, 1023);
+        Assert::same($instagram >> 10 & 0x1FFF, 1023);
+        Assert::same($twitter >> 12 & 0x3FF, 1023);
+        // Discord keeps the worker and process IDs modulo 32.
+        Assert::same($discord >> 17 & 0x1F, 31);
+        Assert::same($discord >> 12 & 0x1F, 31);
+    }
+
+    #[Test]
+    public function testDiscordDefaultProcessId(): void
+    {
+        SnowflakeDiscordListener::setDefaults(0, 0);
+        $zero = $this->generate([SnowflakeDiscordListener::class, ['field' => 'discord']]);
+        SnowflakeDiscordListener::setDefaults(0, 5);
+        $five = $this->generate([SnowflakeDiscordListener::class, ['field' => 'discord']]);
+        SnowflakeDiscordListener::setDefaults(0, 6);
+        $six = $this->generate([SnowflakeDiscordListener::class, ['field' => 'discord']]);
+
+        Assert::same($zero >> 12 & 0x1F, 0);
+        Assert::same($five >> 12 & 0x1F, 5);
+        Assert::same($six >> 12 & 0x1F, 6);
+    }
+
+    #[Test]
+    public function testGenericDefaultEpochOffset(): void
+    {
+        SnowflakeGenericListener::setDefaults(0, 1662744255000);
+        Assert::same(SnowflakeGenericListener::getEpochOffset(), 1662744255000);
+
+        SnowflakeGenericListener::setDefaults(0, null);
+        Assert::same(SnowflakeGenericListener::getEpochOffset(), 0);
+    }
+
+    #[Test]
+    public function testMastodonRejectsEmptyTableName(): never
+    {
+        Expect::exception(\InvalidArgumentException::class);
+
+        SnowflakeMastodonListener::setDefaults('');
+    }
+
     public function withListeners(array|string|null $listeners = null): void
     {
         $this->withSchema(new Schema([
@@ -330,5 +407,20 @@ final class ListenerTest extends IdentifierTestCase
         SnowflakeInstagramListener::setDefaults(0);
         SnowflakeMastodonListener::setDefaults(null);
         SnowflakeTwitterListener::setDefaults(0);
+    }
+
+    /**
+     * Saves a new entity with the given listener and returns the generated Snowflake as an integer.
+     */
+    private function generate(array $listener): int
+    {
+        $this->getDatabase()->table('all_snowflakes')->delete()->run();
+        $this->withListeners($listener);
+        $this->save(new AllSnowflake());
+
+        $field = $listener[1]['field'];
+        $data = (new Select($this->orm->with(heap: new Heap()), AllSnowflake::class))->fetchOne();
+
+        return (int) $data->$field->toString();
     }
 }

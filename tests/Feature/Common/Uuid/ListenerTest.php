@@ -185,6 +185,41 @@ final class ListenerTest extends IdentifierTestCase
         ];
     }
 
+    public static function argumentsOverDefaultsDataProvider(): iterable
+    {
+        $factory = new UuidFactory();
+
+        yield 'uuid1' => [
+            [Uuid1Listener::class, ['field' => 'uuid1', 'node' => '01000fffffff', 'clockSeq' => 0x0fff]],
+            '/-8fff-01000fffffff$/',
+        ];
+        yield 'uuid2' => [
+            [
+                Uuid2Listener::class,
+                [
+                    'field' => 'uuid2',
+                    'localDomain' => DceDomain::Person,
+                    'localIdentifier' => 12345678,
+                    'node' => '3d1239b4f540',
+                    'clockSeq' => 5,
+                ],
+            ],
+            '/^00bc614e-.{4}-2.{3}-8500-3d1239b4f540$/',
+        ];
+        yield 'uuid3' => [
+            [Uuid3Listener::class, ['field' => 'uuid3', 'namespace' => NamespaceId::Url, 'name' => 'foo']],
+            '/^' . $factory->v3(NamespaceId::Url, 'foo')->toString() . '$/',
+        ];
+        yield 'uuid5' => [
+            [Uuid5Listener::class, ['field' => 'uuid5', 'namespace' => NamespaceId::Url, 'name' => 'foo']],
+            '/^' . $factory->v5(NamespaceId::Url, 'foo')->toString() . '$/',
+        ];
+        yield 'uuid6' => [
+            [Uuid6Listener::class, ['field' => 'uuid6', 'node' => '01000fffffff', 'clockSeq' => 0x0fff]],
+            '/-8fff-01000fffffff$/',
+        ];
+    }
+
     #[Test]
     public function testNullable(): void
     {
@@ -305,6 +340,24 @@ final class ListenerTest extends IdentifierTestCase
         $this->save($entity);
     }
 
+    #[Test]
+    #[DataProvider('argumentsOverDefaultsDataProvider')]
+    public function testListenerArgumentsOverrideDefaults(array $listener, string $expected): void
+    {
+        Uuid1Listener::setDefaults('111111111111', 1);
+        Uuid2Listener::setDefaults(DceDomain::Group, 1, '111111111111', 1);
+        Uuid3Listener::setDefaults(NamespaceId::Dns, 'bar');
+        Uuid5Listener::setDefaults(NamespaceId::Dns, 'bar');
+        Uuid6Listener::setDefaults('111111111111', 1);
+        $this->withListeners($listener);
+
+        $this->save(new AllUuid());
+
+        $field = $listener[1]['field'];
+        $data = (new Select($this->orm->with(heap: new Heap()), AllUuid::class))->fetchOne();
+        Assert::string($data->$field->toString())->matchesRegex($expected);
+    }
+
     public function withListeners(array|string|null $listeners = null): void
     {
         $this->withSchema(new Schema([
@@ -357,7 +410,10 @@ final class ListenerTest extends IdentifierTestCase
     #[AfterTest]
     protected function resetDefaults(): void
     {
+        Uuid1Listener::setDefaults(null, null);
+        Uuid2Listener::setDefaults(DceDomain::Person, null, null, null);
         Uuid3Listener::setDefaults(null, null);
         Uuid5Listener::setDefaults(null, null);
+        Uuid6Listener::setDefaults(null, null);
     }
 }
