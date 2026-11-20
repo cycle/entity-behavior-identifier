@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Ulid;
 
 use Cycle\Annotated\Locator\TokenizerEntityLocator;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\Comment;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\MultipleUlid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\NullableUlid;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Ulid\Post;
@@ -102,6 +103,33 @@ final class UlidTest extends IdentifierTestCase
             ->column('not_defined_ulid')
             ->isNullable());
         Assert::null($fields->get('notDefinedUlid')->getGenerated());
+    }
+
+    #[Test]
+    #[DataProvider('readersDataProvider')]
+    public function testAddColumnNamedAfterField(ReaderInterface $reader): void
+    {
+        $this->compileWithTokenizer($this->tokenizer, $reader);
+
+        $field = $this->registry->getEntity(Comment::class)->getFields()->get('token');
+
+        Assert::same($field->getColumn(), 'token');
+        Assert::same($field->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::same($field->getTypecast(), [Ulid::class, 'create']);
+    }
+
+    #[Test]
+    #[DataProvider('readersDataProvider')]
+    public function testComputeConfiguresDeclaredFields(ReaderInterface $reader): void
+    {
+        $this->computeWithTokenizer($this->tokenizer, $reader);
+
+        $field = $this->registry->getEntity(User::class)->getFields()->get('ulid');
+        $nullable = $this->registry->getEntity(NullableUlid::class)->getFields();
+
+        Assert::same($field->getTypecast(), [Ulid::class, 'create']);
+        Assert::same($field->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::null($nullable->get('notDefinedUlid')->getGenerated());
     }
 
     #[BeforeTest]

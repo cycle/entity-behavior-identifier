@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace Cycle\ORM\Entity\Behavior\Identifier\Tests\Feature\Common\Snowflake;
 
 use Cycle\Annotated\Locator\TokenizerEntityLocator;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeDiscord;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeGeneric;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeInstagram;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeMastodon;
+use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeTwitter;
+use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\Comment;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\MultipleSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\NullableSnowflake;
 use Cycle\ORM\Entity\Behavior\Identifier\Tests\Fixtures\Snowflake\Post;
@@ -106,6 +112,37 @@ final class SnowflakeTest extends IdentifierTestCase
             ->column('not_defined_snowflake')
             ->isNullable());
         Assert::null($fields->get('notDefinedSnowflake')->getGenerated());
+    }
+
+    #[Test]
+    #[DataProvider('readersDataProvider')]
+    public function testAddColumnsNamedAfterFields(ReaderInterface $reader): void
+    {
+        $this->compileWithTokenizer($this->tokenizer, $reader);
+
+        $fields = $this->registry->getEntity(Comment::class)->getFields();
+
+        Assert::same($fields->get('generic')->getColumn(), 'generic');
+        Assert::same($fields->get('generic')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::same($fields->get('generic')->getTypecast(), [SnowflakeGeneric::class, 'create', [1662744255000]]);
+        Assert::same($fields->get('discord')->getTypecast(), [SnowflakeDiscord::class, 'create']);
+        Assert::same($fields->get('instagram')->getTypecast(), [SnowflakeInstagram::class, 'create']);
+        Assert::same($fields->get('mastodon')->getTypecast(), [SnowflakeMastodon::class, 'create']);
+        Assert::same($fields->get('twitter')->getTypecast(), [SnowflakeTwitter::class, 'create']);
+    }
+
+    #[Test]
+    #[DataProvider('readersDataProvider')]
+    public function testComputeConfiguresDeclaredFields(ReaderInterface $reader): void
+    {
+        $this->computeWithTokenizer($this->tokenizer, $reader);
+
+        $fields = $this->registry->getEntity(MultipleSnowflake::class)->getFields();
+        $nullable = $this->registry->getEntity(NullableSnowflake::class)->getFields();
+
+        Assert::same($fields->get('discord')->getTypecast(), [SnowflakeDiscord::class, 'create']);
+        Assert::same($fields->get('discord')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::null($nullable->get('notDefinedSnowflake')->getGenerated());
     }
 
     #[BeforeTest]
