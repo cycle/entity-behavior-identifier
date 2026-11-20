@@ -59,11 +59,12 @@
         "bamarni/composer-bin-plugin": "^1.8",
         "buggregator/trap": "^1.20",
         "cycle/annotated": "^4.6",
+        "cycle/testing": "^0.1.1",
         "doctrine/annotations": "^2.0.2",
         "llm/skills": "^1.20",
-        "phpunit/phpunit": "^11.5",
         "roxblnfk/unpoly": "^1.8",
-        "spiral/tokenizer": "^3.18"
+        "spiral/tokenizer": "^3.18",
+        "testo/testo": "^0.10.60"
     },
     "autoload": {
         "psr-4": {
@@ -72,18 +73,31 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Cycle\\ORM\\Entity\\Behavior\\Identifier\\Tests\\": "tests/Identifier"
+            "Cycle\\ORM\\Entity\\Behavior\\Identifier\\Tests\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/cycle/testing"
+        }
+    ],
     "scripts": {
         "cs:diff": "php-cs-fixer fix --dry-run -v --diff --config=vendor-bin/code-style/.php-cs-fixer.dist.php",
         "cs:fix": "php-cs-fixer fix -v --config=vendor-bin/code-style/.php-cs-fixer.dist.php",
+        "db:down": "docker compose -f vendor/cycle/testing/resources/docker/compose.yaml down -v",
+        "db:up": "docker compose -f vendor/cycle/testing/resources/docker/compose.yaml up -d --wait",
         "psalm": "psalm -c vendor-bin/psalm/psalm.xml",
         "psalm:baseline": "psalm -c vendor-bin/psalm/psalm.xml --set-baseline=vendor-bin/psalm/psalm-baseline.xml",
         "psalm:ci": "psalm -c vendor-bin/psalm/psalm.xml --output-format=github --shepherd --show-info=false --stats --threads=4",
-        "test": "phpunit --color=always",
-        "test:coverage": "phpunit --colors=always --coverage-text",
-        "test:report": "phpunit --do-not-cache-result --log-junit=.report/phpunit.xml --coverage-clover=.report/coverage-clover.xml --coverage-cobertura=.report/coverage-cobertura.xml --coverage-text --colors=never"
+        "test": "testo",
+        "test:coverage": "testo --coverage-clover=runtime/clover.xml",
+        "test:mysql": "testo --suite=Feature/MySQL",
+        "test:postgres": "testo --suite=Feature/Postgres",
+        "test:report": "testo --log-junit=.report/junit.xml --coverage-clover=.report/coverage-clover.xml --coverage-cobertura=.report/coverage-cobertura.xml",
+        "test:sqlite": "testo --suite=Feature/SQLite",
+        "test:sqlserver": "testo --suite=Feature/SQLServer",
+        "test:unit": "testo --suite=Unit"
     },
     "extra": {
         "bamarni-bin": {
