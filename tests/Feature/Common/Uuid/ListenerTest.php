@@ -34,6 +34,12 @@ use Ramsey\Identifier\Uuid\UuidV4;
 use Ramsey\Identifier\Uuid\UuidV5;
 use Ramsey\Identifier\Uuid\UuidV6;
 use Ramsey\Identifier\Uuid\UuidV7;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Expect;
+use Testo\Lifecycle\AfterTest;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 final class ListenerTest extends IdentifierTestCase
 {
@@ -179,7 +185,7 @@ final class ListenerTest extends IdentifierTestCase
         ];
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testNullable(): void
     {
         $this->withListeners([
@@ -226,16 +232,16 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), AllUuid::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::null($data->uuid1);
-        \Testo\Assert::null($data->uuid2);
-        \Testo\Assert::null($data->uuid3);
-        \Testo\Assert::null($data->uuid4);
-        \Testo\Assert::null($data->uuid5);
-        \Testo\Assert::null($data->uuid6);
-        \Testo\Assert::null($data->uuid7);
+        Assert::null($data->uuid1);
+        Assert::null($data->uuid2);
+        Assert::null($data->uuid3);
+        Assert::null($data->uuid4);
+        Assert::null($data->uuid5);
+        Assert::null($data->uuid6);
+        Assert::null($data->uuid7);
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testAssignManually(): void
     {
         $this->withListeners();
@@ -254,17 +260,17 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), AllUuid::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::same($data->uuid1->toString(), $entity->uuid1->toString());
-        \Testo\Assert::same($data->uuid2->toString(), $entity->uuid2->toString());
-        \Testo\Assert::same($data->uuid3->toString(), $entity->uuid3->toString());
-        \Testo\Assert::same($data->uuid4->toString(), $entity->uuid4->toString());
-        \Testo\Assert::same($data->uuid5->toString(), $entity->uuid5->toString());
-        \Testo\Assert::same($data->uuid6->toString(), $entity->uuid6->toString());
-        \Testo\Assert::same($data->uuid7->toString(), $entity->uuid7->toString());
+        Assert::same($data->uuid1->toString(), $entity->uuid1->toString());
+        Assert::same($data->uuid2->toString(), $entity->uuid2->toString());
+        Assert::same($data->uuid3->toString(), $entity->uuid3->toString());
+        Assert::same($data->uuid4->toString(), $entity->uuid4->toString());
+        Assert::same($data->uuid5->toString(), $entity->uuid5->toString());
+        Assert::same($data->uuid6->toString(), $entity->uuid6->toString());
+        Assert::same($data->uuid7->toString(), $entity->uuid7->toString());
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('uuidGenerationDataProvider')]
+    #[Test]
+    #[DataProvider('uuidGenerationDataProvider')]
     public function testUuidGeneration(
         array $listeners,
         string $field,
@@ -280,18 +286,18 @@ final class ListenerTest extends IdentifierTestCase
         $data = $select->fetchOne();
 
         $uuid = $data->$field;
-        \Testo\Assert::instanceOf($uuid, $expectedClass);
-        \Testo\Assert::same($uuid->getVersion()->value, $expectedVersion);
-        \Testo\Assert::string($uuid->toString());
+        Assert::instanceOf($uuid, $expectedClass);
+        Assert::same($uuid->getVersion()->value, $expectedVersion);
+        Assert::string($uuid->toString());
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('uuidExceptionDataProvider')]
+    #[Test]
+    #[DataProvider('uuidExceptionDataProvider')]
     public function testUuidException(
         array $listeners,
         string $expectedException,
     ): void {
-        \Testo\Expect::exception($expectedException);
+        Expect::exception($expectedException);
 
         $this->withListeners($listeners);
 
@@ -324,18 +330,7 @@ final class ListenerTest extends IdentifierTestCase
         ]));
     }
 
-    /**
-     * The listener defaults are static: reset them after each test too, so they never leak into other classes.
-     */
-    #[\Testo\Lifecycle\BeforeTest]
-    #[\Testo\Lifecycle\AfterTest]
-    protected function resetDefaults(): void
-    {
-        Uuid3Listener::setDefaults(null, null);
-        Uuid5Listener::setDefaults(null, null);
-    }
-
-    #[\Testo\Lifecycle\BeforeTest]
+    #[BeforeTest]
     protected function setUp(): void
     {
         $this->factory = new UuidFactory();
@@ -353,5 +348,16 @@ final class ListenerTest extends IdentifierTestCase
                 'uuid7' => 'uuid,nullable',
             ],
         );
+    }
+
+    /**
+     * The listener defaults are static: reset them after each test too, so they never leak into other classes.
+     */
+    #[BeforeTest]
+    #[AfterTest]
+    protected function resetDefaults(): void
+    {
+        Uuid3Listener::setDefaults(null, null);
+        Uuid5Listener::setDefaults(null, null);
     }
 }

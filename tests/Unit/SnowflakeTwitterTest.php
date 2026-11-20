@@ -8,8 +8,13 @@ use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\SnowflakeTwitter as Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\SnowflakeTwitter;
 use Cycle\ORM\SchemaInterface;
-use PHPUnit\Framework\TestCase;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\AfterTest;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
+#[Test]
 final class SnowflakeTwitterTest
 {
     public static function schemaDataProvider(): \Traversable
@@ -61,18 +66,16 @@ final class SnowflakeTwitterTest
         ];
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('schemaDataProvider')]
+    #[DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $snowflake = new SnowflakeTwitter(...$args);
         $snowflake->modifySchema($schema);
 
-        \Testo\Assert::same($schema, $expected);
+        Assert::same($schema, $expected);
     }
 
-    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults(1);
@@ -96,11 +99,11 @@ final class SnowflakeTwitterTest
         $snowflake = new SnowflakeTwitter(...$args);
         $snowflake->modifySchema($schema);
 
-        \Testo\Assert::same($schema, $expected);
+        Assert::same($schema, $expected);
     }
 
-    #[\Testo\Lifecycle\BeforeTest]
-    #[\Testo\Lifecycle\AfterTest]
+    #[BeforeTest]
+    #[AfterTest]
     protected function resetDefaults(): void
     {
         Listener::setDefaults(null);

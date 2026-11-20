@@ -16,60 +16,64 @@ use Spiral\Attributes\AttributeReader;
 use Spiral\Attributes\ReaderInterface;
 use Spiral\Tokenizer\ClassLocator;
 use Symfony\Component\Finder\Finder;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 final class CombinedTest extends IdentifierTestCase
 {
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testColumnsExist(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(MultipleIdentifiers::class)->getFields();
 
-        \Testo\Assert::same($fields->count(), 6);
+        Assert::same($fields->count(), 6);
 
-        \Testo\Assert::true($fields->has('uuid'));
-        \Testo\Assert::true($fields->hasColumn('uuid'));
-        \Testo\Assert::same($fields->get('uuid')->getType(), 'uuid');
-        \Testo\Assert::same($fields->get('uuid')->getTypecast(), [Uuid4::class, 'create']);
-        \Testo\Assert::same($fields->get('uuid')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('uuid'));
+        Assert::true($fields->hasColumn('uuid'));
+        Assert::same($fields->get('uuid')->getType(), 'uuid');
+        Assert::same($fields->get('uuid')->getTypecast(), [Uuid4::class, 'create']);
+        Assert::same($fields->get('uuid')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('uuidNullable'));
-        \Testo\Assert::true($fields->hasColumn('uuid_nullable'));
-        \Testo\Assert::same($fields->get('uuidNullable')->getType(), 'uuid');
-        \Testo\Assert::same($fields->get('uuidNullable')->getTypecast(), [Uuid4::class, 'create']);
-        \Testo\Assert::null($fields->get('uuidNullable')->getGenerated());
+        Assert::true($fields->has('uuidNullable'));
+        Assert::true($fields->hasColumn('uuid_nullable'));
+        Assert::same($fields->get('uuidNullable')->getType(), 'uuid');
+        Assert::same($fields->get('uuidNullable')->getTypecast(), [Uuid4::class, 'create']);
+        Assert::null($fields->get('uuidNullable')->getGenerated());
 
-        \Testo\Assert::true($fields->has('ulid'));
-        \Testo\Assert::true($fields->hasColumn('ulid'));
-        \Testo\Assert::same($fields->get('ulid')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('ulid'));
+        Assert::true($fields->hasColumn('ulid'));
+        Assert::same($fields->get('ulid')->getType(), 'ulid');
+        Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
+        Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('ulidNullable'));
-        \Testo\Assert::true($fields->hasColumn('ulid_nullable'));
-        \Testo\Assert::same($fields->get('ulidNullable')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('ulidNullable')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::null($fields->get('ulidNullable')->getGenerated());
+        Assert::true($fields->has('ulidNullable'));
+        Assert::true($fields->hasColumn('ulid_nullable'));
+        Assert::same($fields->get('ulidNullable')->getType(), 'ulid');
+        Assert::same($fields->get('ulidNullable')->getTypecast(), [Ulid::class, 'create']);
+        Assert::null($fields->get('ulidNullable')->getGenerated());
 
-        \Testo\Assert::true($fields->has('snowflake'));
-        \Testo\Assert::true($fields->hasColumn('snowflake'));
-        \Testo\Assert::same($fields->get('snowflake')->getType(), 'snowflake');
-        \Testo\Assert::same($fields->get('snowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
-        \Testo\Assert::same($fields->get('snowflake')->getTypecast(), [SnowflakeGeneric::class, 'create', [0]]);
+        Assert::true($fields->has('snowflake'));
+        Assert::true($fields->hasColumn('snowflake'));
+        Assert::same($fields->get('snowflake')->getType(), 'snowflake');
+        Assert::same($fields->get('snowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::same($fields->get('snowflake')->getTypecast(), [SnowflakeGeneric::class, 'create', [0]]);
 
-        \Testo\Assert::true($fields->has('snowflakeNullable'));
-        \Testo\Assert::true($fields->hasColumn('snowflake_nullable'));
-        \Testo\Assert::same($fields->get('snowflakeNullable')->getType(), 'snowflake');
-        \Testo\Assert::null($fields->get('snowflakeNullable')->getGenerated());
-        \Testo\Assert::same($fields->get('snowflakeNullable')->getTypecast(), [SnowflakeGeneric::class, 'create', [0]]);
+        Assert::true($fields->has('snowflakeNullable'));
+        Assert::true($fields->hasColumn('snowflake_nullable'));
+        Assert::same($fields->get('snowflakeNullable')->getType(), 'snowflake');
+        Assert::null($fields->get('snowflakeNullable')->getGenerated());
+        Assert::same($fields->get('snowflakeNullable')->getTypecast(), [SnowflakeGeneric::class, 'create', [0]]);
     }
 
-    #[\Testo\Lifecycle\BeforeTest]
+    #[BeforeTest]
     protected function setUp(): void
     {
         $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 3) . '/Fixtures/Combined']));

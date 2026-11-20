@@ -19,10 +19,13 @@ use Ramsey\Identifier\Ulid as UlidInterface;
 use Ramsey\Identifier\Ulid\UlidFactory;
 use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidFactory;
+use Testo\Assert;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 final class ListenerTest extends IdentifierTestCase
 {
-    #[\Testo\Test]
+    #[Test]
     public function testAssignManually(): void
     {
         $this->withListeners([
@@ -44,12 +47,12 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::same($data->uuid->toBytes(), $uuidBytes);
-        \Testo\Assert::same($data->ulid->toBytes(), $ulidBytes);
-        \Testo\Assert::same($data->snowflake->toBytes(), $snowflakeBytes);
+        Assert::same($data->uuid->toBytes(), $uuidBytes);
+        Assert::same($data->ulid->toBytes(), $ulidBytes);
+        Assert::same($data->snowflake->toBytes(), $snowflakeBytes);
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testWithNullableTrue(): void
     {
         $this->withListeners([
@@ -68,12 +71,12 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
         $data = $select->fetchData();
 
-        \Testo\Assert::null($data[0]['uuid_nullable']);
-        \Testo\Assert::null($data[0]['ulid_nullable']);
-        \Testo\Assert::null($data[0]['snowflake_nullable']);
+        Assert::null($data[0]['uuid_nullable']);
+        Assert::null($data[0]['ulid_nullable']);
+        Assert::null($data[0]['snowflake_nullable']);
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testCombined(): void
     {
         $this->withListeners([
@@ -89,21 +92,21 @@ final class ListenerTest extends IdentifierTestCase
         /** @var MultipleIdentifiers $data */
         $data = $select->fetchOne();
 
-        \Testo\Assert::instanceOf($data->uuid, UntypedUuid::class);
-        \Testo\Assert::instanceOf($data->ulid, UlidInterface::class);
-        \Testo\Assert::instanceOf($data->snowflake, SnowflakeInterface::class);
-        \Testo\Assert::null($data->uuidNullable);
-        \Testo\Assert::null($data->ulidNullable);
-        \Testo\Assert::null($data->snowflakeNullable);
-        \Testo\Assert::string($data->uuid->toBytes());
-        \Testo\Assert::string($data->uuid->toString());
-        \Testo\Assert::string($data->ulid->toBytes());
-        \Testo\Assert::string($data->ulid->toString());
-        \Testo\Assert::string($data->snowflake->toBytes());
-        \Testo\Assert::string($data->snowflake->toString());
+        Assert::instanceOf($data->uuid, UntypedUuid::class);
+        Assert::instanceOf($data->ulid, UlidInterface::class);
+        Assert::instanceOf($data->snowflake, SnowflakeInterface::class);
+        Assert::null($data->uuidNullable);
+        Assert::null($data->ulidNullable);
+        Assert::null($data->snowflakeNullable);
+        Assert::string($data->uuid->toBytes());
+        Assert::string($data->uuid->toString());
+        Assert::string($data->ulid->toBytes());
+        Assert::string($data->ulid->toString());
+        Assert::string($data->snowflake->toBytes());
+        Assert::string($data->snowflake->toString());
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testComparison(): void
     {
         $this->withListeners([
@@ -124,11 +127,11 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), MultipleIdentifiers::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::same($data->uuid->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
-        \Testo\Assert::same($data->ulid->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
-        \Testo\Assert::same($data->snowflake->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
-        \Testo\Assert::true($data->uuid->equals($data->ulid));
-        \Testo\Assert::false($data->uuid->equals($data->snowflake));
+        Assert::same($data->uuid->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
+        Assert::same($data->ulid->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
+        Assert::same($data->snowflake->getDateTime()->format('Y-m-d H:i:s.v P'), $expectedDate);
+        Assert::true($data->uuid->equals($data->ulid));
+        Assert::false($data->uuid->equals($data->snowflake));
     }
 
     public function withListeners(array $listeners): void
@@ -166,7 +169,7 @@ final class ListenerTest extends IdentifierTestCase
         ]));
     }
 
-    #[\Testo\Lifecycle\BeforeTest]
+    #[BeforeTest]
     protected function setUp(): void
     {
         $this->makeTable(

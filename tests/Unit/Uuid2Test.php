@@ -8,9 +8,14 @@ use Cycle\ORM\Entity\Behavior\Dispatcher\ListenerProvider;
 use Cycle\ORM\Entity\Behavior\Identifier\Listener\Uuid2 as Listener;
 use Cycle\ORM\Entity\Behavior\Identifier\Uuid2;
 use Cycle\ORM\SchemaInterface;
-use PHPUnit\Framework\TestCase;
 use Ramsey\Identifier\Uuid\DceDomain;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\AfterTest;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
+#[Test]
 final class Uuid2Test
 {
     public static function schemaDataProvider(): \Traversable
@@ -125,18 +130,16 @@ final class Uuid2Test
         ];
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('schemaDataProvider')]
+    #[DataProvider('schemaDataProvider')]
     public function testModifySchema(array $expected, array $args): void
     {
         $schema = [];
         $uuid = new Uuid2(...$args);
         $uuid->modifySchema($schema);
 
-        \Testo\Assert::same($schema, $expected);
+        Assert::same($schema, $expected);
     }
 
-    #[\Testo\Test]
     public function testModifySchemaWithDefaults(): void
     {
         Listener::setDefaults(DceDomain::Group, 2, 'foo', 3);
@@ -163,11 +166,11 @@ final class Uuid2Test
         $snowflake = new Uuid2(...$args);
         $snowflake->modifySchema($schema);
 
-        \Testo\Assert::same($schema, $expected);
+        Assert::same($schema, $expected);
     }
 
-    #[\Testo\Lifecycle\BeforeTest]
-    #[\Testo\Lifecycle\AfterTest]
+    #[BeforeTest]
+    #[AfterTest]
     protected function resetDefaults(): void
     {
         Listener::setDefaults(DceDomain::Person, null, null, null);

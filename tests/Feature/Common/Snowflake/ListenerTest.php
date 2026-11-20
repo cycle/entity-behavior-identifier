@@ -30,6 +30,12 @@ use Ramsey\Identifier\Snowflake\MastodonSnowflake;
 use Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory;
 use Ramsey\Identifier\Snowflake\TwitterSnowflake;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Expect;
+use Testo\Lifecycle\AfterTest;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 final class ListenerTest extends IdentifierTestCase
 {
@@ -169,7 +175,7 @@ final class ListenerTest extends IdentifierTestCase
         ];
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testNullable(): void
     {
         $this->withListeners([
@@ -206,14 +212,14 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::null($data->generic);
-        \Testo\Assert::null($data->discord);
-        \Testo\Assert::null($data->instagram);
-        \Testo\Assert::null($data->mastodon);
-        \Testo\Assert::null($data->twitter);
+        Assert::null($data->generic);
+        Assert::null($data->discord);
+        Assert::null($data->instagram);
+        Assert::null($data->mastodon);
+        Assert::null($data->twitter);
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testAssignManually(): void
     {
         $this->withListeners();
@@ -230,15 +236,15 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), AllSnowflake::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::same($data->generic->toString(), $entity->generic->toString());
-        \Testo\Assert::same($data->discord->toString(), $entity->discord->toString());
-        \Testo\Assert::same($data->instagram->toString(), $entity->instagram->toString());
-        \Testo\Assert::same($data->mastodon->toString(), $entity->mastodon->toString());
-        \Testo\Assert::same($data->twitter->toString(), $entity->twitter->toString());
+        Assert::same($data->generic->toString(), $entity->generic->toString());
+        Assert::same($data->discord->toString(), $entity->discord->toString());
+        Assert::same($data->instagram->toString(), $entity->instagram->toString());
+        Assert::same($data->mastodon->toString(), $entity->mastodon->toString());
+        Assert::same($data->twitter->toString(), $entity->twitter->toString());
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('snowflakeGenerationDataProvider')]
+    #[Test]
+    #[DataProvider('snowflakeGenerationDataProvider')]
     public function testSnowflakeGeneration(
         array $listeners,
         string $field,
@@ -254,19 +260,19 @@ final class ListenerTest extends IdentifierTestCase
         $data = $select->fetchOne();
 
         $snowflake = $data->$field;
-        \Testo\Assert::instanceOf($snowflake, $expectedClass);
-        \Testo\Assert::string($snowflake->toString());
-        \Testo\Assert::same(\strlen($snowflake->toString()), $expectedLength);
+        Assert::instanceOf($snowflake, $expectedClass);
+        Assert::string($snowflake->toString());
+        Assert::same(\strlen($snowflake->toString()), $expectedLength);
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('snowflakeExceptionDataProvider')]
+    #[Test]
+    #[DataProvider('snowflakeExceptionDataProvider')]
     public function testSnowflakeException(
         string $listenerClass,
         array $defaults,
         string $expectedException,
     ): void {
-        \Testo\Expect::exception($expectedException);
+        Expect::exception($expectedException);
 
         if (\class_exists($listenerClass) && \method_exists($listenerClass, 'setDefaults')) {
             $listenerClass::setDefaults(...$defaults);
@@ -296,21 +302,7 @@ final class ListenerTest extends IdentifierTestCase
         ]));
     }
 
-    /**
-     * The listener defaults are static: reset them after each test too, so they never leak into other classes.
-     */
-    #[\Testo\Lifecycle\BeforeTest]
-    #[\Testo\Lifecycle\AfterTest]
-    protected function resetDefaults(): void
-    {
-        SnowflakeGenericListener::setDefaults(0, 0);
-        SnowflakeDiscordListener::setDefaults(0, null);
-        SnowflakeInstagramListener::setDefaults(0);
-        SnowflakeMastodonListener::setDefaults(null);
-        SnowflakeTwitterListener::setDefaults(0);
-    }
-
-    #[\Testo\Lifecycle\BeforeTest]
+    #[BeforeTest]
     protected function setUp(): void
     {
         $this->makeTable(
@@ -324,5 +316,19 @@ final class ListenerTest extends IdentifierTestCase
                 'twitter' => 'snowflake,nullable',
             ],
         );
+    }
+
+    /**
+     * The listener defaults are static: reset them after each test too, so they never leak into other classes.
+     */
+    #[BeforeTest]
+    #[AfterTest]
+    protected function resetDefaults(): void
+    {
+        SnowflakeGenericListener::setDefaults(0, 0);
+        SnowflakeDiscordListener::setDefaults(0, null);
+        SnowflakeInstagramListener::setDefaults(0);
+        SnowflakeMastodonListener::setDefaults(null);
+        SnowflakeTwitterListener::setDefaults(0);
     }
 }

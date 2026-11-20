@@ -16,95 +16,99 @@ use Spiral\Attributes\AttributeReader;
 use Spiral\Attributes\ReaderInterface;
 use Spiral\Tokenizer\ClassLocator;
 use Symfony\Component\Finder\Finder;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 final class SnowflakeTest extends IdentifierTestCase
 {
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testColumnExist(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(User::class)->getFields();
 
-        \Testo\Assert::true($fields->has('snowflake'));
-        \Testo\Assert::true($fields->hasColumn('snowflake'));
-        \Testo\Assert::same($fields->get('snowflake')->getType(), 'snowflake');
-        \Testo\Assert::array($fields->get('snowflake')->getTypecast());
-        \Testo\Assert::same($fields->get('snowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
-        \Testo\Assert::same($fields->count(), 1);
+        Assert::true($fields->has('snowflake'));
+        Assert::true($fields->hasColumn('snowflake'));
+        Assert::same($fields->get('snowflake')->getType(), 'snowflake');
+        Assert::array($fields->get('snowflake')->getTypecast());
+        Assert::same($fields->get('snowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::same($fields->count(), 1);
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testAddColumn(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(Post::class)->getFields();
 
-        \Testo\Assert::true($fields->has('customSnowflake'));
-        \Testo\Assert::true($fields->hasColumn('custom_snowflake'));
-        \Testo\Assert::same($fields->get('customSnowflake')->getType(), 'snowflake');
-        \Testo\Assert::same($fields->get('customSnowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('customSnowflake'));
+        Assert::true($fields->hasColumn('custom_snowflake'));
+        Assert::same($fields->get('customSnowflake')->getType(), 'snowflake');
+        Assert::same($fields->get('customSnowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testMultipleSnowflake(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(MultipleSnowflake::class)->getFields();
 
-        \Testo\Assert::true($fields->has('snowflake'));
-        \Testo\Assert::true($fields->hasColumn('snowflake'));
-        \Testo\Assert::same($fields->get('snowflake')->getType(), 'snowflake');
-        \Testo\Assert::same($fields->get('snowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('snowflake'));
+        Assert::true($fields->hasColumn('snowflake'));
+        Assert::same($fields->get('snowflake')->getType(), 'snowflake');
+        Assert::same($fields->get('snowflake')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('discord'));
-        \Testo\Assert::true($fields->hasColumn('discord'));
-        \Testo\Assert::same($fields->get('discord')->getType(), 'snowflake');
-        \Testo\Assert::same($fields->get('discord')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('discord'));
+        Assert::true($fields->hasColumn('discord'));
+        Assert::same($fields->get('discord')->getType(), 'snowflake');
+        Assert::same($fields->get('discord')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('instagram'));
-        \Testo\Assert::true($fields->hasColumn('instagram'));
-        \Testo\Assert::same($fields->get('instagram')->getType(), 'snowflake');
-        \Testo\Assert::same($fields->get('instagram')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('instagram'));
+        Assert::true($fields->hasColumn('instagram'));
+        Assert::same($fields->get('instagram')->getType(), 'snowflake');
+        Assert::same($fields->get('instagram')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('mastodon'));
-        \Testo\Assert::true($fields->hasColumn('mastodon'));
-        \Testo\Assert::same($fields->get('mastodon')->getType(), 'snowflake');
-        \Testo\Assert::same($fields->get('mastodon')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('mastodon'));
+        Assert::true($fields->hasColumn('mastodon'));
+        Assert::same($fields->get('mastodon')->getType(), 'snowflake');
+        Assert::same($fields->get('mastodon')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('twitter'));
-        \Testo\Assert::true($fields->hasColumn('twitter'));
-        \Testo\Assert::same($fields->get('twitter')->getType(), 'snowflake');
-        \Testo\Assert::same($fields->get('twitter')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('twitter'));
+        Assert::true($fields->hasColumn('twitter'));
+        Assert::same($fields->get('twitter')->getType(), 'snowflake');
+        Assert::same($fields->get('twitter')->getGenerated(), GeneratedField::BEFORE_INSERT);
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testAddNullableColumn(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(NullableSnowflake::class)->getFields();
 
-        \Testo\Assert::true($fields->has('notDefinedSnowflake'));
-        \Testo\Assert::true($fields->hasColumn('not_defined_snowflake'));
-        \Testo\Assert::same($fields->get('notDefinedSnowflake')->getType(), 'snowflake');
-        \Testo\Assert::true($this->registry
+        Assert::true($fields->has('notDefinedSnowflake'));
+        Assert::true($fields->hasColumn('not_defined_snowflake'));
+        Assert::same($fields->get('notDefinedSnowflake')->getType(), 'snowflake');
+        Assert::true($this->registry
             ->getTableSchema($this->registry->getEntity(NullableSnowflake::class))
             ->column('not_defined_snowflake')
             ->isNullable());
-        \Testo\Assert::null($fields->get('notDefinedSnowflake')->getGenerated());
+        Assert::null($fields->get('notDefinedSnowflake')->getGenerated());
     }
 
-    #[\Testo\Lifecycle\BeforeTest]
+    #[BeforeTest]
     protected function setUp(): void
     {
         $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 3) . '/Fixtures/Snowflake']));

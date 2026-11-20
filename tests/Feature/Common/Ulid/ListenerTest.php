@@ -14,10 +14,13 @@ use Cycle\ORM\SchemaInterface;
 use Cycle\ORM\Select;
 use Ramsey\Identifier\Ulid as UlidInterface;
 use Ramsey\Identifier\Ulid\UlidFactory;
+use Testo\Assert;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 final class ListenerTest extends IdentifierTestCase
 {
-    #[\Testo\Test]
+    #[Test]
     public function testNullable(): void
     {
         $this->withListeners([
@@ -34,10 +37,10 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::null($data->ulid);
+        Assert::null($data->ulid);
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testAssignManually(): void
     {
         $this->withListeners();
@@ -50,10 +53,10 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::same($data->ulid->toString(), $entity->ulid->toString());
+        Assert::same($data->ulid->toString(), $entity->ulid->toString());
     }
 
-    #[\Testo\Test]
+    #[Test]
     public function testUlid(): void
     {
         $this->withListeners([
@@ -69,9 +72,9 @@ final class ListenerTest extends IdentifierTestCase
         $select = new Select($this->orm->with(heap: new Heap()), AllUlid::class);
         $data = $select->fetchOne();
 
-        \Testo\Assert::instanceOf($data->ulid, UlidInterface::class);
-        \Testo\Assert::string($data->ulid->toString());
-        \Testo\Assert::same(\strlen($data->ulid->toString()), 26);
+        Assert::instanceOf($data->ulid, UlidInterface::class);
+        Assert::string($data->ulid->toString());
+        Assert::same(\strlen($data->ulid->toString()), 26);
     }
 
     public function withListeners(array|string|null $listeners = null): void
@@ -93,7 +96,7 @@ final class ListenerTest extends IdentifierTestCase
         ]));
     }
 
-    #[\Testo\Lifecycle\BeforeTest]
+    #[BeforeTest]
     protected function setUp(): void
     {
         $this->makeTable(

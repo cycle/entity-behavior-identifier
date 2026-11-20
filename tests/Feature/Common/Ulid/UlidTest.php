@@ -17,90 +17,94 @@ use Spiral\Attributes\AttributeReader;
 use Spiral\Attributes\ReaderInterface;
 use Spiral\Tokenizer\ClassLocator;
 use Symfony\Component\Finder\Finder;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 final class UlidTest extends IdentifierTestCase
 {
     protected Registry $registry;
     protected TokenizerEntityLocator $tokenizer;
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testColumnExist(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(User::class)->getFields();
 
-        \Testo\Assert::true($fields->has('ulid'));
-        \Testo\Assert::true($fields->hasColumn('ulid'));
-        \Testo\Assert::same($fields->get('ulid')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
-        \Testo\Assert::same($fields->count(), 1);
+        Assert::true($fields->has('ulid'));
+        Assert::true($fields->hasColumn('ulid'));
+        Assert::same($fields->get('ulid')->getType(), 'ulid');
+        Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
+        Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::same($fields->count(), 1);
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testAddColumn(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(Post::class)->getFields();
 
-        \Testo\Assert::true($fields->has('customUlid'));
-        \Testo\Assert::true($fields->hasColumn('custom_ulid'));
-        \Testo\Assert::same($fields->get('customUlid')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('customUlid')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::same($fields->get('customUlid')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('customUlid'));
+        Assert::true($fields->hasColumn('custom_ulid'));
+        Assert::same($fields->get('customUlid')->getType(), 'ulid');
+        Assert::same($fields->get('customUlid')->getTypecast(), [Ulid::class, 'create']);
+        Assert::same($fields->get('customUlid')->getGenerated(), GeneratedField::BEFORE_INSERT);
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testMultipleUlid(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(MultipleUlid::class)->getFields();
 
-        \Testo\Assert::true($fields->has('ulid'));
-        \Testo\Assert::true($fields->hasColumn('ulid'));
-        \Testo\Assert::same($fields->get('ulid')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('ulid'));
+        Assert::true($fields->hasColumn('ulid'));
+        Assert::same($fields->get('ulid')->getType(), 'ulid');
+        Assert::same($fields->get('ulid')->getTypecast(), [Ulid::class, 'create']);
+        Assert::same($fields->get('ulid')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('fooUlid'));
-        \Testo\Assert::true($fields->hasColumn('foo_ulid'));
-        \Testo\Assert::same($fields->get('fooUlid')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('fooUlid')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::same($fields->get('fooUlid')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('fooUlid'));
+        Assert::true($fields->hasColumn('foo_ulid'));
+        Assert::same($fields->get('fooUlid')->getType(), 'ulid');
+        Assert::same($fields->get('fooUlid')->getTypecast(), [Ulid::class, 'create']);
+        Assert::same($fields->get('fooUlid')->getGenerated(), GeneratedField::BEFORE_INSERT);
 
-        \Testo\Assert::true($fields->has('bar'));
-        \Testo\Assert::true($fields->hasColumn('bar'));
-        \Testo\Assert::same($fields->get('bar')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('bar')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::same($fields->get('bar')->getGenerated(), GeneratedField::BEFORE_INSERT);
+        Assert::true($fields->has('bar'));
+        Assert::true($fields->hasColumn('bar'));
+        Assert::same($fields->get('bar')->getType(), 'ulid');
+        Assert::same($fields->get('bar')->getTypecast(), [Ulid::class, 'create']);
+        Assert::same($fields->get('bar')->getGenerated(), GeneratedField::BEFORE_INSERT);
     }
 
-    #[\Testo\Test]
-    #[\Testo\Data\DataProvider('readersDataProvider')]
+    #[Test]
+    #[DataProvider('readersDataProvider')]
     public function testAddNullableColumn(ReaderInterface $reader): void
     {
         $this->compileWithTokenizer($this->tokenizer, $reader);
 
         $fields = $this->registry->getEntity(NullableUlid::class)->getFields();
 
-        \Testo\Assert::true($fields->has('notDefinedUlid'));
-        \Testo\Assert::true($fields->hasColumn('not_defined_ulid'));
-        \Testo\Assert::same($fields->get('notDefinedUlid')->getType(), 'ulid');
-        \Testo\Assert::same($fields->get('notDefinedUlid')->getTypecast(), [Ulid::class, 'create']);
-        \Testo\Assert::true($this->registry
+        Assert::true($fields->has('notDefinedUlid'));
+        Assert::true($fields->hasColumn('not_defined_ulid'));
+        Assert::same($fields->get('notDefinedUlid')->getType(), 'ulid');
+        Assert::same($fields->get('notDefinedUlid')->getTypecast(), [Ulid::class, 'create']);
+        Assert::true($this->registry
             ->getTableSchema($this->registry->getEntity(NullableUlid::class))
             ->column('not_defined_ulid')
             ->isNullable());
-        \Testo\Assert::null($fields->get('notDefinedUlid')->getGenerated());
+        Assert::null($fields->get('notDefinedUlid')->getGenerated());
     }
 
-    #[\Testo\Lifecycle\BeforeTest]
+    #[BeforeTest]
     protected function setUp(): void
     {
         $locator = new ClassLocator((new Finder())->files()->in([\dirname(__DIR__, 3) . '/Fixtures/Ulid']));
