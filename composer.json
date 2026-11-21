@@ -52,14 +52,14 @@
     },
     "require": {
         "php": ">=8.2",
-        "cycle/entity-behavior": "^1.7",
+        "cycle/entity-behavior": "^1.8",
         "ramsey/identifier": "^0.1"
     },
     "require-dev": {
         "bamarni/composer-bin-plugin": "^1.8",
         "buggregator/trap": "^1.20",
-        "cycle/annotated": "^4.6",
-        "cycle/testing": "^0.1.1",
+        "cycle/annotated": "^4.7",
+        "cycle/testing": "^0.1.2",
         "doctrine/annotations": "^2.0.2",
         "llm/skills": "^1.20",
         "roxblnfk/unpoly": "^1.8",
